@@ -440,28 +440,17 @@ header{
 .cal-day.cal-zero{background:var(--s2);border-color:var(--border);}
 .cal-day.cal-today{border-color:var(--purple)!important;box-shadow:inset 0 0 0 1px var(--purple);}
 .cal-dn{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:6px;}
-.cal-day.cal-pos .cal-dn,.cal-day.cal-neg .cal-dn{color:rgba(255,255,255,.5);}
+.cal-day.cal-pos .cal-dn,.cal-day.cal-neg .cal-dn{color:rgba(255,255,255,.3);}
 .cal-pnl{
   font-family:'Barlow Condensed',sans-serif;font-weight:800;
   font-size:20px;letter-spacing:.03em;line-height:1;
   position:absolute;bottom:10px;left:8px;right:8px;text-align:center;
 }
-.cal-day.cal-pos .cal-pnl{color:var(--mint);}
-.cal-day.cal-neg .cal-pnl{color:#ff7a8a;}
+.cal-day.cal-pos .cal-pnl{color:rgba(6,218,174,.85);}
+.cal-day.cal-neg .cal-pnl{color:rgba(255,100,120,.85);}
+.cal-day.cal-zero .cal-pnl{color:rgba(255,255,255,.2);}
 
-/* ── BUCKET CHART ── */
-.chart-section{margin-bottom:28px;}
-.chart-card{
-  background:var(--s1);border:1px solid var(--border);
-  padding:24px;position:relative;overflow:hidden;
-}
-.chart-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px;}
-.chart-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;letter-spacing:.04em;color:var(--text);}
-.chart-legend{display:flex;gap:18px;}
-.chart-leg-item{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;}
-.chart-leg-dot{width:8px;height:8px;border-radius:50%;}
-.chart-wrap{position:relative;width:100%;height:220px;}
-.chart-wrap canvas{width:100%!important;height:100%!important;}
+/* ── BUCKET CHART - removed */
 
 /* ANIMATIONS */
 @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
@@ -576,12 +565,12 @@ header{
       <div class="mega-bar"><div class="mega-fill" id="megaBar" style="width:0%"></div></div>
     </div>
     <div class="streams">
-      <div class="sc">
+      <div class="sc" id="tradingCard" style="cursor:pointer" title="Click to view PnL Calendar">
         <div class="sc-head">
           <div class="sc-icon">📈</div>
           <div class="ib">i<div class="tip">📊 Crypto · Stock · Polymarket</div></div>
         </div>
-        <div class="sc-label">Trading</div>
+        <div class="sc-label">Trading <span style="font-size:8px;color:var(--purple-lt);letter-spacing:.1em;">▼ PnL CAL</span></div>
         <div class="sc-amt" id="tradingAmt">$0</div>
         <div class="mini-bar"><div class="mini-fill" id="tradingBar" style="width:0%"></div></div>
       </div>
@@ -641,8 +630,9 @@ header{
     </div>
   </div>
 
-  <!-- PNL CALENDAR -->
-  <div class="sl"><span class="sl-icon">📅</span>PnL Calendar</div>
+  <!-- PNL CALENDAR (revealed on Trading click) -->
+  <div id="pnlCalendarSection" style="display:none">
+  <div class="sl"><span class="sl-icon">📅</span>PnL Calendar <span style="font-size:10px;color:var(--muted);margin-left:8px;cursor:pointer" id="calClose">✕ close</span></div>
   <div class="pnl-section">
     <div class="pnl-top">
       <div class="pnl-nav">
@@ -673,23 +663,7 @@ header{
       <div class="cal-dh">Wed</div><div class="cal-dh">Thu</div><div class="cal-dh">Fri</div><div class="cal-dh">Sat</div>
     </div>
     <div class="cal-grid" id="calGrid"></div>
-  </div>
-
-  <!-- BUCKET CHART -->
-  <div class="sl"><span class="sl-icon">📈</span>Cumulative Progress</div>
-  <div class="chart-section">
-    <div class="chart-card">
-      <div class="chart-head">
-        <div class="chart-title">Trading · Airdrop · Content</div>
-        <div class="chart-legend">
-          <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#7250FF"></div>Trading</div>
-          <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#06DAAE"></div>Airdrop</div>
-          <div class="chart-leg-item"><div class="chart-leg-dot" style="background:#F5C842"></div>Content</div>
-        </div>
-      </div>
-      <div class="chart-wrap"><canvas id="bucketChart"></canvas></div>
-    </div>
-  </div>
+  </div><!-- end pnlCalendarSection -->
 
   <!-- LIFE GOALS -->
   <div class="sl"><span class="sl-icon">🌟</span>Life Goals</div>
@@ -984,6 +958,18 @@ document.getElementById('calNext').addEventListener('click',()=>{
   calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();
 });
 
+// trading card click → show/hide calendar
+document.getElementById('tradingCard').addEventListener('click',()=>{
+  const sec=document.getElementById('pnlCalendarSection');
+  const isHidden=sec.style.display==='none';
+  sec.style.display=isHidden?'block':'none';
+  if(isHidden){sec.scrollIntoView({behavior:'smooth',block:'start'});}
+});
+document.getElementById('calClose').addEventListener('click',(e)=>{
+  e.stopPropagation();
+  document.getElementById('pnlCalendarSection').style.display='none';
+});
+
 async function init(){
   tick();setInterval(tick,30000);
   const [d,daily]=await Promise.all([load(),loadDaily()]);
@@ -991,7 +977,6 @@ async function init(){
   setTimeout(()=>{
     render(d);
     renderCalendar();
-    renderBucketChart();
     const ov=$('loadingOverlay');ov.classList.add('hidden');
     setTimeout(()=>ov.remove(),600);
   },1400);
