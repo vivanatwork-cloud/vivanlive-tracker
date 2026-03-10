@@ -593,6 +593,47 @@ header{
     </div>
   </div>
 
+  <!-- PNL CALENDAR (revealed on Trading click, inside $100K section) -->
+  <div id="pnlCalendarSection" style="display:none;margin-top:-14px;margin-bottom:28px;">
+  <div style="background:var(--s1);border:1px solid #1a1a2e;border-top:none;padding:24px 32px 28px;position:relative;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div class="sl" style="margin-bottom:0;flex:1"><span class="sl-icon">📅</span>PnL Calendar</div>
+    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;letter-spacing:.1em;text-transform:uppercase" id="calClose">✕ Close</span>
+  </div>
+  <div class="pnl-section">
+    <div class="pnl-top">
+      <div class="pnl-nav">
+        <button id="calPrev">&#8592;</button>
+        <div class="pnl-month" id="calMonthLabel">— 2026</div>
+        <button id="calNext">&#8594;</button>
+      </div>
+    </div>
+    <div class="pnl-stats">
+      <div class="pnl-stat"><div class="pnl-stat-lbl">Total PnL</div><div class="pnl-stat-val neu" id="calTotal">—</div></div>
+      <div class="pnl-stat"><div class="pnl-stat-lbl">Best Day</div><div class="pnl-stat-val pos" id="calBest">—</div></div>
+      <div class="pnl-stat"><div class="pnl-stat-lbl">Worst Day</div><div class="pnl-stat-val neg" id="calWorst">—</div></div>
+      <div class="pnl-stat"><div class="pnl-stat-lbl">Green Days</div><div class="pnl-stat-val neu" id="calWinDays">—</div></div>
+    </div>
+    <div class="pnl-ratio-bar">
+      <div class="pnl-ratio-lbl">Profit / Loss Ratio</div>
+      <div class="pnl-ratio-track">
+        <div class="pnl-ratio-green" id="ratioGreen" style="width:0%"></div>
+        <div class="pnl-ratio-red" id="ratioRed"></div>
+      </div>
+      <div class="pnl-ratio-ends">
+        <div class="pnl-ratio-end"><div class="pnl-ratio-dot" style="background:var(--mint)"></div><span id="ratioGreenLbl">0 days · $0</span></div>
+        <div class="pnl-ratio-end"><span id="ratioRedLbl">0 days · $0</span><div class="pnl-ratio-dot" style="background:var(--red)"></div></div>
+      </div>
+    </div>
+    <div class="cal-grid-head">
+      <div class="cal-dh">Sun</div><div class="cal-dh">Mon</div><div class="cal-dh">Tue</div>
+      <div class="cal-dh">Wed</div><div class="cal-dh">Thu</div><div class="cal-dh">Fri</div><div class="cal-dh">Sat</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div><!-- end pnl-section -->
+  </div><!-- end inner panel -->
+  </div><!-- end pnlCalendarSection -->
+
   <!-- GROWTH CHANNELS -->
   <div class="sl"><span class="sl-icon">📣</span>Growth Channels</div>
   <div class="goals-grid">
@@ -629,41 +670,6 @@ header{
       <div class="gc-meta"><span id="twRem">4,000 to go</span><em id="twPct">0%</em></div>
     </div>
   </div>
-
-  <!-- PNL CALENDAR (revealed on Trading click) -->
-  <div id="pnlCalendarSection" style="display:none">
-  <div class="sl"><span class="sl-icon">📅</span>PnL Calendar <span style="font-size:10px;color:var(--muted);margin-left:8px;cursor:pointer" id="calClose">✕ close</span></div>
-  <div class="pnl-section">
-    <div class="pnl-top">
-      <div class="pnl-nav">
-        <button id="calPrev">&#8592;</button>
-        <div class="pnl-month" id="calMonthLabel">— 2026</div>
-        <button id="calNext">&#8594;</button>
-      </div>
-    </div>
-    <div class="pnl-stats">
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Total PnL</div><div class="pnl-stat-val neu" id="calTotal">—</div></div>
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Best Day</div><div class="pnl-stat-val pos" id="calBest">—</div></div>
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Worst Day</div><div class="pnl-stat-val neg" id="calWorst">—</div></div>
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Green Days</div><div class="pnl-stat-val neu" id="calWinDays">—</div></div>
-    </div>
-    <div class="pnl-ratio-bar">
-      <div class="pnl-ratio-lbl">Profit / Loss Ratio</div>
-      <div class="pnl-ratio-track">
-        <div class="pnl-ratio-green" id="ratioGreen" style="width:0%"></div>
-        <div class="pnl-ratio-red" id="ratioRed"></div>
-      </div>
-      <div class="pnl-ratio-ends">
-        <div class="pnl-ratio-end"><div class="pnl-ratio-dot" style="background:var(--mint)"></div><span id="ratioGreenLbl">0 days · $0</span></div>
-        <div class="pnl-ratio-end"><span id="ratioRedLbl">0 days · $0</span><div class="pnl-ratio-dot" style="background:var(--red)"></div></div>
-      </div>
-    </div>
-    <div class="cal-grid-head">
-      <div class="cal-dh">Sun</div><div class="cal-dh">Mon</div><div class="cal-dh">Tue</div>
-      <div class="cal-dh">Wed</div><div class="cal-dh">Thu</div><div class="cal-dh">Fri</div><div class="cal-dh">Sat</div>
-    </div>
-    <div class="cal-grid" id="calGrid"></div>
-  </div><!-- end pnlCalendarSection -->
 
   <!-- LIFE GOALS -->
   <div class="sl"><span class="sl-icon">🌟</span>Life Goals</div>
@@ -958,12 +964,10 @@ document.getElementById('calNext').addEventListener('click',()=>{
   calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();
 });
 
-// trading card click → show/hide calendar
+// trading card click → show/hide calendar inline
 document.getElementById('tradingCard').addEventListener('click',()=>{
   const sec=document.getElementById('pnlCalendarSection');
-  const isHidden=sec.style.display==='none';
-  sec.style.display=isHidden?'block':'none';
-  if(isHidden){sec.scrollIntoView({behavior:'smooth',block:'start'});}
+  sec.style.display=sec.style.display==='none'?'block':'none';
 });
 document.getElementById('calClose').addEventListener('click',(e)=>{
   e.stopPropagation();
