@@ -452,6 +452,25 @@ header{
 
 /* ── BUCKET CHART - removed */
 
+/* ── SHARE ── */
+.share-btn{
+  background:linear-gradient(135deg,var(--purple),var(--mint));
+  color:#000;border:none;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;
+  font-size:14px;letter-spacing:.08em;text-transform:uppercase;
+  padding:8px 20px;
+  transition:opacity .2s,transform .15s;
+}
+.share-btn:hover{opacity:.85;transform:translateY(-1px);}
+.share-action-btn{
+  background:var(--s2);border:1px solid var(--border);color:var(--text);
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;
+  padding:11px;cursor:pointer;text-transform:uppercase;
+  transition:background .15s,border-color .15s;
+}
+.share-action-btn:hover{background:var(--s3);border-color:var(--purple);}
+.share-action-btn.tweet-btn{border-color:rgba(114,80,255,.4);color:var(--purple-lt);}
+
 /* ANIMATIONS */
 @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .gc:nth-child(1){animation-delay:.06s}.gc:nth-child(2){animation-delay:.12s}
@@ -607,6 +626,7 @@ header{
         <div class="pnl-month" id="calMonthLabel">— 2026</div>
         <button id="calNext">&#8594;</button>
       </div>
+      <button class="share-btn" id="sharePnlBtn">⬡ Share PnL</button>
     </div>
     <div class="pnl-stats">
       <div class="pnl-stat"><div class="pnl-stat-lbl">Total PnL</div><div class="pnl-stat-val neu" id="calTotal">—</div></div>
@@ -749,6 +769,22 @@ header{
     </div>
   </div>
 
+  <!-- SHARE MODAL -->
+  <div id="shareModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
+    <div style="background:#0A0A0A;border:1px solid #2a2a40;max-width:500px;width:92%;position:relative;padding:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;letter-spacing:.06em;color:#fff;">SHARE PNL</div>
+        <span id="shareClose" style="cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;color:#555;letter-spacing:.1em;text-transform:uppercase">✕ CLOSE</span>
+      </div>
+      <canvas id="shareCanvas" style="width:100%;border:1px solid #1a1a2e;display:block;"></canvas>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+        <button class="share-action-btn" id="copyImgBtn">📋 Copy Image</button>
+        <button class="share-action-btn" id="copyTextBtn" style="background:rgba(114,80,255,.1);border-color:rgba(114,80,255,.3);color:var(--purple-lt)">📝 Copy Text</button>
+      </div>
+      <div id="shareMsg" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--mint);letter-spacing:.08em;margin-top:10px;text-align:center;min-height:14px;"></div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <div class="footer">
     <div class="motto">The grind is private. <strong>The results are public. 🚀</strong></div>
@@ -825,12 +861,26 @@ async function load(){
 }
 const DAILY_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vRQtO8kCl5EoaseHwo98-m1h6G9_aidcVHsdsWxFufjlje3yq4IhdIHtpXhLIf6LRuRhiitDSdg35zu/pub?gid=1958217971&single=true&output=csv';
 
+function parseCSVRow(line){
+  const cols=[];let cur='',inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){inQ=!inQ;}
+    else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+    else{cur+=ch;}
+  }
+  cols.push(cur.trim());
+  return cols;
+}
 function parseDaily(csv){
-  const rows=csv.trim().split('\n').map(l=>l.split(',').map(c=>c.trim().replace(/^"|"$/g,'')));
+  const lines=csv.trim().split('\n');
   const data=[];
-  rows.slice(1).forEach(([date,trading,airdrop,content])=>{
+  lines.slice(1).forEach(line=>{
+    const row=parseCSVRow(line);
+    const date=row[0];
     if(!date||date==='date')return;
-    const t=parseFloat(trading)||0,a=parseFloat(airdrop)||0,c=parseFloat(content)||0;
+    const clean=s=>parseFloat((s||'').replace(/,/g,''))||0;
+    const t=clean(row[1]),a=clean(row[2]),c=clean(row[3]);
     data.push({date,trading:t,airdrop:a,content:c,total:t+a+c});
   });
   return data;
@@ -972,6 +1022,204 @@ document.getElementById('tradingCard').addEventListener('click',()=>{
 document.getElementById('calClose').addEventListener('click',(e)=>{
   e.stopPropagation();
   document.getElementById('pnlCalendarSection').style.display='none';
+});
+
+// ── SHARE PNL ──
+function buildShareCanvas(){
+  const canvas=document.getElementById('shareCanvas');
+  const W=900,H=500;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  // today's date string
+  const todayStr=new Date().toISOString().slice(0,10);
+  const todayEntry=calData.find(d=>d.date===todayStr);
+  const todayPnl=todayEntry?todayEntry.total:0;
+
+  // month data
+  const monthData=calData.filter(d=>{
+    const dt=new Date(d.date+'T00:00:00');
+    return dt.getFullYear()===calYear&&dt.getMonth()===calMonth;
+  });
+  const vals=monthData.map(d=>d.total);
+  const monthTotal=vals.reduce((a,b)=>a+b,0);
+  const green=vals.filter(v=>v>0).length;
+  const red=vals.filter(v=>v<0).length;
+
+  // all time
+  const allTime=calData.reduce((a,d)=>a+d.total,0);
+
+  const isPos=monthTotal>=0;
+
+  const fmtC=v=>{
+    const s=v>=0?'+':'-';
+    const abs=Math.abs(v);
+    return s+'$'+(abs>=1000?(abs/1000).toFixed(1)+'K':abs.toFixed(2));
+  };
+
+  // ── BACKGROUND ──
+  ctx.fillStyle='#050505';
+  ctx.fillRect(0,0,W,H);
+
+  // subtle grid
+  ctx.strokeStyle='rgba(255,255,255,.025)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // left accent bar
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'#7250FF');grad.addColorStop(1,'#06DAAE');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,4,H);
+
+  // top glow
+  const glow=ctx.createRadialGradient(W,0,0,W,0,380);
+  glow.addColorStop(0,isPos?'rgba(6,218,174,.10)':'rgba(255,59,92,.08)');
+  glow.addColorStop(1,'transparent');
+  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+
+  // ── HEADER ──
+  ctx.fillStyle='rgba(255,255,255,.2)';
+  ctx.font='500 12px monospace';
+  ctx.fillText('VIVANLIVE  ·  @VivanLive',32,36);
+
+  ctx.fillStyle='rgba(255,255,255,.45)';
+  ctx.font='bold 14px monospace';
+  ctx.fillText(monthNames[calMonth].toUpperCase()+' '+calYear,32,58);
+
+  // ── 3 PNL STATS ──
+  const statY=100;
+  const statW=(W-64)/3;
+
+  const stats3=[
+    {label:"TODAY'S PNL",value:fmtPnl(todayPnl),color:todayPnl>=0?'#06DAAE':'#FF3B5C'},
+    {label:'MONTH PNL',value:fmtPnl(monthTotal),color:monthTotal>=0?'#06DAAE':'#FF3B5C'},
+    {label:'ALL TIME PNL',value:fmtPnl(allTime),color:allTime>=0?'#06DAAE':'#FF3B5C'},
+  ];
+
+  stats3.forEach((s,i)=>{
+    const x=32+i*statW;
+    // card bg
+    ctx.fillStyle='rgba(255,255,255,.03)';
+    ctx.fillRect(x,statY-20,statW-12,160);
+    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+    ctx.strokeRect(x,statY-20,statW-12,160);
+
+    // label
+    ctx.fillStyle='rgba(255,255,255,.3)';
+    ctx.font='500 10px monospace';
+    ctx.fillText(s.label,x+14,statY+4);
+
+    // value
+    ctx.fillStyle=s.color;
+    ctx.font='bold 52px "Barlow Condensed",monospace';
+    ctx.fillText(s.value,x+14,statY+70);
+  });
+
+  // ── DIVIDER ──
+  const divY=280;
+  ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(32,divY);ctx.lineTo(W-32,divY);ctx.stroke();
+
+  // ── WIN STATS ROW ──
+  const wY=310;
+  const wStats=[
+    {l:'GREEN DAYS',v:green+'/'+(green+red),c:'#06DAAE'},
+    {l:'RED DAYS',v:String(red),c:'#FF3B5C'},
+    {l:'WIN RATE',v:green+red>0?Math.round(green/(green+red)*100)+'%':'—',c:'#9B7FFF'},
+    {l:'TRADING DAYS',v:String(green+red),c:'rgba(255,255,255,.6)'},
+  ];
+  const wColW=(W-64)/4;
+  wStats.forEach((s,i)=>{
+    const x=32+i*wColW;
+    ctx.fillStyle='rgba(255,255,255,.25)';
+    ctx.font='9px monospace';
+    ctx.fillText(s.l,x,wY);
+    ctx.fillStyle=s.c;
+    ctx.font='bold 26px "Barlow Condensed",monospace';
+    ctx.fillText(s.v,x,wY+32);
+  });
+
+  // ── RATIO BAR ──
+  const barX=32,barY=380,barW=W-64,barH=5;
+  ctx.fillStyle='rgba(255,255,255,.05)';
+  ctx.fillRect(barX,barY,barW,barH);
+  const gPct=green+red>0?green/(green+red):0;
+  if(gPct>0){
+    const gg=ctx.createLinearGradient(barX,0,barX+barW*gPct,0);
+    gg.addColorStop(0,'#04B08C');gg.addColorStop(1,'#06DAAE');
+    ctx.fillStyle=gg;ctx.fillRect(barX,barY,barW*gPct,barH);
+  }
+  if(gPct<1){ctx.fillStyle='#FF3B5C';ctx.fillRect(barX+barW*gPct,barY,barW*(1-gPct),barH);}
+
+  // ── FOOTER ──
+  ctx.fillStyle='rgba(114,80,255,.5)';
+  ctx.font='bold 13px monospace';
+  ctx.textAlign='center';
+  ctx.fillText('#100KChallengeWithVivan',W/2,H-22);
+  ctx.textAlign='left';
+
+  return canvas;
+}
+
+function getTweetText(){
+  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const monthData=calData.filter(d=>{
+    const dt=new Date(d.date+'T00:00:00');
+    return dt.getFullYear()===calYear&&dt.getMonth()===calMonth;
+  });
+  const vals=monthData.map(d=>d.total);
+  const total=vals.reduce((a,b)=>a+b,0);
+  const green=vals.filter(v=>v>0).length;
+  const red=vals.filter(v=>v<0).length;
+  const isPos=total>=0;
+  const fmtV=v=>Math.abs(v)>=1000?'$'+(Math.abs(v)/1000).toFixed(1)+'K':'$'+Math.abs(v).toFixed(0);
+  return `${isPos?'🟢':'🔴'} ${monthNames[calMonth]} ${calYear} PnL Update\n\n${isPos?'+':''}${fmtV(total)} total\n✅ ${green} green days  ❌ ${red} red days\n\nTracking the $100K challenge live 👇\nvivanatwork-cloud.github.io/vivanlive-tracker\n\n#VivanLive #100KChallenge #Crypto #Trading`;
+}
+
+document.getElementById('sharePnlBtn').addEventListener('click',()=>{
+  const modal=document.getElementById('shareModal');
+  modal.style.display='flex';
+  buildShareCanvas();
+});
+document.getElementById('shareClose').addEventListener('click',()=>{
+  document.getElementById('shareModal').style.display='none';
+});
+document.getElementById('shareModal').addEventListener('click',(e)=>{
+  if(e.target===document.getElementById('shareModal'))
+    document.getElementById('shareModal').style.display='none';
+});
+
+document.getElementById('copyImgBtn').addEventListener('click',async()=>{
+  const canvas=buildShareCanvas();
+  const msg=document.getElementById('shareMsg');
+  try{
+    canvas.toBlob(async blob=>{
+      await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+      msg.textContent='✓ Image copied to clipboard!';
+      setTimeout(()=>msg.textContent='',3000);
+    });
+  }catch{
+    // fallback: download
+    const a=document.createElement('a');
+    a.download='vivanlive-pnl.png';
+    a.href=canvas.toDataURL();
+    a.click();
+    msg.textContent='✓ Image saved (clipboard not supported in this browser)';
+    setTimeout(()=>msg.textContent='',3000);
+  }
+});
+
+document.getElementById('copyTextBtn').addEventListener('click',async()=>{
+  const msg=document.getElementById('shareMsg');
+  try{
+    await navigator.clipboard.writeText('Join Inner Circle for Real-time trades: https://hi.switchy.io/VivanLive');
+    msg.textContent='✓ Text copied!';
+    setTimeout(()=>msg.textContent='',3000);
+  }catch{
+    msg.textContent='Could not copy — please copy manually.';
+  }
 });
 
 async function init(){
