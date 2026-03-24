@@ -633,10 +633,116 @@ header{
   .money-total{font-size:32px;}
   .streams{grid-template-columns:1fr;}
 }
-/* CAL PANEL */
+/* JOURNAL TEASER */
+.journal-teaser{position:relative;overflow:hidden;}
+.teaser-rows{padding:8px 0;}
+.teaser-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:nowrap;
+  padding:13px 24px;border-bottom:1px solid rgba(255,255,255,.04);
+  filter:blur(5px);user-select:none;pointer-events:none;
+  opacity:.7;
+}
+.teaser-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);width:42px;flex-shrink:0;}
+.teaser-badge{
+  font-family:'DM Mono',monospace;font-size:8px;font-weight:600;
+  letter-spacing:.1em;padding:3px 8px;border-radius:2px;flex-shrink:0;
+}
+.teaser-badge.long{background:rgba(6,218,174,.15);border:1px solid rgba(6,218,174,.3);color:var(--mint);}
+.teaser-badge.short{background:rgba(255,59,92,.12);border:1px solid rgba(255,59,92,.28);color:var(--red);}
+.teaser-market{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;color:#fff;width:44px;flex-shrink:0;}
+.teaser-strat{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.teaser-entry,.teaser-exit{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);white-space:nowrap;}
+.teaser-arrow{color:var(--muted);font-size:10px;}
+.teaser-r{font-family:'DM Mono',monospace;font-size:9px;color:var(--purple-lt);width:36px;text-align:right;flex-shrink:0;}
+.teaser-pnl{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;width:72px;text-align:right;flex-shrink:0;}
+.teaser-pnl.pos{color:var(--mint);}
+.teaser-pnl.neg{color:var(--red);}
+
+/* overlay */
+.teaser-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;
+  background:linear-gradient(to bottom, rgba(5,5,5,.2) 0%, rgba(5,5,5,.92) 40%, rgba(5,5,5,.98) 100%);
+  padding:24px;
+}
+.teaser-lock{font-size:28px;margin-bottom:2px;}
+.teaser-cta-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:24px;letter-spacing:.04em;color:#fff;text-align:center;
+}
+.teaser-cta-sub{
+  font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--muted);letter-spacing:.1em;text-align:center;
+  text-transform:uppercase;margin-bottom:4px;
+}
+.teaser-cta-btn{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--purple),var(--mint));
+  color:#000;text-decoration:none;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;
+  font-size:16px;letter-spacing:.06em;text-transform:uppercase;
+  padding:13px 28px;
+  transition:opacity .2s,transform .15s,box-shadow .2s;
+  white-space:nowrap;
+}
+.teaser-cta-btn:hover{opacity:.88;transform:translateY(-2px);box-shadow:0 8px 28px rgba(114,80,255,.4);}
+
+@media(max-width:640px){
+  .teaser-strat{display:none;}
+  .teaser-entry,.teaser-exit,.teaser-arrow{display:none;}
+  .teaser-row{gap:7px;}
+  .teaser-cta-title{font-size:18px;}
+  .teaser-cta-btn{font-size:13px;padding:11px 20px;}
+}
 .cal-panel{
   background:var(--s1);border:1px solid #1a1a2e;border-top:none;
   padding:24px 28px 28px;position:relative;
+}
+
+/* TRAVEL FLAG PILLS */
+.t-flags{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px;}
+.t-flag-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(114,80,255,.12);border:1px solid rgba(114,80,255,.25);
+  padding:5px 12px;border-radius:20px;
+  font-size:13px;transition:transform .15s,border-color .15s;
+}
+.t-flag-pill:hover{transform:translateY(-1px);border-color:rgba(114,80,255,.5);}
+.t-flag-name{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.6);letter-spacing:.04em;}
+.t-remaining{display:flex;align-items:center;gap:10px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+
+/* COURSE CTA */
+.course-cta-bar{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  background:linear-gradient(135deg,rgba(245,200,66,.1),rgba(114,80,255,.08));
+  border:1px solid rgba(245,200,66,.28);
+  padding:20px 24px;margin-bottom:28px;
+  position:relative;overflow:hidden;
+}
+.course-cta-bar::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--gold),#ff9900);}
+.course-cta-left{flex:1;}
+.course-cta-tag{
+  display:inline-block;
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--gold);
+  background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.25);
+  padding:3px 10px;margin-bottom:6px;
+}
+.course-cta-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;letter-spacing:.04em;color:#fff;margin-bottom:3px;}
+.course-cta-sub{font-size:12px;color:var(--dim);}
+.course-cta-btn{
+  background:linear-gradient(135deg,var(--gold),#ff9900);
+  color:#000;text-decoration:none;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;
+  font-size:14px;letter-spacing:.06em;text-transform:uppercase;
+  padding:12px 22px;white-space:nowrap;flex-shrink:0;
+  transition:opacity .2s,transform .15s,box-shadow .2s;
+}
+.course-cta-btn:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 6px 20px rgba(245,200,66,.3);}
+@media(max-width:640px){
+  .course-cta-bar{flex-direction:column;align-items:flex-start;}
+  .course-cta-btn{width:100%;text-align:center;}
 }
 
 /* ANIMATIONS */
@@ -696,13 +802,11 @@ header{
     <div class="pt-item"><span class="pt-coin">ETH</span><span class="pt-price" id="ptETH">—</span><span class="pt-chg" id="ptETHc">—</span></div>
     <div class="pt-item"><span class="pt-coin">SOL</span><span class="pt-price" id="ptSOL">—</span><span class="pt-chg" id="ptSOLc">—</span></div>
     <div class="pt-item"><span class="pt-coin">HYPE</span><span class="pt-price" id="ptHYPE">—</span><span class="pt-chg" id="ptHYPEc">—</span></div>
-    <div class="pt-item"><span class="pt-coin">LAST UPDATED</span><span class="pt-price" id="lastUpdated">fetching…</span></div>
     <!-- duplicate for seamless loop -->
     <div class="pt-item"><span class="pt-coin">BTC</span><span class="pt-price" id="ptBTC2">—</span><span class="pt-chg" id="ptBTCc2">—</span></div>
     <div class="pt-item"><span class="pt-coin">ETH</span><span class="pt-price" id="ptETH2">—</span><span class="pt-chg" id="ptETHc2">—</span></div>
     <div class="pt-item"><span class="pt-coin">SOL</span><span class="pt-price" id="ptSOL2">—</span><span class="pt-chg" id="ptSOLc2">—</span></div>
     <div class="pt-item"><span class="pt-coin">HYPE</span><span class="pt-price" id="ptHYPE2">—</span><span class="pt-chg" id="ptHYPEc2">—</span></div>
-    <div class="pt-item"><span class="pt-coin">LAST UPDATED</span><span class="pt-price" id="lastUpdated2">fetching…</span></div>
   </div>
 </div>
 
@@ -769,7 +873,7 @@ header{
           <div class="sc-icon">📈</div>
           <div class="ib">i<div class="tip">📊 Crypto · Stock · Polymarket</div></div>
         </div>
-        <div class="sc-label">Trading <span style="font-size:8px;color:var(--purple-lt);letter-spacing:.1em;">▼ PnL CAL</span></div>
+        <div class="sc-label">Trading <span id="calToggleHint" style="font-size:8px;color:var(--purple-lt);letter-spacing:.1em;">📅 PnL CAL</span></div>
         <div class="sc-amt" id="tradingAmt">$0</div>
         <div class="mini-bar"><div class="mini-fill" id="tradingBar" style="width:0%"></div></div>
       </div>
@@ -834,6 +938,42 @@ header{
   </div><!-- end inner panel -->
   </div><!-- end pnlCalendarSection -->
 
+  <!-- TRADE JOURNAL (before Growth Channels) -->
+  <div class="sl"><span class="sl-icon">📒</span>Trade Journal</div>
+  <div class="journal-section">
+    <div class="journal-card">
+      <div class="journal-header">
+        <div class="journal-title">Recent Trades</div>
+        <div class="journal-count">Live · Updated Daily</div>
+      </div>
+      <div class="journal-teaser">
+        <div class="teaser-rows">
+          <div class="teaser-row"><span class="teaser-date">24 Mar</span><span class="teaser-badge long">LONG</span><span class="teaser-market">BTC</span><span class="teaser-strat">Pair Candle Breakout</span><span class="teaser-entry">$84,220</span><span class="teaser-arrow">→</span><span class="teaser-exit">$86,100</span><span class="teaser-r">+2.4R</span><span class="teaser-pnl pos">+$1,880</span></div>
+          <div class="teaser-row"><span class="teaser-date">23 Mar</span><span class="teaser-badge short">SHORT</span><span class="teaser-market">ETH</span><span class="teaser-strat">Momentum Fade</span><span class="teaser-entry">$2,041</span><span class="teaser-arrow">→</span><span class="teaser-exit">$1,998</span><span class="teaser-r">+1.8R</span><span class="teaser-pnl pos">+$655</span></div>
+          <div class="teaser-row"><span class="teaser-date">22 Mar</span><span class="teaser-badge long">LONG</span><span class="teaser-market">SOL</span><span class="teaser-strat">Pair Candle Breakout</span><span class="teaser-entry">$128.40</span><span class="teaser-arrow">→</span><span class="teaser-exit">$124.10</span><span class="teaser-r">-1R</span><span class="teaser-pnl neg">-$430</span></div>
+          <div class="teaser-row"><span class="teaser-date">21 Mar</span><span class="teaser-badge long">LONG</span><span class="teaser-market">HYPE</span><span class="teaser-strat">Breakout Retest</span><span class="teaser-entry">$14.22</span><span class="teaser-arrow">→</span><span class="teaser-exit">$16.80</span><span class="teaser-r">+3.1R</span><span class="teaser-pnl pos">+$3,200</span></div>
+          <div class="teaser-row"><span class="teaser-date">20 Mar</span><span class="teaser-badge short">SHORT</span><span class="teaser-market">BTC</span><span class="teaser-strat">Range Fade</span><span class="teaser-entry">$86,500</span><span class="teaser-arrow">→</span><span class="teaser-exit">$84,200</span><span class="teaser-r">+2.0R</span><span class="teaser-pnl pos">+$3,147</span></div>
+        </div>
+        <div class="teaser-overlay">
+          <div class="teaser-lock">🔒</div>
+          <div class="teaser-cta-title">Real-time Trade Journal</div>
+          <div class="teaser-cta-sub">Entry · Exit · Strategy · R-Multiple · Emotion Score</div>
+          <a class="teaser-cta-btn" href="https://hi.switchy.io/VivanLive" target="_blank">Join Inner Circle to Get Access ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COURSE CTA -->
+  <div class="course-cta-bar">
+    <div class="course-cta-left">
+      <div class="course-cta-tag">🎓 COURSE</div>
+      <div class="course-cta-title">Learn Trading from Vivan</div>
+      <div class="course-cta-sub">Crypto Trading Playbook — Proven strategies for profitable trades · Entry, Exit & Risk Management</div>
+    </div>
+    <a class="course-cta-btn" href="https://www.cryptocourse.in/courses/crypto-trading-playbook-proven-strategies-for-profitable-trades-from-vivan-68878b6aa882204f18bbabc1" target="_blank">Enroll Now ↗</a>
+  </div>
+
   <!-- GROWTH CHANNELS -->
   <div class="sl"><span class="sl-icon">📣</span>Growth Channels</div>
   <div class="goals-grid">
@@ -868,20 +1008,6 @@ header{
       <div class="gc-nums"><span class="gc-cur tw" id="twCur">0</span><span class="gc-sep">/</span><span class="gc-target">4K</span></div>
       <div class="gc-bar"><div class="gc-fill tw" id="twBar" style="width:0%"></div></div>
       <div class="gc-meta"><span id="twRem">4,000 to go</span><em id="twPct">0%</em></div>
-    </div>
-  </div>
-
-  <!-- TRADE JOURNAL -->
-  <div class="sl"><span class="sl-icon">📒</span>Trade Journal</div>
-  <div class="journal-section">
-    <div class="journal-card">
-      <div class="journal-header">
-        <div class="journal-title">Recent Trades</div>
-        <div class="journal-count" id="journalCount">— entries</div>
-      </div>
-      <div class="journal-feed" id="journalFeed">
-        <div class="journal-empty">Loading trade data…</div>
-      </div>
     </div>
   </div>
 
@@ -924,9 +1050,12 @@ header{
         </div>
         <div class="t-big"><span id="tDone">0</span><span>/20</span></div>
       </div>
-      <div class="c-grid" id="countryGrid"></div>
-      <div class="t-bar"><div class="t-fill" id="tBarFill" style="width:0%"></div></div>
-      <div class="t-meta"><span>🗺️ <em id="tLeft">20 to go</em></span><em id="tPct">0%</em></div>
+      <div class="t-flags" id="countryGrid"></div>
+      <div class="t-remaining">
+        <span id="tLeft">20 to go</span>
+        <div class="t-bar" style="flex:1"><div class="t-fill" id="tBarFill" style="width:0%"></div></div>
+        <span id="tPct">0%</span>
+      </div>
     </div>
   </div>
 
@@ -958,7 +1087,7 @@ header{
       <div class="bk" style="animation-delay:.29s"><div class="bk-num">09</div><div class="bk-emoji">🧘</div><div class="bk-title">The Mental Game of Trading</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/49JIIBS" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/48nvmZy" target="_blank">🎧 Audible</a></div></div>
       <div class="bk" style="animation-delay:.32s"><div class="bk-num">10</div><div class="bk-emoji">⚗️</div><div class="bk-title">The Alchemy of Finance</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/483Yw14" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/43XnooF" target="_blank">🎧 Audible</a></div></div>
       <div class="bk" style="animation-delay:.35s"><div class="bk-num">11</div><div class="bk-emoji">🤖</div><div class="bk-title">The Man Who Solved the Market</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4oxhsdG" target="_blank">🛒 Amazon</a></div></div>
-      <div class="bk" style="animation-delay:.38s"><div class="bk-num">12</div><div class="bk-emoji">⏳</div><div class="bk-title">The Price of Time</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4p4ITfF" target="_blank">🛒 Amazon</a></div></div>
+      <div class="bk" style="animation-delay:.38s"><div class="bk-num">12</div><div class="bk-emoji">⏳</div><div class="bk-title">The Price of Time</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/3PCZ2Mz" target="_blank">🛒 Amazon</a></div></div>
       <div class="bk" style="animation-delay:.41s"><div class="bk-num">13</div><div class="bk-emoji">📋</div><div class="bk-title">The Playbook</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4jbFNo8" target="_blank">🛒 Amazon</a></div></div>
     </div>
   </div>
@@ -989,11 +1118,6 @@ header{
         <a href="https://vivanlive.substack.com/" target="_blank">📩</a>
         <a href="https://x.com/VivanLive" target="_blank">🐦</a>
         <a href="https://hi.switchy.io/VivanLive" target="_blank">🔥</a>
-      </div>
-      <p id="fetchedAt"></p>
-      <div class="view-counter">
-        <span class="vc-label">👁 Page Views</span>
-        <img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fvivanatwork-cloud.github.io%2Fvivanlive-tracker&count_bg=%237250FF&title_bg=%230D0D0D&icon=eye.svg&icon_color=%2306DAAE&title=views&edge_flat=true" alt="View Counter"/>
       </div>
     </div>
   </div>
@@ -1032,14 +1156,15 @@ function render(d){
   const arc=Math.PI*80,f=Math.min(1,Math.max(0,(v-20)/50));
   $('gaugeArc').style.strokeDashoffset=arc-arc*f;
   const grid=$('countryGrid');grid.innerHTML='';
-  d.countries.forEach(c=>{const el=document.createElement('div');el.className='c-slot done';el.title=c;el.innerHTML=`<div class="c-flag">${flag(c)}</div><div class="c-name">${c}</div>`;grid.appendChild(el);});
-  for(let i=d.countries.length;i<20;i++){const el=document.createElement('div');el.className='c-slot empty';el.innerHTML='<div class="c-flag">❓</div>';grid.appendChild(el);}
+  d.countries.forEach(c=>{
+    const el=document.createElement('div');
+    el.className='t-flag-pill';
+    el.innerHTML=`<span>${flag(c)}</span><span class="t-flag-name">${c}</span>`;
+    grid.appendChild(el);
+  });
   const pct=(d.countries.length/20)*100;
   $('tBarFill').style.width=pct+'%';$('tDone').textContent=d.countries.length;
   $('tLeft').textContent=(20-d.countries.length)+' to go';$('tPct').textContent=pct.toFixed(0)+'%';
-  $('lastUpdated').textContent=d.lastUpdated;
-  if($('lastUpdated2'))$('lastUpdated2').textContent=d.lastUpdated;
-  $('fetchedAt').textContent='⏱ Fetched: '+new Date().toLocaleTimeString('en-IN',{timeZone:'Asia/Kolkata',hour12:false})+' IST';
 }
 function tick(){
   const diff=new Date('2026-08-18T00:00:00+05:30')-Date.now(),el=$('countdown');
@@ -1213,11 +1338,15 @@ document.getElementById('calNext').addEventListener('click',()=>{
 // trading card click → show/hide calendar inline
 document.getElementById('tradingCard').addEventListener('click',()=>{
   const sec=document.getElementById('pnlCalendarSection');
-  sec.style.display=sec.style.display==='none'?'block':'none';
+  const hint=document.getElementById('calToggleHint');
+  const isOpen=sec.style.display!=='none';
+  sec.style.display=isOpen?'none':'block';
+  hint.textContent=isOpen?'📅 PnL CAL':'📅 CLOSE CAL';
 });
 document.getElementById('calClose').addEventListener('click',(e)=>{
   e.stopPropagation();
   document.getElementById('pnlCalendarSection').style.display='none';
+  document.getElementById('calToggleHint').textContent='📅 PnL CAL';
 });
 
 // ── SHARE PNL ──
@@ -1561,35 +1690,7 @@ document.getElementById('msClose').addEventListener('click',()=>{
   if(stopConfetti){stopConfetti();stopConfetti=null;}
 });
 
-// ── TRADE JOURNAL ──
-function renderJournal(){
-  const feed=document.getElementById('journalFeed');
-  const count=document.getElementById('journalCount');
-  if(!calData.length){feed.innerHTML='<div class="journal-empty">No trade data yet</div>';return;}
-
-  const sorted=[...calData]
-    .filter(d=>d.total!==0||d.note)
-    .sort((a,b)=>b.date.localeCompare(a.date))
-    .slice(0,20);
-
-  if(!sorted.length){feed.innerHTML='<div class="journal-empty">Log your first trade in the daily sheet</div>';return;}
-
-  count.textContent=sorted.length+' entries';
-  feed.innerHTML=sorted.map(d=>{
-    const dt=new Date(d.date+'T00:00:00');
-    const dateStr=dt.toLocaleDateString('en-IN',{day:'numeric',month:'short'});
-    const isPos=d.total>0,isNeg=d.total<0;
-    const pnlStr=fmtPnl(d.total);
-    const tag=isPos?'<span class="je-tag win">WIN</span>':isNeg?'<span class="je-tag loss">LOSS</span>':'<span class="je-tag flat">FLAT</span>';
-    const note=d.note?`<span class="je-note">${d.note}</span>`:'<span class="je-note empty">no note</span>';
-    return `<div class="jentry">
-      <span class="je-date">${dateStr}</span>
-      ${note}
-      <span class="je-pnl ${isPos?'pos':isNeg?'neg':''}">${pnlStr}</span>
-      ${tag}
-    </div>`;
-  }).join('');
-}
+// ── TRADE JOURNAL (teaser only — static dummy data, no fetch needed) ──
 
 async function init(){
   tick();setInterval(tick,30000);
@@ -1599,7 +1700,6 @@ async function init(){
   setTimeout(()=>{
     render(d);
     renderCalendar();
-    renderJournal();
     const tot=d.trading+d.airdrop+d.content;
     checkMilestone(tot);
     const ov=$('loadingOverlay');ov.classList.add('hidden');
