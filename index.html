@@ -745,6 +745,30 @@ header{
   .course-cta-btn{width:100%;text-align:center;}
 }
 
+/* TARGET STATUS */
+.target-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.target-item{
+  background:var(--s2);border:1px solid var(--border);
+  padding:14px 16px;position:relative;overflow:hidden;
+}
+.target-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.target-info{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;}
+.target-amount{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;letter-spacing:.03em;color:#fff;line-height:1;}
+.target-badge{
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;
+  padding:3px 9px;border-radius:2px;white-space:nowrap;font-weight:600;
+}
+.target-badge.met{background:rgba(6,218,174,.15);border:1px solid rgba(6,218,174,.3);color:var(--mint);}
+.target-badge.not-met{background:rgba(255,59,92,.1);border:1px solid rgba(255,59,92,.25);color:var(--red);}
+.target-badge.pending{background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);color:var(--gold);}
+.target-bar-wrap{height:4px;background:var(--s3);border-radius:99px;overflow:hidden;margin-bottom:6px;}
+.target-bar-fill{height:100%;border-radius:99px;transition:width 1s cubic-bezier(.16,1,.3,1);}
+.target-item.met .target-bar-fill{background:linear-gradient(90deg,var(--mint-dk),var(--mint));}
+.target-item.not-met .target-bar-fill{background:linear-gradient(90deg,#a0122a,var(--red));}
+.target-item.pending .target-bar-fill{background:linear-gradient(90deg,#c49a00,var(--gold));}
+.target-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em;}
+@media(max-width:480px){.target-row{grid-template-columns:1fr;}}
+
 /* ANIMATIONS */
 @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .gc:nth-child(1){animation-delay:.06s}.gc:nth-child(2){animation-delay:.12s}
@@ -917,6 +941,22 @@ header{
       <div class="pnl-stat"><div class="pnl-stat-lbl">Best Day</div><div class="pnl-stat-val pos" id="calBest">—</div></div>
       <div class="pnl-stat"><div class="pnl-stat-lbl">Worst Day</div><div class="pnl-stat-val neg" id="calWorst">—</div></div>
       <div class="pnl-stat"><div class="pnl-stat-lbl">Green Days</div><div class="pnl-stat-val neu" id="calWinDays">—</div></div>
+    </div>
+
+    <!-- TARGET STATUS -->
+    <div class="target-row">
+      <div class="target-item" id="dailyTargetStatus">
+        <div class="target-label">Daily Target</div>
+        <div class="target-info"><span class="target-amount" id="targetDailyAmt">—</span><span class="target-badge" id="targetDailyBadge">—</span></div>
+        <div class="target-bar-wrap"><div class="target-bar-fill" id="targetDailyBar" style="width:0%"></div></div>
+        <div class="target-sub" id="targetDailySub">—</div>
+      </div>
+      <div class="target-item" id="monthlyTargetStatus">
+        <div class="target-label">Monthly Target</div>
+        <div class="target-info"><span class="target-amount" id="targetMonthAmt">—</span><span class="target-badge" id="targetMonthBadge">—</span></div>
+        <div class="target-bar-wrap"><div class="target-bar-fill" id="targetMonthBar" style="width:0%"></div></div>
+        <div class="target-sub" id="targetMonthSub">—</div>
+      </div>
     </div>
     <div class="pnl-ratio-bar">
       <div class="pnl-ratio-lbl">Profit / Loss Ratio</div>
@@ -1138,6 +1178,7 @@ const fmt=n=>n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+Math.round(n).toLocaleStrin
 const $=id=>document.getElementById(id);
 function render(d){
   const tot=d.trading+d.airdrop+d.content,tp=Math.min(100,(tot/1e5)*100);
+  totalEarned=tot;
   $('totalDisplay').textContent=fmt(tot);$('totalPct').textContent=tp.toFixed(1)+'%';
   $('megaBar').style.width=tp+'%';$('megaPctLabel').textContent=tp.toFixed(1)+'% complete';
   const days=Math.max(1,Math.ceil((new Date('2026-08-18T00:00:00+05:30')-Date.now())/864e5));
@@ -1209,6 +1250,7 @@ function parseDaily(csv){
 
 let calData=[],calYear=2026,calMonth=new Date().getMonth();
 let bucketChart=null;
+let totalEarned=0; // updated from render()
 
 function fmtPnl(v){
   const s=v>=0?'+':'-';
@@ -1243,6 +1285,77 @@ function renderCalendar(){
   $('calBest').textContent=best?fmtPnl(best):'—';
   $('calWorst').textContent=worst?fmtPnl(worst):'—';
   $('calWinDays').textContent=vals.length?greenDays+' / '+vals.length:'—';
+
+  // ── TARGET STATUS ──
+  const deadline=new Date('2026-08-18T00:00:00+05:30');
+  const now=new Date();
+  const daysLeft=Math.max(1,Math.ceil((deadline-now)/864e5));
+  const dailyTarget=Math.max(0,(100000-totalEarned)/daysLeft);
+  const mDays=new Date(calYear,calMonth+1,0).getDate();
+  const monthlyTarget=dailyTarget*mDays;
+
+  // today's PnL for daily check
+  const todayStr=now.toISOString().slice(0,10);
+  const todayEntry=calData.find(d=>d.date===todayStr);
+  const todayPnl=todayEntry?todayEntry.total:null;
+
+  // daily status
+  const fmtT=v=>'$'+(v>=1000?(v/1000).toFixed(1)+'K':Math.round(v).toLocaleString());
+  const dailyEl=$('dailyTargetStatus');
+  const dailyPct=todayPnl!==null?Math.min(100,Math.max(0,(todayPnl/dailyTarget)*100)):0;
+  const isViewingToday=calYear===now.getFullYear()&&calMonth===now.getMonth();
+
+  $('targetDailyAmt').textContent=fmtT(dailyTarget)+' / day';
+  if(!isViewingToday){
+    // not today's month — show target only
+    $('targetDailyBadge').textContent='NOT TODAY';
+    $('targetDailyBadge').className='target-badge pending';
+    dailyEl.className='target-item pending';
+    $('targetDailyBar').style.width='0%';
+    $('targetDailySub').textContent='Viewing a past/future month';
+  } else if(todayPnl===null){
+    $('targetDailyBadge').textContent='NO DATA';
+    $('targetDailyBadge').className='target-badge pending';
+    dailyEl.className='target-item pending';
+    $('targetDailyBar').style.width='0%';
+    $('targetDailySub').textContent='No entry logged for today';
+  } else if(todayPnl>=dailyTarget){
+    $('targetDailyBadge').textContent='✓ MET';
+    $('targetDailyBadge').className='target-badge met';
+    dailyEl.className='target-item met';
+    $('targetDailyBar').style.width='100%';
+    $('targetDailySub').textContent=`Today: ${fmtPnl(todayPnl)} · +${fmtT(todayPnl-dailyTarget)} ahead`;
+  } else {
+    $('targetDailyBadge').textContent='✗ NOT MET';
+    $('targetDailyBadge').className='target-badge not-met';
+    dailyEl.className='target-item not-met';
+    $('targetDailyBar').style.width=dailyPct+'%';
+    $('targetDailySub').textContent=`Today: ${fmtPnl(todayPnl)} · ${fmtT(dailyTarget-todayPnl)} short`;
+  }
+
+  // monthly status
+  const monthEl=$('monthlyTargetStatus');
+  const monthPct=Math.min(100,Math.max(0,(monthTotal/monthlyTarget)*100));
+  $('targetMonthAmt').textContent=fmtT(monthlyTarget)+' / mo';
+  if(monthTotal>=monthlyTarget){
+    $('targetMonthBadge').textContent='✓ MET';
+    $('targetMonthBadge').className='target-badge met';
+    monthEl.className='target-item met';
+    $('targetMonthBar').style.width='100%';
+    $('targetMonthSub').textContent=`${fmtPnl(monthTotal)} earned · +${fmtT(monthTotal-monthlyTarget)} ahead`;
+  } else if(monthTotal>0){
+    $('targetMonthBadge').textContent='✗ NOT MET';
+    $('targetMonthBadge').className='target-badge not-met';
+    monthEl.className='target-item not-met';
+    $('targetMonthBar').style.width=monthPct+'%';
+    $('targetMonthSub').textContent=`${fmtPnl(monthTotal)} of ${fmtT(monthlyTarget)} · ${fmtT(monthlyTarget-monthTotal)} to go`;
+  } else {
+    $('targetMonthBadge').textContent='PENDING';
+    $('targetMonthBadge').className='target-badge pending';
+    monthEl.className='target-item pending';
+    $('targetMonthBar').style.width='0%';
+    $('targetMonthSub').textContent='No trades logged this month';
+  }
 
   // ratio bar
   const totalDays=greenDays+redDays||1;
