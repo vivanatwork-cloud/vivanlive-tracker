@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VIVANLIVE · MISSION CONTROL 2026</title>
 <meta property="og:title" content="VivanLive · Mission Control 2026">
-<meta property="og:description" content="Live progress tracker — $100K challenge, growth goals, fitness & travel.">
+<meta property="og:description" content="Live progress tracker — ₹1Cr challenge, growth goals, fitness & travel.">
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
@@ -769,6 +769,79 @@ header{
 .target-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.04em;}
 @media(max-width:480px){.target-row{grid-template-columns:1fr;}}
 
+/* CURRENCY TOGGLE */
+.currency-toggle{
+  display:inline-flex;align-items:center;gap:0;
+  border:1px solid var(--border);overflow:hidden;margin-bottom:16px;
+}
+.curr-btn{
+  background:transparent;border:none;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;
+  color:var(--muted);padding:7px 16px;transition:all .15s;
+  text-transform:uppercase;
+}
+.curr-btn.active{background:var(--purple);color:#fff;}
+.curr-btn:hover:not(.active){background:var(--s2);color:var(--text);}
+.rate-badge{
+  font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--muted);letter-spacing:.06em;margin-left:10px;
+}
+
+/* VIDEO LINK in calendar */
+.cal-video-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(255,59,92,.12);border:1px solid rgba(255,59,92,.25);
+  color:#ff7a8a;font-family:'DM Mono',monospace;font-size:8px;
+  letter-spacing:.08em;text-transform:uppercase;text-decoration:none;
+  padding:4px 10px;transition:background .15s,transform .15s;
+}
+.cal-video-btn:hover{background:rgba(255,59,92,.22);transform:translateY(-1px);}
+
+/* ACCORDION */
+.accordion-section{margin-bottom:28px;}
+.accordion-header{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  background:var(--s1);border:1px solid var(--border);
+  padding:16px 20px;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.32em;
+  color:var(--muted);text-transform:uppercase;
+  transition:background .2s,border-color .2s;
+  gap:12px;
+}
+.accordion-header:hover{background:var(--s2);border-color:rgba(114,80,255,.3);}
+.accordion-header span:first-child{display:flex;align-items:center;gap:12px;}
+.accordion-header .sl-icon{font-size:14px;}
+.accordion-arrow{
+  font-size:10px;color:var(--purple-lt);
+  transition:transform .3s ease;
+  flex-shrink:0;
+}
+.accordion-arrow.open{transform:rotate(180deg);}
+.accordion-body{
+  border:1px solid var(--border);border-top:none;
+  background:var(--bg);
+  overflow:hidden;
+  max-height:0;
+  transition:max-height .4s cubic-bezier(.16,1,.3,1), padding .3s ease;
+  padding:0 0;
+}
+.accordion-body.open{
+  max-height:4000px;
+  padding:20px 0 4px;
+}
+
+/* SIMPLE AUDIBLE BANNER */
+.audible-banner-simple{
+  display:flex;align-items:center;gap:10px;
+  background:var(--s1);border:1px solid var(--border);
+  padding:12px 16px;margin-bottom:14px;
+  font-size:13px;color:var(--dim);
+}
+.au-s-icon{font-size:18px;}
+.au-s-text strong{color:rgba(255,255,255,.7);}
+.au-s-link{color:var(--gold);text-decoration:none;}
+.au-s-link:hover{text-decoration:underline;}
+
 /* ANIMATIONS */
 @keyframes up{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 .gc:nth-child(1){animation-delay:.06s}.gc:nth-child(2){animation-delay:.12s}
@@ -868,22 +941,32 @@ header{
     <a class="cta-btn" href="https://hi.switchy.io/VivanLive" target="_blank">Join Now ↗</a>
   </div>
 
-  <!-- $100K CHALLENGE -->
-  <div class="sl"><span class="sl-icon">💰</span>$100K Challenge</div>
+  <!-- 1CR CHALLENGE -->
+  <div class="sl" style="justify-content:space-between;align-items:center;">
+    <span><span class="sl-icon">💰</span>1 Crore Challenge</span>
+    <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+      <span class="rate-badge" id="rateBadge">fetching rate…</span>
+      <div class="currency-toggle">
+        <button class="curr-btn active" id="btnINR" onclick="setCurrency('INR')">₹ INR</button>
+        <button class="curr-btn" id="btnUSD" onclick="setCurrency('USD')">$ USD</button>
+      </div>
+    </div>
+  </div>
   <div class="money-card">
     <div class="money-head">
       <div>
         <div class="money-left-title">
-          💸 $100K Challenge
+          💸 <span id="challengeTitle">₹1 Crore Challenge</span>
           <small>📈 Trading &nbsp;·&nbsp; 🪂 Airdrop &nbsp;·&nbsp; 🎬 Content</small>
+          <small style="margin-top:4px;">🎬 1 video every day until I make ₹1Cr</small>
         </div>
       </div>
       <div class="money-right">
-        <div class="money-total" id="totalDisplay">$0</div>
-        <div class="money-sub">of $100,000 target</div>
+        <div class="money-total" id="totalDisplay">₹0</div>
+        <div class="money-sub">of <span id="targetLabel">₹1,00,00,000</span> target</div>
         <div class="money-pct">Overall: <strong id="totalPct">0%</strong></div>
         <div class="daily-note">
-          <span>⚡ Need <strong id="dailyTarget">—</strong>/day to hit $100K</span>
+          <span>⚡ Need <strong id="dailyTarget">—</strong>/day</span>
         </div>
       </div>
     </div>
@@ -898,13 +981,13 @@ header{
           <div class="ib">i<div class="tip">📊 Crypto · Stock · Polymarket</div></div>
         </div>
         <div class="sc-label">Trading <span id="calToggleHint" style="font-size:8px;color:var(--purple-lt);letter-spacing:.1em;">📅 PnL CAL</span></div>
-        <div class="sc-amt" id="tradingAmt">$0</div>
+        <div class="sc-amt" id="tradingAmt">₹0</div>
         <div class="mini-bar"><div class="mini-fill" id="tradingBar" style="width:0%"></div></div>
       </div>
       <div class="sc">
         <div class="sc-head"><div class="sc-icon">🪂</div><span></span></div>
         <div class="sc-label">Airdrop</div>
-        <div class="sc-amt" id="airdropAmt">$0</div>
+        <div class="sc-amt" id="airdropAmt">₹0</div>
         <div class="mini-bar"><div class="mini-fill" id="airdropBar" style="width:0%"></div></div>
         <a class="sc-link" href="https://vivanlive.substack.com/p/how-to-make-100k-from-crypto-airdrops" target="_blank">📖 How to make $100K from Airdrops ↗</a>
       </div>
@@ -914,7 +997,7 @@ header{
           <div class="ib">i<div class="tip">💼 Affiliate · Brand Deals · Subs · Courses</div></div>
         </div>
         <div class="sc-label">Content</div>
-        <div class="sc-amt" id="contentAmt">$0</div>
+        <div class="sc-amt" id="contentAmt">₹0</div>
         <div class="mini-bar"><div class="mini-fill" id="contentBar" style="width:0%"></div></div>
       </div>
     </div>
@@ -1051,12 +1134,19 @@ header{
     </div>
   </div>
 
-  <!-- LIFE GOALS -->
-  <div class="sl"><span class="sl-icon">🌟</span>Life Goals</div>
-  <div class="bottom-row">
+  <!-- 2026 GOALS ACCORDION -->
+  <div class="accordion-section" id="goals2026">
+    <button class="accordion-header" onclick="toggleAccordion('goals2026Body','goals2026Arrow')">
+      <span><span class="sl-icon">🌟</span>2026 Goals</span>
+      <span class="accordion-arrow" id="goals2026Arrow">▼</span>
+    </button>
+    <div class="accordion-body" id="goals2026Body">
+
+  <!-- Row 1: Travel + VO2 -->
+  <div class="bottom-row" style="margin-bottom:16px;">
     <div class="vo2-card">
       <div class="card-head"><span class="card-head-icon">🫀</span><div class="card-head-title">VO2 Max</div></div>
-      <div class="card-sub">💪 Fitness · Endurance Target</div>
+      <div class="card-sub">💪 Fitness · Target: 50</div>
       <div class="gauge-wrap">
         <svg viewBox="0 0 200 115" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -1099,38 +1189,32 @@ header{
     </div>
   </div>
 
-  <!-- BOOKS -->
+  <!-- Row 2: Books to Read -->
   <div class="sl"><span class="sl-icon">📚</span>Books to Read in 2026</div>
   <div class="books-section">
-    <div class="audible-bar">
-      <div class="au-emoji">🎧</div>
-      <div class="au-text">
-        <strong>Get Audible Membership — Listen while you trade</strong>
-        <span>Access millions of audiobooks · Cancel anytime · Perfect for busy traders</span>
+    <div class="audible-banner-simple">
+      <span class="au-s-icon">🎧</span>
+      <div class="au-s-text">
+        <strong>Listen while you trade</strong> — <a href="https://amzn.to/4pz4lcH" target="_blank" class="au-s-link">Get Audible Free ↗</a>
       </div>
-      <a class="au-btn" href="https://amzn.to/4pz4lcH" target="_blank">Get Audible Free ↗</a>
-    </div>
-    <div class="books-progress">
-      <span class="bp-lbl">📖 Reading Progress 2026</span>
-      <div class="bp-bar"><div class="bp-fill" style="width:7.7%"></div></div>
-      <span class="bp-count">1 / 13</span>
     </div>
     <div class="books-grid">
       <div class="bk" style="animation-delay:.05s"><div class="bk-num">01</div><div class="bk-emoji">🧠</div><div class="bk-title">Trading in the Zone</div><div class="bk-status done">✅ Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/3MdWe6V" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/43Tyzid" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.08s"><div class="bk-num">02</div><div class="bk-emoji">🧙</div><div class="bk-title">Market Wizards</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/486xjuH" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/48nWW9c" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.11s"><div class="bk-num">03</div><div class="bk-emoji">🦢</div><div class="bk-title">The Black Swan</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4ageEhg" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/485rBZZ" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.14s"><div class="bk-num">04</div><div class="bk-emoji">📜</div><div class="bk-title">Reminiscences of a Stock Operator</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4im09ui" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4pAJtl9" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.17s"><div class="bk-num">05</div><div class="bk-emoji">🎲</div><div class="bk-title">Thinking in Bets</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/48EmgsI" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/483t2rS" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.20s"><div class="bk-num">06</div><div class="bk-emoji">🏆</div><div class="bk-title">Best Loser Wins</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/48khWgX" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4okdl4k" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.23s"><div class="bk-num">07</div><div class="bk-emoji">🎰</div><div class="bk-title">Fooled by Randomness</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/3KtYkz5" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4p327SR" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.26s"><div class="bk-num">08</div><div class="bk-emoji">💰</div><div class="bk-title">The Psychology of Money</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4pyGFF8" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4okZgDS" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.29s"><div class="bk-num">09</div><div class="bk-emoji">🧘</div><div class="bk-title">The Mental Game of Trading</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/49JIIBS" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/48nvmZy" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.32s"><div class="bk-num">10</div><div class="bk-emoji">⚗️</div><div class="bk-title">The Alchemy of Finance</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/483Yw14" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/43XnooF" target="_blank">🎧 Audible</a></div></div>
-      <div class="bk" style="animation-delay:.35s"><div class="bk-num">11</div><div class="bk-emoji">🤖</div><div class="bk-title">The Man Who Solved the Market</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4oxhsdG" target="_blank">🛒 Amazon</a></div></div>
-      <div class="bk" style="animation-delay:.38s"><div class="bk-num">12</div><div class="bk-emoji">⏳</div><div class="bk-title">The Price of Time</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/3PCZ2Mz" target="_blank">🛒 Amazon</a></div></div>
-      <div class="bk" style="animation-delay:.41s"><div class="bk-num">13</div><div class="bk-emoji">📋</div><div class="bk-title">The Playbook</div><div class="bk-status unread">📋 To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4jbFNo8" target="_blank">🛒 Amazon</a></div></div>
+      <div class="bk" style="animation-delay:.08s"><div class="bk-num">02</div><div class="bk-emoji">🧙</div><div class="bk-title">Market Wizards</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/486xjuH" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/48nWW9c" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.11s"><div class="bk-num">03</div><div class="bk-emoji">🦢</div><div class="bk-title">The Black Swan</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4ageEhg" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/485rBZZ" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.14s"><div class="bk-num">04</div><div class="bk-emoji">📜</div><div class="bk-title">Reminiscences of a Stock Operator</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4im09ui" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4pAJtl9" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.17s"><div class="bk-num">05</div><div class="bk-emoji">🎲</div><div class="bk-title">Thinking in Bets</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/48EmgsI" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/483t2rS" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.20s"><div class="bk-num">06</div><div class="bk-emoji">🏆</div><div class="bk-title">Best Loser Wins</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/48khWgX" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4okdl4k" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.23s"><div class="bk-num">07</div><div class="bk-emoji">🎰</div><div class="bk-title">Fooled by Randomness</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/3KtYkz5" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4p327SR" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.26s"><div class="bk-num">08</div><div class="bk-emoji">💰</div><div class="bk-title">The Psychology of Money</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4pyGFF8" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/4okZgDS" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.29s"><div class="bk-num">09</div><div class="bk-emoji">🧘</div><div class="bk-title">The Mental Game of Trading</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/49JIIBS" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/48nvmZy" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.32s"><div class="bk-num">10</div><div class="bk-emoji">⚗️</div><div class="bk-title">The Alchemy of Finance</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/483Yw14" target="_blank">🛒 Amazon</a><a class="bk-link audible" href="https://amzn.to/43XnooF" target="_blank">🎧 Audible</a></div></div>
+      <div class="bk" style="animation-delay:.35s"><div class="bk-num">11</div><div class="bk-emoji">🤖</div><div class="bk-title">The Man Who Solved the Market</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4oxhsdG" target="_blank">🛒 Amazon</a></div></div>
+      <div class="bk" style="animation-delay:.38s"><div class="bk-num">12</div><div class="bk-emoji">⏳</div><div class="bk-title">The Price of Time</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/3PCZ2Mz" target="_blank">🛒 Amazon</a></div></div>
+      <div class="bk" style="animation-delay:.41s"><div class="bk-num">13</div><div class="bk-emoji">📋</div><div class="bk-title">The Playbook</div><div class="bk-status unread">To Read</div><div class="bk-links"><a class="bk-link amazon" href="https://amzn.to/4jbFNo8" target="_blank">🛒 Amazon</a></div></div>
     </div>
-  </div>
+  </div><!-- end accordion-body -->
+  </div><!-- end accordion-section -->
 
   <!-- SHARE MODAL -->
   <div id="shareModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
@@ -1165,6 +1249,63 @@ header{
 </div>
 
 <script>
+// ── ACCORDION ──
+function toggleAccordion(bodyId, arrowId){
+  const body=document.getElementById(bodyId);
+  const arrow=document.getElementById(arrowId);
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  arrow.classList.toggle('open',!isOpen);
+}
+
+// ── CURRENCY ──
+let currency='INR';
+let usdInr=92.40; // fallback, updated live
+
+async function fetchExchangeRate(){
+  try{
+    const r=await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+    const d=await r.json();
+    usdInr=d.rates.INR||85;
+    const badge=$('rateBadge');
+    if(badge)badge.textContent='1 USD = ₹'+usdInr.toFixed(1);
+  }catch{
+    try{
+      // fallback: frankfurter
+      const r=await fetch('https://api.frankfurter.app/latest?from=USD&to=INR');
+      const d=await r.json();
+      usdInr=d.rates.INR||85;
+      const badge=$('rateBadge');
+      if(badge)badge.textContent='1 USD = ₹'+usdInr.toFixed(1);
+    }catch{
+      const badge=$('rateBadge');
+      if(badge)badge.textContent='Rate: ₹92.4 (est.)';
+    }
+  }
+}
+
+function setCurrency(c){
+  currency=c;
+  $('btnINR').className='curr-btn'+(c==='INR'?' active':'');
+  $('btnUSD').className='curr-btn'+(c==='USD'?' active':'');
+  $('challengeTitle').textContent=c==='INR'?'₹1 Crore Challenge':'$100K Challenge';
+  $('targetLabel').textContent=c==='INR'?'₹1,00,00,000':'$100,000';
+  // re-render with current data if available
+  if(window._lastRenderData)render(window._lastRenderData);
+  renderCalendar();
+}
+
+function fmtMoney(usdVal){
+  if(currency==='INR'){
+    const inr=usdVal*usdInr;
+    if(inr>=10000000)return '₹'+(inr/10000000).toFixed(2)+'Cr';
+    if(inr>=100000)return '₹'+(inr/100000).toFixed(1)+'L';
+    if(inr>=1000)return '₹'+(inr/1000).toFixed(1)+'K';
+    return '₹'+Math.round(inr).toLocaleString('en-IN');
+  }
+  return usdVal>=1000?'$'+(usdVal/1000).toFixed(1)+'K':'$'+Math.round(usdVal).toLocaleString();
+}
+
 const SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vRQtO8kCl5EoaseHwo98-m1h6G9_aidcVHsdsWxFufjlje3yq4IhdIHtpXhLIf6LRuRhiitDSdg35zu/pub?output=csv';
 const FLAGS={'singapore':'🇸🇬','malaysia':'🇲🇾','usa':'🇺🇸','united states':'🇺🇸','india':'🇮🇳','japan':'🇯🇵','thailand':'🇹🇭','france':'🇫🇷','germany':'🇩🇪','uk':'🇬🇧','united kingdom':'🇬🇧','australia':'🇦🇺','canada':'🇨🇦','italy':'🇮🇹','spain':'🇪🇸','portugal':'🇵🇹','netherlands':'🇳🇱','switzerland':'🇨🇭','uae':'🇦🇪','dubai':'🇦🇪','abu dhabi':'🇦🇪','indonesia':'🇮🇩','bali':'🇮🇩','vietnam':'🇻🇳','cambodia':'🇰🇭','nepal':'🇳🇵','sri lanka':'🇱🇰','maldives':'🇲🇻','mexico':'🇲🇽','brazil':'🇧🇷','argentina':'🇦🇷','colombia':'🇨🇴','peru':'🇵🇪','south korea':'🇰🇷','china':'🇨🇳','hong kong':'🇭🇰','taiwan':'🇹🇼','turkey':'🇹🇷','greece':'🇬🇷','croatia':'🇭🇷','czech republic':'🇨🇿','austria':'🇦🇹','poland':'🇵🇱','hungary':'🇭🇺','sweden':'🇸🇪','norway':'🇳🇴','denmark':'🇩🇰','finland':'🇫🇮','new zealand':'🇳🇿','south africa':'🇿🇦','kenya':'🇰🇪','egypt':'🇪🇬','morocco':'🇲🇦','miami':'🇺🇸','new york':'🇺🇸','london':'🇬🇧','paris':'🇫🇷','barcelona':'🇪🇸','amsterdam':'🇳🇱','rome':'🇮🇹','philippines':'🇵🇭','myanmar':'🇲🇲','laos':'🇱🇦','bhutan':'🇧🇹','bahrain':'🇧🇭','qatar':'🇶🇦','saudi arabia':'🇸🇦','oman':'🇴🇲','jordan':'🇯🇴','israel':'🇮🇱','georgia':'🇬🇪','armenia':'🇦🇲','russia':'🇷🇺','ukraine':'🇺🇦','iceland':'🇮🇸','ireland':'🇮🇪','scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿'};
 const flag=n=>FLAGS[n.toLowerCase()]||'🏳️';
@@ -1177,14 +1318,17 @@ function parse(csv){
 const fmt=n=>n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+Math.round(n).toLocaleString();
 const $=id=>document.getElementById(id);
 function render(d){
+  window._lastRenderData=d;
   const tot=d.trading+d.airdrop+d.content,tp=Math.min(100,(tot/1e5)*100);
   totalEarned=tot;
-  $('totalDisplay').textContent=fmt(tot);$('totalPct').textContent=tp.toFixed(1)+'%';
+  $('totalDisplay').textContent=fmtMoney(tot);
+  $('totalPct').textContent=tp.toFixed(1)+'%';
   $('megaBar').style.width=tp+'%';$('megaPctLabel').textContent=tp.toFixed(1)+'% complete';
   const days=Math.max(1,Math.ceil((new Date('2026-08-18T00:00:00+05:30')-Date.now())/864e5));
-  $('dailyTarget').textContent=fmt(Math.max(0,1e5-tot)/days);
+  const dailyUSD=Math.max(0,1e5-tot)/days;
+  $('dailyTarget').textContent=fmtMoney(dailyUSD);
   [['trading',40000],['airdrop',30000],['content',20000]].forEach(([k,t])=>{
-    const v=d[k];$(`${k}Amt`).textContent=fmt(v);$(`${k}Bar`).style.width=Math.min(100,(v/t)*100)+'%';
+    const v=d[k];$(`${k}Amt`).textContent=fmtMoney(v);$(`${k}Bar`).style.width=Math.min(100,(v/t)*100)+'%';
   });
   [['yt',10000],['ig',10000],['nl',500],['tw',4000]].forEach(([k,t])=>{
     const v=d[k],p=Math.min(100,(v/t)*100),disp=v>=1000?(v/1000).toFixed(1)+'K':v+'';
@@ -1243,7 +1387,8 @@ function parseDaily(csv){
     const clean=s=>parseFloat((s||'').replace(/,/g,''))||0;
     const t=clean(row[1]),a=clean(row[2]),c=clean(row[3]);
     const note=(row[4]||'').trim();
-    data.push({date,trading:t,airdrop:a,content:c,total:t+a+c,note});
+    const videoUrl=(row[5]||'').trim();
+    data.push({date,trading:t,airdrop:a,content:c,total:t+a+c,note,videoUrl});
   });
   return data;
 }
@@ -1293,6 +1438,7 @@ function renderCalendar(){
   const dailyTarget=Math.max(0,(100000-totalEarned)/daysLeft);
   const mDays=new Date(calYear,calMonth+1,0).getDate();
   const monthlyTarget=dailyTarget*mDays;
+  const fmtT=v=>fmtMoney(v);
 
   // today's PnL for daily check
   const todayStr=now.toISOString().slice(0,10);
@@ -1300,7 +1446,6 @@ function renderCalendar(){
   const todayPnl=todayEntry?todayEntry.total:null;
 
   // daily status
-  const fmtT=v=>'$'+(v>=1000?(v/1000).toFixed(1)+'K':Math.round(v).toLocaleString());
   const dailyEl=$('dailyTargetStatus');
   const dailyPct=todayPnl!==null?Math.min(100,Math.max(0,(todayPnl/dailyTarget)*100)):0;
   const isViewingToday=calYear===now.getFullYear()&&calMonth===now.getMonth();
@@ -1382,7 +1527,8 @@ function renderCalendar(){
     if(entry){cls+=entry.total>0?' cal-pos':entry.total<0?' cal-neg':' cal-zero';}
     if(isToday)cls+=' cal-today';
     el.className=cls;
-    el.innerHTML=`<div class="cal-dn">${d}</div>${entry?`<div class="cal-pnl">${fmtPnl(entry.total)}</div>`:''}`;
+    const videoBtn=entry&&entry.videoUrl?`<a class="cal-video-btn" href="${entry.videoUrl}" target="_blank">▶ Video</a>`:'';
+    el.innerHTML=`<div class="cal-dn">${d}</div>${entry?`<div class="cal-pnl">${fmtPnl(entry.total)}</div>${videoBtn}`:''}`;
     grid.appendChild(el);
   }
 }
@@ -1758,10 +1904,10 @@ function launchConfetti(){
 
 // ── MILESTONE ──
 const MILESTONES=[
-  {pct:25,label:'25% REACHED 🔥',sub:'$25,000 of the $100K Challenge',emoji:'🎯'},
-  {pct:50,label:'HALFWAY THERE 💎',sub:'$50,000 — You are halfway to $100K',emoji:'💎'},
-  {pct:75,label:'75% DONE 🚀',sub:'$75,000 — The final stretch begins',emoji:'🚀'},
-  {pct:100,label:'$100K UNLOCKED 🏆',sub:'Mission accomplished. The grind paid off.',emoji:'🏆'},
+  {pct:25,label:'25% REACHED 🔥',sub:'₹25L of the ₹1Cr Challenge',emoji:'🎯'},
+  {pct:50,label:'HALFWAY THERE 💎',sub:'₹50L — You are halfway to ₹1Cr',emoji:'💎'},
+  {pct:75,label:'75% DONE 🚀',sub:'₹75L — The final stretch begins',emoji:'🚀'},
+  {pct:100,label:'₹1Cr UNLOCKED 🏆',sub:'Mission accomplished. The grind paid off.',emoji:'🏆'},
 ];
 const shownMilestones=new Set();
 let stopConfetti=null;
@@ -1808,6 +1954,7 @@ document.getElementById('msClose').addEventListener('click',()=>{
 async function init(){
   tick();setInterval(tick,30000);
   fetchPrices();setInterval(fetchPrices,60000);
+  fetchExchangeRate();setInterval(fetchExchangeRate,3600000);
   const [d,daily]=await Promise.all([load(),loadDaily()]);
   calData=daily;
   setTimeout(()=>{
