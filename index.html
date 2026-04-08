@@ -158,7 +158,7 @@ header{
 }
 .money-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--purple),var(--mint));}
 .money-card::after{
-  content:'$100K';position:absolute;right:-10px;top:-28px;
+  content:'₹1CR';position:absolute;right:-10px;top:-28px;
   font-family:'Barlow Condensed',sans-serif;font-weight:900;
   font-size:180px;color:rgba(114,80,255,.04);pointer-events:none;user-select:none;line-height:1;
 }
@@ -496,6 +496,88 @@ header{
 .pt-chg.dn{color:var(--red);}
 .pt-live{display:flex;align-items:center;gap:6px;padding:0 16px;flex-shrink:0;}
 .pt-dot{width:5px;height:5px;border-radius:50%;background:var(--mint);box-shadow:0 0 6px var(--mint);animation:pulse 2s ease-in-out infinite;flex-shrink:0;}
+
+/* WELCOME POPUP */
+#welcomePopup{
+  position:fixed;inset:0;z-index:300;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.92);backdrop-filter:blur(10px);
+  padding:16px;
+}
+#welcomePopup.hidden{display:none;}
+.wp-box{
+  background:#0D0D0D;
+  border:1px solid rgba(114,80,255,.3);
+  max-width:480px;width:100%;
+  position:relative;overflow:hidden;
+  animation:popIn .45s cubic-bezier(.175,.885,.32,1.275) both;
+}
+.wp-box::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--purple),var(--mint));
+}
+.wp-glow{
+  position:absolute;top:-60px;right:-60px;width:200px;height:200px;
+  background:radial-gradient(circle,rgba(114,80,255,.18),transparent 70%);
+  pointer-events:none;
+}
+.wp-inner{padding:32px 32px 28px 36px;}
+.wp-tag{
+  display:inline-block;
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--mint);
+  background:rgba(6,218,174,.08);border:1px solid rgba(6,218,174,.2);
+  padding:3px 10px;margin-bottom:14px;
+}
+.wp-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(28px,6vw,40px);letter-spacing:.03em;line-height:1.05;
+  color:#fff;margin-bottom:8px;
+}
+.wp-title em{color:var(--mint);font-style:normal;}
+.wp-sub{font-size:13px;color:var(--dim);line-height:1.6;margin-bottom:24px;}
+.wp-actions{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.wp-btn{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;text-decoration:none;
+  border:1px solid var(--border);
+  transition:border-color .2s,transform .15s,background .2s;
+  position:relative;overflow:hidden;
+}
+.wp-btn:hover{transform:translateY(-2px);}
+.wp-btn.telegram{
+  background:rgba(39,174,239,.08);
+  border-color:rgba(39,174,239,.28);
+}
+.wp-btn.telegram:hover{background:rgba(39,174,239,.15);border-color:rgba(39,174,239,.5);}
+.wp-btn.newsletter{
+  background:rgba(6,218,174,.08);
+  border-color:rgba(6,218,174,.25);
+}
+.wp-btn.newsletter:hover{background:rgba(6,218,174,.14);border-color:rgba(6,218,174,.5);}
+.wp-btn-icon{font-size:22px;flex-shrink:0;}
+.wp-btn-text strong{display:block;font-size:13px;font-weight:600;color:#fff;margin-bottom:1px;}
+.wp-btn-text span{font-size:11px;color:var(--muted);}
+.wp-btn-arrow{margin-left:auto;font-size:14px;color:var(--muted);}
+.wp-divider{
+  display:flex;align-items:center;gap:12px;margin-bottom:18px;
+  font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.1em;
+}
+.wp-divider::before,.wp-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.wp-skip{
+  width:100%;background:transparent;border:none;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;
+  color:var(--muted);cursor:pointer;padding:10px;
+  transition:color .2s;text-transform:uppercase;
+}
+.wp-skip:hover{color:var(--text);}
+.wp-checked{
+  display:inline-flex;align-items:center;gap:6px;
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.08em;
+  color:var(--mint);background:rgba(6,218,174,.08);
+  border:1px solid rgba(6,218,174,.2);padding:3px 10px;
+  position:absolute;top:12px;right:12px;
+}
 
 /* MILESTONE OVERLAY */
 #milestoneOverlay{
@@ -862,6 +944,38 @@ header{
   <div class="lo-sub">⚡ Loading mission data...</div>
 </div>
 
+<!-- WELCOME POPUP -->
+<div id="welcomePopup" class="hidden">
+  <div class="wp-box">
+    <div class="wp-glow"></div>
+    <div class="wp-inner">
+      <div class="wp-tag">👋 Welcome to VivanLive</div>
+      <div class="wp-title">Join the <em>Mission</em><br>Before You Enter</div>
+      <div class="wp-sub">Stay updated on trades, progress & everything VivanLive — for free.</div>
+      <div class="wp-actions">
+        <a class="wp-btn telegram" href="https://t.me/VivanLiveCrypto" target="_blank" id="wpTelegram">
+          <span class="wp-btn-icon">✈️</span>
+          <div class="wp-btn-text">
+            <strong>Join Telegram Channel</strong>
+            <span>Live updates · Trade alerts · Behind the scenes</span>
+          </div>
+          <span class="wp-btn-arrow">↗</span>
+        </a>
+        <a class="wp-btn newsletter" href="https://vivanlive.substack.com/" target="_blank" id="wpNewsletter">
+          <span class="wp-btn-icon">📩</span>
+          <div class="wp-btn-text">
+            <strong>Subscribe to Newsletter</strong>
+            <span>Weekly breakdowns · Strategy · ₹1Cr journey updates</span>
+          </div>
+          <span class="wp-btn-arrow">↗</span>
+        </a>
+      </div>
+      <div class="wp-divider">or</div>
+      <button class="wp-skip" id="wpSkip">Skip for now — Enter the Dashboard</button>
+    </div>
+  </div>
+</div>
+
 <!-- Corner marks -->
 <div class="corner tl">
   <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
@@ -924,7 +1038,7 @@ header{
         <div class="dl-emoji">🏁</div>
         <div>
           <div class="dl-lbl">Final Deadline</div>
-          <div class="dl-date">18 AUG 2026</div>
+          <div class="dl-date">31 AUG 2026</div>
         </div>
       </div>
       <div id="countdown"></div>
@@ -958,7 +1072,7 @@ header{
         <div class="money-left-title">
           💸 <span id="challengeTitle">₹1 Crore Challenge</span>
           <small>📈 Trading &nbsp;·&nbsp; 🪂 Airdrop &nbsp;·&nbsp; 🎬 Content</small>
-          <small style="margin-top:4px;">🎬 1 video every day until I make ₹1Cr</small>
+          <small style="margin-top:4px;">🎬 1 video every day until I make <span id="videoGoalLabel">₹1Cr</span></small>
         </div>
       </div>
       <div class="money-right">
@@ -1249,6 +1363,28 @@ header{
 </div>
 
 <script>
+// ── WELCOME POPUP ──
+function showWelcomePopup(){
+  if(localStorage.getItem('vl_welcomed')==='1')return;
+  const popup=document.getElementById('welcomePopup');
+  popup.classList.remove('hidden');
+
+  // clicking either action button marks as seen after a short delay
+  ['wpTelegram','wpNewsletter'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',()=>{
+      setTimeout(dismissWelcome,600);
+    });
+  });
+  document.getElementById('wpSkip').addEventListener('click',dismissWelcome);
+}
+function dismissWelcome(){
+  localStorage.setItem('vl_welcomed','1');
+  const popup=document.getElementById('welcomePopup');
+  popup.style.transition='opacity .4s ease';
+  popup.style.opacity='0';
+  setTimeout(()=>popup.classList.add('hidden'),400);
+}
+
 // ── ACCORDION ──
 function toggleAccordion(bodyId, arrowId){
   const body=document.getElementById(bodyId);
@@ -1288,13 +1424,15 @@ function setCurrency(c){
   currency=c;
   $('btnINR').className='curr-btn'+(c==='INR'?' active':'');
   $('btnUSD').className='curr-btn'+(c==='USD'?' active':'');
-  $('challengeTitle').textContent=c==='INR'?'₹1 Crore Challenge':'$100K Challenge';
-  $('targetLabel').textContent=c==='INR'?'₹1,00,00,000':'$100,000';
+  $('challengeTitle').textContent=c==='INR'?'₹1 Crore Challenge':'$'+getUSDTarget().toLocaleString()+' Challenge';
+  $('videoGoalLabel').textContent=c==='INR'?'₹1Cr':'$'+getUSDTarget().toLocaleString();
+  $('targetLabel').textContent=currency==='INR'?'₹1,00,00,000':'$'+getUSDTarget().toLocaleString();
   // re-render with current data if available
   if(window._lastRenderData)render(window._lastRenderData);
   renderCalendar();
 }
 
+function getUSDTarget(){return Math.round(10000000/usdInr);}
 function fmtMoney(usdVal){
   if(currency==='INR'){
     const inr=usdVal*usdInr;
@@ -1319,15 +1457,15 @@ const fmt=n=>n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+Math.round(n).toLocaleStrin
 const $=id=>document.getElementById(id);
 function render(d){
   window._lastRenderData=d;
-  const tot=d.trading+d.airdrop+d.content,tp=Math.min(100,(tot/1e5)*100);
+  const tot=d.trading+d.airdrop+d.content,usdTarget=getUSDTarget(),tp=Math.min(100,(tot/usdTarget)*100);
   totalEarned=tot;
   $('totalDisplay').textContent=fmtMoney(tot);
   $('totalPct').textContent=tp.toFixed(1)+'%';
   $('megaBar').style.width=tp+'%';$('megaPctLabel').textContent=tp.toFixed(1)+'% complete';
-  const days=Math.max(1,Math.ceil((new Date('2026-08-18T00:00:00+05:30')-Date.now())/864e5));
-  const dailyUSD=Math.max(0,1e5-tot)/days;
+  const days=Math.max(1,Math.ceil((new Date('2026-08-31T00:00:00+05:30')-Date.now())/864e5));
+  const dailyUSD=Math.max(0,usdTarget-tot)/days;
   $('dailyTarget').textContent=fmtMoney(dailyUSD);
-  [['trading',40000],['airdrop',30000],['content',20000]].forEach(([k,t])=>{
+  [['trading',usdTarget*0.4],['airdrop',usdTarget*0.3],['content',usdTarget*0.2]].forEach(([k,t])=>{
     const v=d[k];$(`${k}Amt`).textContent=fmtMoney(v);$(`${k}Bar`).style.width=Math.min(100,(v/t)*100)+'%';
   });
   [['yt',10000],['ig',10000],['nl',500],['tw',4000]].forEach(([k,t])=>{
@@ -1352,7 +1490,7 @@ function render(d){
   $('tLeft').textContent=(20-d.countries.length)+' to go';$('tPct').textContent=pct.toFixed(0)+'%';
 }
 function tick(){
-  const diff=new Date('2026-08-18T00:00:00+05:30')-Date.now(),el=$('countdown');
+  const diff=new Date('2026-08-31T00:00:00+05:30')-Date.now(),el=$('countdown');
   if(diff<=0){el.textContent='🏁 DEADLINE REACHED';return;}
   const d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4);
   el.innerHTML=`<div class="cd-unit"><span class="cd-n">${d}</span><span class="cd-l">days</span></div><div class="cd-unit"><span class="cd-n">${h}</span><span class="cd-l">hrs</span></div><div class="cd-unit"><span class="cd-n">${m}</span><span class="cd-l">min</span></div>`;
@@ -1393,9 +1531,10 @@ function parseDaily(csv){
   return data;
 }
 
-let calData=[],calYear=2026,calMonth=new Date().getMonth();
+let calData=[],calYear=2026,calMonth=3; // April = month index 3
 let bucketChart=null;
-let totalEarned=0; // updated from render()
+let totalEarned=0;
+const CAL_START_YEAR=2026,CAL_START_MONTH=3; // April 2026 minimum
 
 function fmtPnl(v){
   const s=v>=0?'+':'-';
@@ -1414,6 +1553,10 @@ function renderCalendar(){
   // month label
   const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
   $('calMonthLabel').textContent=monthNames[calMonth]+' '+calYear;
+  // dim prev button at start
+  const atStart=calYear===CAL_START_YEAR&&calMonth===CAL_START_MONTH;
+  $('calPrev').style.opacity=atStart?'0.25':'1';
+  $('calPrev').style.cursor=atStart?'not-allowed':'pointer';
 
   // stats
   const vals=monthData.map(d=>d.total);
@@ -1432,10 +1575,10 @@ function renderCalendar(){
   $('calWinDays').textContent=vals.length?greenDays+' / '+vals.length:'—';
 
   // ── TARGET STATUS ──
-  const deadline=new Date('2026-08-18T00:00:00+05:30');
+  const deadline=new Date('2026-08-31T00:00:00+05:30');
   const now=new Date();
   const daysLeft=Math.max(1,Math.ceil((deadline-now)/864e5));
-  const dailyTarget=Math.max(0,(100000-totalEarned)/daysLeft);
+  const dailyTarget=Math.max(0,(getUSDTarget()-totalEarned)/daysLeft);
   const mDays=new Date(calYear,calMonth+1,0).getDate();
   const monthlyTarget=dailyTarget*mDays;
   const fmtT=v=>fmtMoney(v);
@@ -1588,7 +1731,10 @@ async function loadDaily(){
 
 // calendar navigation
 document.getElementById('calPrev').addEventListener('click',()=>{
-  calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();
+  let m=calMonth-1,y=calYear;
+  if(m<0){m=11;y--;}
+  if(y<CAL_START_YEAR||(y===CAL_START_YEAR&&m<CAL_START_MONTH))return;
+  calMonth=m;calYear=y;renderCalendar();
 });
 document.getElementById('calNext').addEventListener('click',()=>{
   calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();
@@ -1634,6 +1780,7 @@ function buildShareCanvas(){
 
   // all time
   const allTime=calData.reduce((a,d)=>a+d.total,0);
+  const usdT=getUSDTarget();
 
   const isPos=monthTotal>=0;
 
@@ -1913,7 +2060,7 @@ const shownMilestones=new Set();
 let stopConfetti=null;
 
 function checkMilestone(total){
-  const pct=(total/100000)*100;
+  const pct=(total/getUSDTarget())*100;
   MILESTONES.forEach(m=>{
     if(pct>=m.pct&&!shownMilestones.has(m.pct)){
       shownMilestones.add(m.pct);
@@ -1963,7 +2110,7 @@ async function init(){
     const tot=d.trading+d.airdrop+d.content;
     checkMilestone(tot);
     const ov=$('loadingOverlay');ov.classList.add('hidden');
-    setTimeout(()=>ov.remove(),600);
+    setTimeout(()=>{ov.remove();showWelcomePopup();},600);
   },1400);
 }
 init();
