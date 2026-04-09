@@ -1641,16 +1641,26 @@ header{
   </div><!-- end accordion-section -->
 
   <!-- SHARE MODAL -->
-  <div id="shareModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);">
-    <div style="background:#0A0A0A;border:1px solid #2a2a40;max-width:500px;width:92%;position:relative;padding:28px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;letter-spacing:.06em;color:#fff;">SHARE PNL</div>
+  <div id="shareModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(12px);padding:16px;">
+    <div style="background:#0A0A0A;border:1px solid #2a2a40;max-width:560px;width:100%;position:relative;padding:24px;max-height:95vh;overflow-y:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:.06em;color:#fff;">SHARE PNL</div>
         <span id="shareClose" style="cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;color:#555;letter-spacing:.1em;text-transform:uppercase">✕ CLOSE</span>
       </div>
+      <!-- Format tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button id="fmtStory" onclick="switchFmt('story')" style="flex:1;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:7px;border:1px solid var(--purple);background:var(--purple);color:#fff;cursor:pointer;">📱 9:16 Story</button>
+        <button id="fmtLandscape" onclick="switchFmt('landscape')" style="flex:1;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;">🖥 16:9 Post</button>
+      </div>
       <canvas id="shareCanvas" style="width:100%;border:1px solid #1a1a2e;display:block;"></canvas>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+      <!-- Action buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;">
         <button class="share-action-btn" id="copyImgBtn">📋 Copy Image</button>
-        <button class="share-action-btn" id="copyTextBtn" style="background:rgba(114,80,255,.1);border-color:rgba(114,80,255,.3);color:var(--purple-lt)">📝 Copy Text</button>
+        <button class="share-action-btn" id="dlImgBtn" style="background:rgba(6,218,174,.1);border-color:rgba(6,218,174,.3);color:var(--mint)">⬇️ Download</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+        <button class="share-action-btn" id="shareIGBtn" style="background:linear-gradient(135deg,rgba(225,48,108,.15),rgba(114,80,255,.1));border-color:rgba(225,48,108,.35);color:#e1306c;">📸 Instagram Story</button>
+        <button class="share-action-btn" id="shareXBtn" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15);color:#fff;">𝕏 Post on X</button>
       </div>
       <div id="shareMsg" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--mint);letter-spacing:.08em;margin-top:10px;text-align:center;min-height:14px;"></div>
     </div>
@@ -2128,164 +2138,309 @@ document.getElementById('calClose').addEventListener('click',(e)=>{
 });
 
 // ── SHARE PNL ──
-function buildShareCanvas(){
-  const canvas=document.getElementById('shareCanvas');
-  const W=900,H=500;
-  canvas.width=W;canvas.height=H;
-  const ctx=canvas.getContext('2d');
+let shareFmt='story'; // 'story' = 9:16, 'landscape' = 16:9
 
+function switchFmt(fmt){
+  shareFmt=fmt;
+  document.getElementById('fmtStory').style.background=fmt==='story'?'var(--purple)':'transparent';
+  document.getElementById('fmtStory').style.color=fmt==='story'?'#fff':'var(--muted)';
+  document.getElementById('fmtStory').style.borderColor=fmt==='story'?'var(--purple)':'var(--border)';
+  document.getElementById('fmtLandscape').style.background=fmt==='landscape'?'var(--purple)':'transparent';
+  document.getElementById('fmtLandscape').style.color=fmt==='landscape'?'#fff':'var(--muted)';
+  document.getElementById('fmtLandscape').style.borderColor=fmt==='landscape'?'var(--purple)':'var(--border)';
+  buildShareCanvas();
+}
+
+function getShareData(){
   const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-  // today's date string
+  const monthData=calData.filter(d=>{const dt=new Date(d.date+'T00:00:00');return dt.getFullYear()===calYear&&dt.getMonth()===calMonth;});
+  const vals=monthData.map(d=>d.total);
+  const monthTotal=vals.reduce((a,b)=>a+b,0);
+  const allTime=calData.reduce((a,d)=>a+d.total,0);
+  const green=vals.filter(v=>v>0).length;
+  const red=vals.filter(v=>v<0).length;
   const todayStr=new Date().toISOString().slice(0,10);
   const todayEntry=calData.find(d=>d.date===todayStr);
   const todayPnl=todayEntry?todayEntry.total:0;
+  return {monthTotal,allTime,green,red,todayPnl,monthName:monthNames[calMonth],year:calYear,vals};
+}
 
-  // month data
-  const monthData=calData.filter(d=>{
-    const dt=new Date(d.date+'T00:00:00');
-    return dt.getFullYear()===calYear&&dt.getMonth()===calMonth;
-  });
-  const vals=monthData.map(d=>d.total);
-  const monthTotal=vals.reduce((a,b)=>a+b,0);
-  const green=vals.filter(v=>v>0).length;
-  const red=vals.filter(v=>v<0).length;
+function fmtShare(v){
+  // respect currency toggle
+  const abs=Math.abs(v);
+  const s=v>=0?'+':'-';
+  if(currency==='INR'){
+    const inr=abs*usdInr;
+    if(inr>=10000000)return s+'₹'+(inr/10000000).toFixed(2)+'Cr';
+    if(inr>=100000)return s+'₹'+(inr/100000).toFixed(1)+'L';
+    if(inr>=1000)return s+'₹'+(inr/1000).toFixed(1)+'K';
+    return s+'₹'+Math.round(inr).toLocaleString('en-IN');
+  }
+  if(abs>=1000)return s+'$'+(abs/1000).toFixed(1)+'K';
+  return s+'$'+abs.toFixed(2);
+}
 
-  // all time
-  const allTime=calData.reduce((a,d)=>a+d.total,0);
-  const usdT=getUSDTarget();
-
+function drawStoryCanvas(canvas){
+  // 9:16 at 2x scale for sharpness — actual pixel dimensions
+  const W=1080,H=1920;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const {monthTotal,allTime,green,red,todayPnl,monthName,year}=getShareData();
   const isPos=monthTotal>=0;
+  const accent=isPos?'#06DAAE':'#FF3B5C';
 
-  const fmtC=v=>{
-    const s=v>=0?'+':'-';
-    const abs=Math.abs(v);
-    return s+'$'+(abs>=1000?(abs/1000).toFixed(1)+'K':abs.toFixed(2));
-  };
+  // BG
+  ctx.fillStyle='#060608';ctx.fillRect(0,0,W,H);
+  const g1=ctx.createRadialGradient(W*.8,H*.1,0,W*.8,H*.1,W*1.1);
+  g1.addColorStop(0,isPos?'rgba(6,218,174,.22)':'rgba(255,59,92,.18)');
+  g1.addColorStop(1,'transparent');
+  ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);
+  const g2=ctx.createRadialGradient(0,H,0,0,H,W);
+  g2.addColorStop(0,'rgba(114,80,255,.18)');g2.addColorStop(1,'transparent');
+  ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
 
-  // ── BACKGROUND ──
-  ctx.fillStyle='#050505';
-  ctx.fillRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=90){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=90){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
 
-  // subtle grid
-  ctx.strokeStyle='rgba(255,255,255,.025)';ctx.lineWidth=1;
-  for(let x=0;x<W;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
-  for(let y=0;y<H;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // top gradient bar
+  const tb=ctx.createLinearGradient(0,0,W,0);
+  tb.addColorStop(0,'#7250FF');tb.addColorStop(1,'#06DAAE');
+  ctx.fillStyle=tb;ctx.fillRect(0,0,W,10);
 
-  // left accent bar
-  const grad=ctx.createLinearGradient(0,0,0,H);
-  grad.addColorStop(0,'#7250FF');grad.addColorStop(1,'#06DAAE');
-  ctx.fillStyle=grad;ctx.fillRect(0,0,4,H);
+  // ── LOGO (top left) ──
+  ctx.font='900 110px "Barlow Condensed",sans-serif';
+  ctx.fillStyle='#ffffff';
+  ctx.fillText('VIVAN',70,160);
+  const vw=ctx.measureText('VIVAN').width;
+  ctx.fillStyle='#06DAAE';
+  ctx.fillText('LIVE',70+vw,160);
+  ctx.fillStyle='rgba(255,255,255,.4)';
+  ctx.font='500 34px monospace';
+  ctx.fillText('@VivanLive  ·  vivan.fun',70,210);
 
-  // top glow
-  const glow=ctx.createRadialGradient(W,0,0,W,0,380);
-  glow.addColorStop(0,isPos?'rgba(6,218,174,.10)':'rgba(255,59,92,.08)');
-  glow.addColorStop(1,'transparent');
-  ctx.fillStyle=glow;ctx.fillRect(0,0,W,H);
+  // ── MONTH BADGE ──
+  ctx.fillStyle='rgba(255,255,255,.07)';
+  ctx.fillRect(70,258,W-140,76);
+  ctx.fillStyle=accent;
+  ctx.font='700 38px monospace';
+  ctx.fillText((monthName+' '+year).toUpperCase()+' PNL UPDATE',92,308);
 
-  // ── HEADER ──
-  ctx.fillStyle='rgba(255,255,255,.2)';
-  ctx.font='500 12px monospace';
-  ctx.fillText('VIVANLIVE  ·  @VivanLive',32,36);
+  // ── MAIN PNL CARD ──
+  const cardTop=380,cardH=290;
+  ctx.fillStyle='rgba(255,255,255,.05)';
+  ctx.fillRect(70,cardTop,W-140,cardH);
+  ctx.fillStyle=accent;ctx.fillRect(70,cardTop,10,cardH);
 
-  ctx.fillStyle='rgba(255,255,255,.45)';
-  ctx.font='bold 14px monospace';
-  ctx.fillText(monthNames[calMonth].toUpperCase()+' '+calYear,32,58);
+  ctx.fillStyle='rgba(255,255,255,.4)';
+  ctx.font='500 32px monospace';
+  ctx.fillText('MONTH PNL',100,cardTop+50);
 
-  // ── 3 PNL STATS ──
-  const statY=100;
-  const statW=(W-64)/3;
+  ctx.fillStyle=accent;
+  const mainTxt=fmtShare(monthTotal);
+  let mfs=148;
+  ctx.font=`900 ${mfs}px "Barlow Condensed",sans-serif`;
+  while(ctx.measureText(mainTxt).width>W-220&&mfs>60){mfs-=8;ctx.font=`900 ${mfs}px "Barlow Condensed",sans-serif`;}
+  ctx.fillText(mainTxt,100,cardTop+200);
 
+  // ── 3 STAT CARDS ──
+  const sc3Y=720,sc3H=230,sc3W=(W-180)/3;
   const stats3=[
-    {label:"TODAY'S PNL",value:fmtPnl(todayPnl),color:todayPnl>=0?'#06DAAE':'#FF3B5C'},
-    {label:'MONTH PNL',value:fmtPnl(monthTotal),color:monthTotal>=0?'#06DAAE':'#FF3B5C'},
-    {label:'ALL TIME PNL',value:fmtPnl(allTime),color:allTime>=0?'#06DAAE':'#FF3B5C'},
+    {l:"TODAY",v:fmtShare(todayPnl),c:todayPnl>=0?'#06DAAE':'#FF3B5C'},
+    {l:'ALL TIME',v:fmtShare(allTime),c:allTime>=0?'#06DAAE':'#FF3B5C'},
+    {l:'WIN RATE',v:green+red>0?Math.round(green/(green+red)*100)+'%':'—',c:'#9B7FFF'},
   ];
-
   stats3.forEach((s,i)=>{
-    const x=32+i*statW;
-    // card bg
-    ctx.fillStyle='rgba(255,255,255,.03)';
-    ctx.fillRect(x,statY-20,statW-12,160);
-    ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
-    ctx.strokeRect(x,statY-20,statW-12,160);
-
-    // label
-    ctx.fillStyle='rgba(255,255,255,.3)';
-    ctx.font='500 10px monospace';
-    ctx.fillText(s.label,x+14,statY+4);
-
-    // value
-    ctx.fillStyle=s.color;
-    ctx.font='bold 52px "Barlow Condensed",monospace';
-    ctx.fillText(s.value,x+14,statY+70);
+    const sx=70+i*(sc3W+20);
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.fillRect(sx,sc3Y,sc3W,sc3H);
+    ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;ctx.strokeRect(sx,sc3Y,sc3W,sc3H);
+    ctx.fillStyle='rgba(255,255,255,.45)';
+    ctx.font='28px monospace';ctx.fillText(s.l,sx+18,sc3Y+46);
+    ctx.fillStyle=s.c;
+    let sf=70;ctx.font=`900 ${sf}px "Barlow Condensed",sans-serif`;
+    while(ctx.measureText(s.v).width>sc3W-36&&sf>28){sf-=4;ctx.font=`900 ${sf}px "Barlow Condensed",sans-serif`;}
+    ctx.fillText(s.v,sx+18,sc3Y+160);
   });
 
-  // ── DIVIDER ──
-  const divY=280;
-  ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(32,divY);ctx.lineTo(W-32,divY);ctx.stroke();
-
-  // ── WIN STATS ROW ──
-  const wY=310;
-  const wStats=[
-    {l:'GREEN DAYS',v:green+'/'+(green+red),c:'#06DAAE'},
-    {l:'RED DAYS',v:String(red),c:'#FF3B5C'},
-    {l:'WIN RATE',v:green+red>0?Math.round(green/(green+red)*100)+'%':'—',c:'#9B7FFF'},
-    {l:'TRADING DAYS',v:String(green+red),c:'rgba(255,255,255,.6)'},
-  ];
-  const wColW=(W-64)/4;
-  wStats.forEach((s,i)=>{
-    const x=32+i*wColW;
-    ctx.fillStyle='rgba(255,255,255,.25)';
-    ctx.font='9px monospace';
-    ctx.fillText(s.l,x,wY);
-    ctx.fillStyle=s.c;
-    ctx.font='bold 26px "Barlow Condensed",monospace';
-    ctx.fillText(s.v,x,wY+32);
+  // ── PILLS ──
+  const pillY=1010,pillH=90,pillW=(W-180)/3;
+  [[`✅ ${green} GREEN`,'rgba(6,218,174,.15)','#06DAAE'],
+   [`❌ ${red} RED`,'rgba(255,59,92,.12)','#FF3B5C'],
+   [`📅 ${green+red} DAYS`,'rgba(114,80,255,.14)','#9B7FFF']
+  ].forEach((p,i)=>{
+    const px=70+i*(pillW+20);
+    ctx.fillStyle=p[1];ctx.fillRect(px,pillY,pillW,pillH);
+    ctx.strokeStyle=p[2].replace(')',', .25)').replace('rgb','rgba');ctx.lineWidth=1;ctx.strokeRect(px,pillY,pillW,pillH);
+    ctx.fillStyle=p[2];ctx.font=`700 42px "Barlow Condensed",sans-serif`;
+    ctx.fillText(p[0],px+14,pillY+60);
   });
 
   // ── RATIO BAR ──
-  const barX=32,barY=380,barW=W-64,barH=5;
-  ctx.fillStyle='rgba(255,255,255,.05)';
-  ctx.fillRect(barX,barY,barW,barH);
-  const gPct=green+red>0?green/(green+red):0;
-  if(gPct>0){
-    const gg=ctx.createLinearGradient(barX,0,barX+barW*gPct,0);
-    gg.addColorStop(0,'#04B08C');gg.addColorStop(1,'#06DAAE');
-    ctx.fillStyle=gg;ctx.fillRect(barX,barY,barW*gPct,barH);
+  const rbY=1160,rbW=W-140;
+  ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(70,rbY,rbW,18);
+  const gPct=green+red>0?green/(green+red):1;
+  if(gPct>0){const gg=ctx.createLinearGradient(70,0,70+rbW*gPct,0);gg.addColorStop(0,'#04B08C');gg.addColorStop(1,'#06DAAE');ctx.fillStyle=gg;ctx.fillRect(70,rbY,rbW*gPct,18);}
+  if(gPct<1){ctx.fillStyle='#FF3B5C';ctx.fillRect(70+rbW*gPct,rbY,rbW*(1-gPct),18);}
+
+  // ── MINI CALENDAR ──
+  const cgY=1230,cW=(W-140)/7,cH=100;
+  const days7=['S','M','T','W','T','F','S'];
+  ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='28px monospace';
+  days7.forEach((d,i)=>ctx.fillText(d,70+i*cW+cW/2-10,cgY+30));
+
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const dim=new Date(calYear,calMonth+1,0).getDate();
+  const byDay={};
+  calData.filter(d=>{const dt=new Date(d.date+'T00:00:00');return dt.getFullYear()===calYear&&dt.getMonth()===calMonth;}).forEach(d=>{byDay[new Date(d.date+'T00:00:00').getDate()]=d;});
+
+  for(let d=1;d<=dim;d++){
+    const pos=firstDay+d-1,col=pos%7,row=Math.floor(pos/7);
+    const cx=70+col*cW,cy=cgY+50+row*cH;
+    const entry=byDay[d];
+    ctx.fillStyle=entry?(entry.total>0?'rgba(6,218,174,.2)':entry.total<0?'rgba(255,59,92,.16)':'rgba(255,255,255,.04)'):'rgba(255,255,255,.03)';
+    ctx.fillRect(cx+2,cy,cW-4,cH-4);
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='22px monospace';ctx.fillText(d,cx+8,cy+26);
+    if(entry&&Math.abs(entry.total)>0){
+      const pv=fmtShare(entry.total);
+      ctx.fillStyle=entry.total>0?'#06DAAE':'#FF3B5C';
+      let ef=24;ctx.font=`700 ${ef}px "Barlow Condensed",sans-serif`;
+      while(ctx.measureText(pv).width>cW-10&&ef>12){ef-=2;ctx.font=`700 ${ef}px "Barlow Condensed",sans-serif`;}
+      ctx.fillText(pv,cx+6,cy+cH-10);
+    }
   }
-  if(gPct<1){ctx.fillStyle='#FF3B5C';ctx.fillRect(barX+barW*gPct,barY,barW*(1-gPct),barH);}
 
   // ── FOOTER ──
-  ctx.fillStyle='rgba(114,80,255,.5)';
-  ctx.font='bold 13px monospace';
-  ctx.textAlign='center';
-  ctx.fillText('#100KChallengeWithVivan',W/2,H-22);
+  const fY=1870;
+  ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(70,fY-30);ctx.lineTo(W-70,fY-30);ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='32px monospace';ctx.textAlign='center';
+  ctx.fillText('vivan.fun  ·  @VivanLive',W/2,fY+10);
+  ctx.fillStyle='rgba(114,80,255,.8)';ctx.font='700 30px monospace';
+  ctx.fillText('#1CroreChallenge  #VivanLive  #Crypto',W/2,fY+52);
   ctx.textAlign='left';
-
   return canvas;
 }
 
-function getTweetText(){
-  const monthNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const monthData=calData.filter(d=>{
-    const dt=new Date(d.date+'T00:00:00');
-    return dt.getFullYear()===calYear&&dt.getMonth()===calMonth;
+function drawLandscapeCanvas(canvas){
+  const W=1600,H=900;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const {monthTotal,allTime,green,red,todayPnl,monthName,year}=getShareData();
+  const isPos=monthTotal>=0;
+  const accent=isPos?'#06DAAE':'#FF3B5C';
+
+  // BG
+  ctx.fillStyle='#060608';ctx.fillRect(0,0,W,H);
+  const g1=ctx.createRadialGradient(W,0,0,W,0,W*.7);
+  g1.addColorStop(0,isPos?'rgba(6,218,174,.18)':'rgba(255,59,92,.14)');g1.addColorStop(1,'transparent');
+  ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);
+  const g2=ctx.createRadialGradient(0,H,0,0,H,W*.6);
+  g2.addColorStop(0,'rgba(114,80,255,.14)');g2.addColorStop(1,'transparent');
+  ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
+
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,.03)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  // left accent bar
+  const lg=ctx.createLinearGradient(0,0,0,H);
+  lg.addColorStop(0,'#7250FF');lg.addColorStop(1,'#06DAAE');
+  ctx.fillStyle=lg;ctx.fillRect(0,0,8,H);
+
+  // ── LOGO ──
+  ctx.fillStyle='#fff';ctx.font='900 80px "Barlow Condensed",sans-serif';
+  ctx.fillText('VIVAN',54,100);
+  const vW=ctx.measureText('VIVAN').width;
+  ctx.fillStyle='#06DAAE';ctx.fillText('LIVE',54+vW,100);
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='22px monospace';
+  ctx.fillText('@VivanLive  ·  vivan.fun',54,136);
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='700 24px monospace';
+  ctx.fillText((monthName+' '+year).toUpperCase(),54,174);
+
+  // ── LEFT PANEL — main PNL ──
+  ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(54,204,580,490);
+  ctx.fillStyle=accent;ctx.fillRect(54,204,8,490);
+
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='24px monospace';ctx.fillText('MONTH PNL',82,256);
+  ctx.fillStyle=accent;
+  const bigTxt=fmtShare(monthTotal);
+  let bfs=128;ctx.font=`900 ${bfs}px "Barlow Condensed",sans-serif`;
+  while(ctx.measureText(bigTxt).width>520&&bfs>48){bfs-=6;ctx.font=`900 ${bfs}px "Barlow Condensed",sans-serif`;}
+  ctx.fillText(bigTxt,82,400);
+
+  ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(82,430);ctx.lineTo(590,430);ctx.stroke();
+
+  ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='20px monospace';ctx.fillText("TODAY'S PNL",82,474);
+  ctx.fillStyle=todayPnl>=0?'#06DAAE':'#FF3B5C';ctx.font=`900 54px "Barlow Condensed",sans-serif`;
+  ctx.fillText(fmtShare(todayPnl),82,530);
+
+  ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='20px monospace';ctx.fillText('ALL TIME PNL',82,578);
+  ctx.fillStyle=allTime>=0?'#06DAAE':'#FF3B5C';ctx.font=`900 54px "Barlow Condensed",sans-serif`;
+  ctx.fillText(fmtShare(allTime),82,634);
+
+  // ── RIGHT PANEL — 4 stat cards ──
+  const rx=680,rw=W-rx-54,ch=200,gap=14;
+  const cards4=[
+    {l:'GREEN DAYS',v:`${green}/${green+red}`,c:'#06DAAE'},
+    {l:'RED DAYS',v:String(red),c:'#FF3B5C'},
+    {l:'WIN RATE',v:green+red>0?Math.round(green/(green+red)*100)+'%':'—',c:'#9B7FFF'},
+    {l:'TRADING DAYS',v:String(green+red),c:'rgba(255,255,255,.75)'},
+  ];
+  const cw=Math.floor((rw-gap)/2);
+  cards4.forEach((c,i)=>{
+    const cx=rx+(i%2)*(cw+gap);
+    const cy=204+Math.floor(i/2)*(ch+gap);
+    ctx.fillStyle='rgba(255,255,255,.05)';ctx.fillRect(cx,cy,cw,ch);
+    ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=1;ctx.strokeRect(cx,cy,cw,ch);
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='20px monospace';ctx.fillText(c.l,cx+20,cy+44);
+    ctx.fillStyle=c.c;
+    let cf=72;ctx.font=`900 ${cf}px "Barlow Condensed",sans-serif`;
+    while(ctx.measureText(c.v).width>cw-40&&cf>28){cf-=4;ctx.font=`900 ${cf}px "Barlow Condensed",sans-serif`;}
+    ctx.fillText(c.v,cx+20,cy+148);
   });
-  const vals=monthData.map(d=>d.total);
-  const total=vals.reduce((a,b)=>a+b,0);
-  const green=vals.filter(v=>v>0).length;
-  const red=vals.filter(v=>v<0).length;
-  const isPos=total>=0;
-  const fmtV=v=>Math.abs(v)>=1000?'$'+(Math.abs(v)/1000).toFixed(1)+'K':'$'+Math.abs(v).toFixed(0);
-  return `${isPos?'🟢':'🔴'} ${monthNames[calMonth]} ${calYear} PnL Update\n\n${isPos?'+':''}${fmtV(total)} total\n✅ ${green} green days  ❌ ${red} red days\n\nTracking the $100K challenge live 👇\nvivanatwork-cloud.github.io/vivanlive-tracker\n\n#VivanLive #100KChallenge #Crypto #Trading`;
+
+  // ── RATIO BAR ──
+  const rbY=790,rbW=W-108;
+  ctx.fillStyle='rgba(255,255,255,.07)';ctx.fillRect(54,rbY,rbW,14);
+  const gPct=green+red>0?green/(green+red):1;
+  if(gPct>0){const gg=ctx.createLinearGradient(54,0,54+rbW*gPct,0);gg.addColorStop(0,'#04B08C');gg.addColorStop(1,'#06DAAE');ctx.fillStyle=gg;ctx.fillRect(54,rbY,rbW*gPct,14);}
+  if(gPct<1){ctx.fillStyle='#FF3B5C';ctx.fillRect(54+rbW*gPct,rbY,rbW*(1-gPct),14);}
+
+  // ── FOOTER ──
+  ctx.fillStyle='rgba(255,255,255,.22)';ctx.font='20px monospace';
+  ctx.fillText('Track the live ₹1Cr challenge at vivan.fun',54,856);
+  ctx.textAlign='right';
+  ctx.fillStyle='rgba(114,80,255,.75)';ctx.font='700 20px monospace';
+  ctx.fillText('#1CroreChallenge  #VivanLive  #Crypto  #Trading',W-54,856);
+  ctx.textAlign='left';
+  return canvas;
+}
+
+function buildShareCanvas(){
+  const canvas=document.getElementById('shareCanvas');
+  if(shareFmt==='story')return drawStoryCanvas(canvas);
+  return drawLandscapeCanvas(canvas);
+}
+
+function getShareText(){
+  const {monthTotal,allTime,green,red,todayPnl,monthName,year}=getShareData();
+  const isPos=monthTotal>=0;
+  const sym=currency==='INR'?'₹':'$';
+  return `${isPos?'🟢':'🔴'} ${monthName} ${year} PnL\n\n${fmtShare(monthTotal)} month total\n${fmtShare(todayPnl)} today\n✅ ${green} green  ❌ ${red} red\n\nTracking the ₹1Cr challenge live 👇\nvivan.fun\n\n#1CroreChallenge #VivanLive #Crypto #Trading`;
 }
 
 document.getElementById('sharePnlBtn').addEventListener('click',()=>{
   const modal=document.getElementById('shareModal');
   modal.style.display='flex';
-  buildShareCanvas();
+  // Always fetch fresh before drawing
+  const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
+  fetch(DAILY_SHEET+'&cachebust='+bust)
+    .then(r=>r.text())
+    .then(text=>{calData=parseDaily(text);buildShareCanvas();})
+    .catch(()=>buildShareCanvas());
 });
 document.getElementById('shareClose').addEventListener('click',()=>{
   document.getElementById('shareModal').style.display='none';
@@ -2295,35 +2450,48 @@ document.getElementById('shareModal').addEventListener('click',(e)=>{
     document.getElementById('shareModal').style.display='none';
 });
 
+// Copy image
 document.getElementById('copyImgBtn').addEventListener('click',async()=>{
   const canvas=buildShareCanvas();
   const msg=document.getElementById('shareMsg');
   try{
     canvas.toBlob(async blob=>{
       await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
-      msg.textContent='✓ Image copied to clipboard!';
-      setTimeout(()=>msg.textContent='',3000);
+      msg.textContent='✓ Image copied!';setTimeout(()=>msg.textContent='',3000);
     });
   }catch{
-    // fallback: download
     const a=document.createElement('a');
-    a.download='vivanlive-pnl.png';
-    a.href=canvas.toDataURL();
-    a.click();
-    msg.textContent='✓ Image saved (clipboard not supported in this browser)';
-    setTimeout(()=>msg.textContent='',3000);
+    a.download='vivanlive-pnl.png';a.href=canvas.toDataURL();a.click();
+    msg.textContent='✓ Downloaded (clipboard not supported)';setTimeout(()=>msg.textContent='',3000);
   }
 });
 
-document.getElementById('copyTextBtn').addEventListener('click',async()=>{
-  const msg=document.getElementById('shareMsg');
-  try{
-    await navigator.clipboard.writeText('Join Inner Circle for Real-time trades: https://hi.switchy.io/VivanLive');
-    msg.textContent='✓ Text copied!';
-    setTimeout(()=>msg.textContent='',3000);
-  }catch{
-    msg.textContent='Could not copy — please copy manually.';
-  }
+// Download
+document.getElementById('dlImgBtn').addEventListener('click',()=>{
+  const canvas=buildShareCanvas();
+  const a=document.createElement('a');
+  const fname=shareFmt==='story'?'vivanlive-story.png':'vivanlive-post.png';
+  a.download=fname;a.href=canvas.toDataURL('image/png');a.click();
+  document.getElementById('shareMsg').textContent='✓ Downloaded as '+fname;
+  setTimeout(()=>document.getElementById('shareMsg').textContent='',3000);
+});
+
+// Instagram — download story format
+document.getElementById('shareIGBtn').addEventListener('click',()=>{
+  switchFmt('story');
+  setTimeout(()=>{
+    const canvas=buildShareCanvas();
+    const a=document.createElement('a');
+    a.download='vivanlive-ig-story.png';a.href=canvas.toDataURL('image/png');a.click();
+    document.getElementById('shareMsg').textContent='✓ Story downloaded — upload to Instagram!';
+    setTimeout(()=>document.getElementById('shareMsg').textContent='',4000);
+  },100);
+});
+
+// X/Twitter — open tweet with text
+document.getElementById('shareXBtn').addEventListener('click',()=>{
+  const text=encodeURIComponent(getShareText());
+  window.open('https://twitter.com/intent/tweet?text='+text,'_blank');
 });
 
 // ── LIVE PRICES ──
