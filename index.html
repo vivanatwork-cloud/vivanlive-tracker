@@ -1837,7 +1837,7 @@ function tick(){
 async function load(){
   try{
     const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
-    const r=await fetch(SHEET+'&t='+bust,{cache:'no-store'});
+    const r=await fetch(SHEET+'&cachebust='+bust);
     if(!r.ok)throw new Error('HTTP '+r.status);
     const text=await r.text();
     if(!text||text.length<10)throw new Error('Empty response');
@@ -2071,7 +2071,7 @@ function renderBucketChart(){
 async function loadDaily(){
   try{
     const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
-    const r=await fetch(DAILY_SHEET+'&t='+bust,{cache:'no-store'});
+    const r=await fetch(DAILY_SHEET+'&cachebust='+bust);
     if(!r.ok)throw new Error('HTTP '+r.status);
     const text=await r.text();
     if(!text||text.length<10)throw new Error('Empty response');
