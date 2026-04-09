@@ -1831,7 +1831,9 @@ function tick(){
 }
 async function load(){
   try{
-    const r=await fetch(SHEET+'&t='+Date.now());if(!r.ok)throw 0;
+    const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
+    const r=await fetch(SHEET+'&t='+bust,{cache:'no-store'});
+    if(!r.ok)throw 0;
     const d=parse(await r.text());
     return(d.trading||d.airdrop||d.content||d.yt||d.ig)?d:FB;
   }catch{$('errorBanner').style.display='flex';return FB;}
@@ -2057,7 +2059,8 @@ function renderBucketChart(){
 
 async function loadDaily(){
   try{
-    const r=await fetch(DAILY_SHEET+'&t='+Date.now());
+    const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
+    const r=await fetch(DAILY_SHEET+'&t='+bust,{cache:'no-store'});
     if(!r.ok)throw 0;
     return parseDaily(await r.text());
   }catch{return[];}
@@ -2082,6 +2085,10 @@ document.getElementById('tradingCard').addEventListener('click',()=>{
   sec.style.display=isOpen?'none':'block';
   hint.textContent=isOpen?'📅 PnL':'✕ Close';
   hint.classList.toggle('open',!isOpen);
+  // Refresh data when opening calendar
+  if(!isOpen){
+    loadDaily().then(daily=>{calData=daily;renderCalendar();});
+  }
 });
 document.getElementById('calClose').addEventListener('click',(e)=>{
   e.stopPropagation();
@@ -2448,13 +2455,13 @@ async function init(){
     checkMilestone(tot);
     const ov=$('loadingOverlay');ov.classList.add('hidden');
     setTimeout(()=>{ov.remove();showWelcomePopup();},400);
-    // Auto-refresh data every 5 minutes
+    // Auto-refresh data every 2 minutes
     setInterval(async()=>{
       const [d,daily]=await Promise.all([load(),loadDaily()]);
       calData=daily;
       render(d);
       renderCalendar();
-    },300000);
+    },120000);
     // Defer exchange rate fetch after page is visible
     setTimeout(()=>{
       fetchExchangeRate();setInterval(fetchExchangeRate,3600000);
