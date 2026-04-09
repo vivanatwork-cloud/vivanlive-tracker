@@ -1890,7 +1890,8 @@ const CAL_START_YEAR=2026,CAL_START_MONTH=3; // April 2026 minimum
 function fmtPnl(v){
   const s=v>=0?'+':'-';
   const abs=Math.abs(v);
-  return s+'$'+(abs>=1000?(abs/1000).toFixed(1)+'K':abs.toFixed(2));
+  const formatted=fmtMoney(abs);
+  return s+formatted;
 }
 
 function renderCalendar(){
@@ -2106,9 +2107,16 @@ document.getElementById('tradingCard').addEventListener('click',()=>{
   sec.style.display=isOpen?'none':'block';
   hint.textContent=isOpen?'📅 PnL':'✕ Close';
   hint.classList.toggle('open',!isOpen);
-  // Refresh data when opening calendar
+  // Refresh data when opening calendar - hard fetch, no cache
   if(!isOpen){
-    loadDaily().then(daily=>{calData=daily;renderCalendar();});
+    const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
+    fetch(DAILY_SHEET+'&cachebust='+bust)
+      .then(r=>r.text())
+      .then(text=>{
+        calData=parseDaily(text);
+        renderCalendar();
+      })
+      .catch(()=>renderCalendar());
   }
 });
 document.getElementById('calClose').addEventListener('click',(e)=>{
@@ -2476,13 +2484,13 @@ async function init(){
     checkMilestone(tot);
     const ov=$('loadingOverlay');ov.classList.add('hidden');
     setTimeout(()=>{ov.remove();showWelcomePopup();},400);
-    // Auto-refresh data every 2 minutes
+    // Auto-refresh data every 60 seconds
     setInterval(async()=>{
       const [d,daily]=await Promise.all([load(),loadDaily()]);
       calData=daily;
       render(d);
       renderCalendar();
-    },120000);
+    },60000);
     // Defer exchange rate fetch after page is visible
     setTimeout(()=>{
       fetchExchangeRate();setInterval(fetchExchangeRate,3600000);
