@@ -289,7 +289,7 @@ header{
   background:linear-gradient(135deg,rgba(114,80,255,.14),rgba(6,218,174,.06));
   border:1px solid rgba(114,80,255,.28);
   padding:16px 22px;margin-bottom:28px;
-  position:relative;overflow:hidden;animation:up .5s ease both .1s;
+  position:relative;overflow:visible;animation:up .5s ease both .1s;
 }
 .cta-bar::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--purple),var(--mint));}
 .cta-emoji{font-size:24px;flex-shrink:0;}
@@ -848,7 +848,7 @@ header{
   .pnl-ratio-ends{flex-direction:column;gap:4px;}
 }
 @media(max-width:640px){
-  .wrapper{padding:0 10px 60px;}
+  .wrapper{padding:0 8px 60px;}
   .goals-grid{grid-template-columns:1fr 1fr;}
   /* header — keep horizontal, tighten */
   header{padding:10px 0 12px;margin-bottom:16px;gap:10px;}
@@ -861,12 +861,15 @@ header{
   .cd-n{font-size:16px;}
   .cd-unit{padding:3px 6px;min-width:32px;}
   .dl-wrap{gap:5px;}
-  /* CTA bar - single line */
-  .cta-bar{flex-direction:row;align-items:center;gap:8px;padding:10px 12px;}
-  .cta-emoji{font-size:16px;}
-  .cta-text strong{font-size:11px;line-height:1.2;white-space:nowrap;}
+  /* CTA bar - tight, button never cut */
+  .cta-bar{flex-direction:row;align-items:center;gap:6px;padding:10px 10px 10px 14px;margin-bottom:14px;}
+  .cta-emoji{font-size:15px;}
+  .cta-text{flex:1;min-width:0;}
+  .cta-text strong{font-size:11px;line-height:1.3;white-space:normal;}
   .cta-text span{display:none;}
-  .cta-btn{font-size:9px;padding:7px 10px;white-space:nowrap;flex-shrink:0;}
+  .cta-btn{font-size:8px;padding:8px 10px;white-space:nowrap;flex-shrink:0;letter-spacing:.08em;}
+  /* section labels tighter */
+  .sl{letter-spacing:.12em;font-size:8px;margin-bottom:10px;}
   /* money head - stack on mobile */
   .money-head{grid-template-columns:1fr;gap:10px;}
   .daily-note{display:inline-flex;}
@@ -878,7 +881,7 @@ header{
   .pnl-stat-lbl{font-size:7px;}
   .books-grid{grid-template-columns:repeat(2,1fr);}
   /* Challenge header */
-  .challenge-header{flex-wrap:wrap;gap:8px;}
+  .challenge-header{flex-wrap:wrap;gap:6px;margin-bottom:10px;}
   /* money stats row */
   .money-stats-row{gap:12px;}
   .money-stat-val{font-size:28px;}
