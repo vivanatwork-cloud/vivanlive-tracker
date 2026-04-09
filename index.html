@@ -911,69 +911,63 @@ header{
   .streams{grid-template-columns:1fr;}
 }
 
-/* ── REEL / GREEN SCREEN MOBILE OPTIMISATION ── */
+/* ── MOBILE OPTIMISATION ≤ 480px (iPhone) ── */
 @media(max-width:480px){
-  /* Clean background — no noise, no radial glows */
   body::before{display:none;}
   body::after{display:none;}
-
-  /* Hide decorative corners always */
   .corner{display:none!important;}
-
-  /* Ticker — tighter, always visible */
-  .price-ticker-bar{height:30px;}
-  .pt-item{padding:0 18px;font-size:9px;}
-
-  /* Wrapper — edge to edge, no side padding waste */
   .wrapper{padding:0 8px 40px;}
 
-  /* Header — stack cleanly */
-  header{
-    padding:16px 0 14px;
-    flex-direction:column;align-items:flex-start;gap:10px;
-  }
-  header .logo-type h1{font-size:40px;letter-spacing:.04em;}
-  .dl-wrap{width:100%;}
-  #countdown{justify-content:flex-start;}
-  .cd-n{font-size:20px;}
-  .cd-unit{padding:4px 8px;min-width:44px;}
+  /* Header — ALWAYS horizontal row, no stacking */
+  header{padding:6px 0 10px;flex-direction:row;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px;}
+  .logo-type h1{font-size:clamp(26px,8vw,38px);letter-spacing:.03em;}
+  .logo-type p{display:none;}
+  .dl-wrap{flex-shrink:0;gap:4px;align-items:flex-end;}
+  .dl-badge{padding:5px 7px;gap:5px;}
+  .dl-date{font-size:12px;letter-spacing:.05em;}
+  .dl-lbl{font-size:5px;letter-spacing:.06em;}
+  .dl-emoji{font-size:12px;}
+  .cd-n{font-size:12px;}
+  .cd-unit{padding:2px 4px;min-width:26px;}
 
-  /* Inner circle CTA — compact */
-  .cta-bar{padding:12px 14px;gap:10px;flex-direction:row;}
-  .cta-emoji{font-size:18px;}
-  .cta-text strong{font-size:12px;}
+  /* CTA — tight row */
+  .cta-bar{padding:8px 8px 8px 10px;gap:6px;flex-direction:row;margin-bottom:10px;overflow:visible;}
+  .cta-emoji{font-size:14px;flex-shrink:0;}
+  .cta-text{flex:1;min-width:0;}
+  .cta-text strong{font-size:10px;line-height:1.3;white-space:normal;}
   .cta-text span{display:none;}
-  .cta-btn{font-size:9px;padding:8px 12px;}
+  .cta-btn{font-size:7px;padding:6px 9px;white-space:nowrap;flex-shrink:0;}
 
   /* Challenge header */
-  .challenge-header{gap:8px;}
-  .rate-badge{font-size:8px;}
-  .curr-btn{font-size:9px;padding:5px 10px;}
+  .challenge-header{gap:5px;margin-bottom:8px;}
+  .rate-badge{font-size:7px;}
+  .curr-btn{font-size:7px;padding:4px 7px;}
+  .sl{font-size:7px;letter-spacing:.1em;margin-bottom:8px;}
 
-  /* Money card — compact, big numbers */
-  .money-card{padding:16px 14px 14px;}
-  .money-head{gap:10px;}
-  .money-left-title{font-size:22px;}
-  .money-stats-row{gap:14px;}
-  .money-stat-val{font-size:30px;}
-  .money-stat-val[style*="24px"]{font-size:18px!important;}
-  .daily-note{padding:4px 10px;}
-  .daily-note span{font-size:9px;}
+  /* Money card */
+  .money-card{padding:12px 10px;}
+  .money-head{gap:8px;}
+  .money-left-title{font-size:18px;}
+  .money-stats-row{gap:8px;}
+  .money-stat-val{font-size:24px;}
+  .money-stat-val[style*="24px"]{font-size:15px!important;}
+  .daily-note{padding:3px 8px;}
+  .daily-note span{font-size:8px;}
 
-  /* Stream cards — single column, tight */
-  .streams{grid-template-columns:1fr;gap:6px;}
-  .sc{padding:12px 14px;}
-  .sc-amt{font-size:26px;margin-bottom:8px;}
-  .sc-label{font-size:8px;}
-  .sc-icon{font-size:16px;}
+  /* Streams */
+  .streams{grid-template-columns:1fr;gap:5px;}
+  .sc{padding:10px 12px;}
+  .sc-amt{font-size:22px;margin-bottom:6px;}
+  .sc-label{font-size:7px;}
+  .sc-icon{font-size:14px;}
 
-  /* Growth grid — 2 col */
-  .goals-grid{grid-template-columns:1fr 1fr;gap:8px;}
-  .gc{padding:14px;}
-  .gc-cur{font-size:34px;}
-  .gc-title{font-size:13px;}
+  /* Growth */
+  .goals-grid{grid-template-columns:1fr 1fr;gap:7px;}
+  .gc{padding:12px;}
+  .gc-cur{font-size:28px;}
+  .gc-title{font-size:12px;}
 
-  /* PnL calendar */
+  /* Calendar */
   .cal-panel{padding:8px 6px 12px;}
   .pnl-stats{grid-template-columns:1fr 1fr;gap:5px;}
   .pnl-stat{padding:8px 8px;}
@@ -981,40 +975,23 @@ header{
   .cal-day{min-height:38px;padding:3px 2px;}
   .cal-pnl{font-size:10px;bottom:2px;}
 
-  /* Books — 2 col */
+  /* Misc */
   .books-grid{grid-template-columns:1fr 1fr;}
-
-  /* Hide non-essential elements when recording */
   .books-section .audible-banner-simple{display:none;}
-
-  /* Section labels — smaller */
-  .sl{font-size:8px;letter-spacing:.2em;margin-bottom:10px;}
-
-  /* Course CTA compact */
-  .course-cta-bar{padding:14px 14px;gap:12px;}
-  .course-cta-title{font-size:16px;}
-  .course-cta-sub{font-size:10px;}
-  .course-cta-btn{font-size:11px;padding:9px 14px;}
-
-  /* Trade journal teaser compact */
-  .journal-header{padding:12px 14px 10px;}
-  .journal-title{font-size:16px;}
-  .teaser-row{padding:9px 14px;gap:7px;}
-
-  /* Travel pills wrap tightly */
+  .course-cta-bar{padding:12px;}
+  .course-cta-title{font-size:15px;}
+  .course-cta-btn{font-size:10px;padding:8px 12px;}
+  .journal-header{padding:10px 12px;}
+  .journal-title{font-size:15px;}
   .t-flags{gap:5px;}
-  .t-flag-pill{padding:4px 8px;}
-  .t-flag-name{font-size:8px;}
-
-  /* VO2 gauge compact */
-  .gauge-wrap{width:150px;height:90px;}
-  .gauge-num{font-size:38px;}
-  .vo2-card,.travel-card{padding:18px 14px;}
+  .t-flag-pill{padding:4px 7px;}
+  .t-flag-name{font-size:7px;}
+  .gauge-wrap{width:140px;height:84px;}
+  .gauge-num{font-size:34px;}
+  .vo2-card,.travel-card{padding:14px 12px;}
   .bottom-row{grid-template-columns:1fr;}
-
-  /* Footer clean */
-  .footer{padding-top:16px;}
-  .footer-links a{font-size:20px;}
+  .footer{padding-top:12px;}
+  .footer-links a{font-size:18px;}
 }
 /* JOURNAL TEASER */
 .journal-teaser{position:relative;overflow:hidden;}
