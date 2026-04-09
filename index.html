@@ -724,6 +724,112 @@ header{
   .money-total{font-size:32px;}
   .streams{grid-template-columns:1fr;}
 }
+
+/* ── REEL / GREEN SCREEN MOBILE OPTIMISATION ── */
+@media(max-width:480px){
+  /* Clean background — no noise, no radial glows */
+  body::before{display:none;}
+  body::after{display:none;}
+
+  /* Hide decorative corners always */
+  .corner{display:none!important;}
+
+  /* Ticker — tighter, always visible */
+  .price-ticker-bar{height:30px;}
+  .pt-item{padding:0 18px;font-size:9px;}
+
+  /* Wrapper — edge to edge, no side padding waste */
+  .wrapper{padding:0 8px 40px;}
+
+  /* Header — stack cleanly */
+  header{
+    padding:16px 0 14px;
+    flex-direction:column;align-items:flex-start;gap:10px;
+  }
+  header .logo-type h1{font-size:40px;letter-spacing:.04em;}
+  .dl-wrap{width:100%;}
+  #countdown{justify-content:flex-start;}
+  .cd-n{font-size:20px;}
+  .cd-unit{padding:4px 8px;min-width:44px;}
+
+  /* Inner circle CTA — compact */
+  .cta-bar{padding:12px 14px;gap:10px;flex-direction:row;}
+  .cta-emoji{font-size:18px;}
+  .cta-text strong{font-size:12px;}
+  .cta-text span{display:none;}
+  .cta-btn{font-size:9px;padding:8px 12px;}
+
+  /* Challenge header */
+  .challenge-header{gap:8px;}
+  .rate-badge{font-size:8px;}
+  .curr-btn{font-size:9px;padding:5px 10px;}
+
+  /* Money card — compact, big numbers */
+  .money-card{padding:16px 14px 14px;}
+  .money-head{gap:10px;}
+  .money-left-title{font-size:22px;}
+  .money-stats-row{gap:14px;}
+  .money-stat-val{font-size:30px;}
+  .money-stat-val[style*="24px"]{font-size:18px!important;}
+  .daily-note{padding:4px 10px;}
+  .daily-note span{font-size:9px;}
+
+  /* Stream cards — single column, tight */
+  .streams{grid-template-columns:1fr;gap:6px;}
+  .sc{padding:12px 14px;}
+  .sc-amt{font-size:26px;margin-bottom:8px;}
+  .sc-label{font-size:8px;}
+  .sc-icon{font-size:16px;}
+
+  /* Growth grid — 2 col */
+  .goals-grid{grid-template-columns:1fr 1fr;gap:8px;}
+  .gc{padding:14px;}
+  .gc-cur{font-size:34px;}
+  .gc-title{font-size:13px;}
+
+  /* PnL calendar */
+  .cal-panel{padding:8px 6px 12px;}
+  .pnl-stats{grid-template-columns:1fr 1fr;gap:5px;}
+  .pnl-stat{padding:8px 8px;}
+  .pnl-stat-val{font-size:18px;}
+  .cal-day{min-height:38px;padding:3px 2px;}
+  .cal-pnl{font-size:10px;bottom:2px;}
+
+  /* Books — 2 col */
+  .books-grid{grid-template-columns:1fr 1fr;}
+
+  /* Hide non-essential elements when recording */
+  .books-section .audible-banner-simple{display:none;}
+
+  /* Section labels — smaller */
+  .sl{font-size:8px;letter-spacing:.2em;margin-bottom:10px;}
+
+  /* Course CTA compact */
+  .course-cta-bar{padding:14px 14px;gap:12px;}
+  .course-cta-title{font-size:16px;}
+  .course-cta-sub{font-size:10px;}
+  .course-cta-btn{font-size:11px;padding:9px 14px;}
+
+  /* Trade journal teaser compact */
+  .journal-header{padding:12px 14px 10px;}
+  .journal-title{font-size:16px;}
+  .teaser-row{padding:9px 14px;gap:7px;}
+
+  /* Travel pills wrap tightly */
+  .t-flags{gap:5px;}
+  .t-flag-pill{padding:4px 8px;}
+  .t-flag-name{font-size:8px;}
+
+  /* VO2 gauge compact */
+  .gauge-wrap{width:150px;height:90px;}
+  .gauge-num{font-size:38px;}
+  .vo2-card,.travel-card{padding:18px 14px;}
+  .bottom-row{grid-template-columns:1fr;}
+
+  /* Footer clean */
+  .footer{padding-top:16px;}
+  .footer-links a{font-size:20px;}
+}
 /* JOURNAL TEASER */
 .journal-teaser{position:relative;overflow:hidden;}
 .teaser-rows{padding:8px 0;}
