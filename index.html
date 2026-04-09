@@ -2284,7 +2284,7 @@ function drawStoryCanvas(canvas){
   if(gPct<1){ctx.fillStyle='#FF3B5C';ctx.fillRect(70+rbW*gPct,rbY,rbW*(1-gPct),18);}
 
   // ── MINI CALENDAR ──
-  const cgY=1230,cW=(W-140)/7,cH=100;
+  const cgY=1230,cW=(W-140)/7,cH=88;
   const days7=['S','M','T','W','T','F','S'];
   ctx.fillStyle='rgba(255,255,255,.25)';ctx.font='28px monospace';
   days7.forEach((d,i)=>ctx.fillText(d,70+i*cW+cW/2-10,cgY+30));
@@ -2310,14 +2310,9 @@ function drawStoryCanvas(canvas){
     }
   }
 
-  // ── FOOTER ──
-  const fY=1870;
-  ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(70,fY-30);ctx.lineTo(W-70,fY-30);ctx.stroke();
-  ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='32px monospace';ctx.textAlign='center';
-  ctx.fillText('vivan.fun  ·  @VivanLive',W/2,fY+10);
-  ctx.fillStyle='rgba(114,80,255,.8)';ctx.font='700 30px monospace';
-  ctx.fillText('#1CroreChallenge  #VivanLive  #Crypto',W/2,fY+52);
+  // ── BOTTOM HASHTAG ONLY ──
+  ctx.fillStyle='rgba(114,80,255,.7)';ctx.font='700 34px monospace';ctx.textAlign='center';
+  ctx.fillText('#1CroreChallenge',W/2,H-40);
   ctx.textAlign='left';
   return canvas;
 }
@@ -2411,10 +2406,10 @@ function drawLandscapeCanvas(canvas){
 
   // ── FOOTER ──
   ctx.fillStyle='rgba(255,255,255,.22)';ctx.font='20px monospace';
-  ctx.fillText('Track the live ₹1Cr challenge at vivan.fun',54,856);
+  ctx.fillText('vivan.fun  ·  Track the live ₹1Cr challenge',54,856);
   ctx.textAlign='right';
   ctx.fillStyle='rgba(114,80,255,.75)';ctx.font='700 20px monospace';
-  ctx.fillText('#1CroreChallenge  #VivanLive  #Crypto  #Trading',W-54,856);
+  ctx.fillText('#1CroreChallenge',W-54,856);
   ctx.textAlign='left';
   return canvas;
 }
@@ -2454,37 +2449,52 @@ document.getElementById('shareModal').addEventListener('click',(e)=>{
 document.getElementById('copyImgBtn').addEventListener('click',async()=>{
   const canvas=buildShareCanvas();
   const msg=document.getElementById('shareMsg');
+  const isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(isIOS){downloadCanvas(canvas,'vivanlive-pnl.png');return;}
   try{
     canvas.toBlob(async blob=>{
       await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
       msg.textContent='✓ Image copied!';setTimeout(()=>msg.textContent='',3000);
     });
   }catch{
-    const a=document.createElement('a');
-    a.download='vivanlive-pnl.png';a.href=canvas.toDataURL();a.click();
-    msg.textContent='✓ Downloaded (clipboard not supported)';setTimeout(()=>msg.textContent='',3000);
+    downloadCanvas(canvas,'vivanlive-pnl.png');
   }
 });
 
-// Download
+// Download - iOS Safari compatible
+function downloadCanvas(canvas, filename){
+  const msg=document.getElementById('shareMsg');
+  const isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(isIOS){
+    // iOS Safari: open image in new tab — user taps & holds to save
+    const win=window.open();
+    win.document.write(`<html><head><title>${filename}</title><meta name="viewport" content="width=device-width"><style>body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;}img{max-width:100%;}</style></head><body><img src="${canvas.toDataURL('image/png')}"/><p style="color:#fff;font-family:monospace;text-align:center;font-size:14px;padding:12px;">Tap &amp; hold the image → Save to Photos</p></body></html>`);
+    win.document.close();
+    msg.textContent='📱 Tap & hold the image → Save to Photos';
+    setTimeout(()=>msg.textContent='',5000);
+  }else{
+    const a=document.createElement('a');
+    a.download=filename;a.href=canvas.toDataURL('image/png');a.click();
+    msg.textContent='✓ Downloaded as '+filename;
+    setTimeout(()=>msg.textContent='',3000);
+  }
+}
+
 document.getElementById('dlImgBtn').addEventListener('click',()=>{
   const canvas=buildShareCanvas();
-  const a=document.createElement('a');
   const fname=shareFmt==='story'?'vivanlive-story.png':'vivanlive-post.png';
-  a.download=fname;a.href=canvas.toDataURL('image/png');a.click();
-  document.getElementById('shareMsg').textContent='✓ Downloaded as '+fname;
-  setTimeout(()=>document.getElementById('shareMsg').textContent='',3000);
+  downloadCanvas(canvas,fname);
 });
 
-// Instagram — download story format
+// Instagram — story format download
 document.getElementById('shareIGBtn').addEventListener('click',()=>{
   switchFmt('story');
   setTimeout(()=>{
     const canvas=buildShareCanvas();
-    const a=document.createElement('a');
-    a.download='vivanlive-ig-story.png';a.href=canvas.toDataURL('image/png');a.click();
-    document.getElementById('shareMsg').textContent='✓ Story downloaded — upload to Instagram!';
-    setTimeout(()=>document.getElementById('shareMsg').textContent='',4000);
+    downloadCanvas(canvas,'vivanlive-ig-story.png');
+    const msg=document.getElementById('shareMsg');
+    msg.textContent='📸 Save to Photos → Upload to Instagram Story!';
+    setTimeout(()=>msg.textContent='',5000);
   },100);
 });
 
