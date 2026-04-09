@@ -3,13 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VIVANLIVE · MISSION CONTROL 2026</title>
+<title>VivanLive</title>
 <meta property="og:title" content="VivanLive · Mission Control 2026">
 <meta property="og:description" content="Live progress tracker — ₹1Cr challenge, growth goals, fitness & travel.">
 <meta property="og:type" content="website">
+<!-- DNS prefetch for all external domains -->
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://api.binance.com">
+<link rel="dns-prefetch" href="https://api.hyperliquid.xyz">
+<link rel="dns-prefetch" href="https://docs.google.com">
+<!-- Preconnect for critical resources -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fonts with display=swap so page renders immediately without waiting -->
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Chart.js removed - not used -->
 <style>
 :root {
   --mint:     #06DAAE;
@@ -686,9 +695,9 @@ header{
   header{flex-direction:column;align-items:flex-start;gap:12px;}
   .dl-wrap{width:100%;}
   #countdown{justify-content:flex-start;}
-  .money-head{flex-direction:column;}
-  .money-right{text-align:left;}
-  .money-total{font-size:38px;}
+  /* money head - stack on mobile */
+  .money-head{grid-template-columns:1fr;gap:10px;}
+  .daily-note{display:inline-flex;}
   .c-grid{grid-template-columns:repeat(4,1fr);}
   .streams{grid-template-columns:1fr;}
   .pnl-stats{grid-template-columns:1fr 1fr;gap:6px;}
@@ -696,8 +705,16 @@ header{
   .pnl-stat-val{font-size:20px;}
   .pnl-stat-lbl{font-size:7px;}
   .books-grid{grid-template-columns:repeat(2,1fr);}
-  .cta-bar{flex-direction:column;align-items:flex-start;gap:12px;}
-  .cta-btn{width:100%;text-align:center;}
+  /* CTA bar - proper row on mobile */
+  .cta-bar{flex-direction:row;align-items:center;gap:10px;padding:12px 14px;}
+  .cta-text strong{font-size:12px;line-height:1.3;}
+  .cta-text span{display:none;}
+  .cta-btn{font-size:9px;padding:8px 12px;white-space:nowrap;}
+  /* Challenge header */
+  .challenge-header{flex-wrap:wrap;gap:8px;}
+  /* money stats row - wrap on small screens */
+  .money-stats-row{gap:12px;}
+  .money-stat-val{font-size:28px;}
   /* calendar on mobile */
   .cal-panel{padding:10px 8px 14px;}
   .cal-day{min-height:48px;padding:4px 3px;}
@@ -1151,7 +1168,7 @@ header{
     <div class="logo-row">
       <div class="logo-type">
         <h1>VIVAN<em>LIVE</em></h1>
-        <p>🎯 Mission Control · 2026 Goals Dashboard</p>
+        <p>🎯 The Grind is Live · 2026 Goals Dashboard</p>
       </div>
     </div>
     <div class="dl-wrap">
@@ -1215,10 +1232,7 @@ header{
     </div>
     <div class="bar-row">
       <div class="bar-head">
-        <span style="display:flex;align-items:center;gap:8px;">
-          <span>📊 Overall Progress</span>
-          <span style="font-size:8px;color:var(--muted);letter-spacing:.06em;opacity:.7;">📈 Trading · 🪂 Airdrop · 🎬 Content</span>
-        </span>
+        <span>📊 Overall Progress</span>
         <span id="megaPctLabel">0% complete</span>
       </div>
       <div class="mega-bar"><div class="mega-fill" id="megaBar" style="width:0%"></div></div>
@@ -1632,10 +1646,16 @@ function tick(){
   el.innerHTML=`<div class="cd-unit"><span class="cd-n">${d}</span><span class="cd-l">days</span></div><div class="cd-unit"><span class="cd-n">${h}</span><span class="cd-l">hrs</span></div><div class="cd-unit"><span class="cd-n">${m}</span><span class="cd-l">min</span></div>`;
 }
 async function load(){
+  const cached=sessionStorage.getItem('vl_data');
+  const cachedTime=sessionStorage.getItem('vl_data_time');
+  if(cached&&cachedTime&&Date.now()-cachedTime<60000){try{return JSON.parse(cached);}catch{}}
   try{
     const r=await fetch(SHEET+'&t='+Date.now());if(!r.ok)throw 0;
     const d=parse(await r.text());
-    return(d.trading||d.airdrop||d.content||d.yt||d.ig)?d:FB;
+    const result=(d.trading||d.airdrop||d.content||d.yt||d.ig)?d:FB;
+    sessionStorage.setItem('vl_data',JSON.stringify(result));
+    sessionStorage.setItem('vl_data_time',Date.now());
+    return result;
   }catch{$('errorBanner').style.display='flex';return FB;}
 }
 const DAILY_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vRQtO8kCl5EoaseHwo98-m1h6G9_aidcVHsdsWxFufjlje3yq4IhdIHtpXhLIf6LRuRhiitDSdg35zu/pub?gid=1958217971&single=true&output=csv';
@@ -1858,10 +1878,16 @@ function renderBucketChart(){
 }
 
 async function loadDaily(){
+  const cached=sessionStorage.getItem('vl_daily');
+  const cachedTime=sessionStorage.getItem('vl_daily_time');
+  if(cached&&cachedTime&&Date.now()-cachedTime<60000){try{return JSON.parse(cached);}catch{}}
   try{
     const r=await fetch(DAILY_SHEET+'&t='+Date.now());
     if(!r.ok)throw 0;
-    return parseDaily(await r.text());
+    const result=parseDaily(await r.text());
+    sessionStorage.setItem('vl_daily',JSON.stringify(result));
+    sessionStorage.setItem('vl_daily_time',Date.now());
+    return result;
   }catch{return[];}
 }
 
@@ -2236,18 +2262,23 @@ document.getElementById('msClose').addEventListener('click',()=>{
 
 async function init(){
   tick();setInterval(tick,30000);
-  fetchPrices();setInterval(fetchPrices,60000);
-  fetchExchangeRate();setInterval(fetchExchangeRate,3600000);
+  // Load data in parallel — don't wait for prices/rate before rendering
   const [d,daily]=await Promise.all([load(),loadDaily()]);
   calData=daily;
+  // Render immediately, short delay just for loading bar animation
   setTimeout(()=>{
     render(d);
     renderCalendar();
     const tot=d.trading+d.airdrop+d.content;
     checkMilestone(tot);
     const ov=$('loadingOverlay');ov.classList.add('hidden');
-    setTimeout(()=>{ov.remove();showWelcomePopup();},600);
-  },1400);
+    setTimeout(()=>{ov.remove();showWelcomePopup();},400);
+    // Defer non-critical after page is visible
+    setTimeout(()=>{
+      fetchPrices();setInterval(fetchPrices,60000);
+      fetchExchangeRate();setInterval(fetchExchangeRate,3600000);
+    },500);
+  },600);
 }
 init();
 </script>
