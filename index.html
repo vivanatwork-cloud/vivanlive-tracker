@@ -787,6 +787,43 @@ header{
 .ms-close:hover{border-color:var(--mint);color:var(--mint);}
 #confettiCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
 
+/* PNL GROWTH CHART */
+.chart-card{
+  background:var(--s1);border:1px solid var(--border);
+  padding:20px 24px 16px;margin-bottom:28px;
+  position:relative;overflow:hidden;
+}
+.chart-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--purple),var(--mint));}
+.chart-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.chart-meta{display:flex;gap:20px;flex-wrap:wrap;}
+.chart-stat{display:flex;flex-direction:column;gap:3px;}
+.chart-stat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:#999;letter-spacing:.12em;text-transform:uppercase;}
+.chart-stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:22px;color:var(--mint);line-height:1;}
+.chart-stat-val.pos{color:var(--mint);}
+.chart-stat-val.neg{color:var(--red);}
+.chart-toggles{display:flex;gap:6px;flex-shrink:0;}
+.chart-tog{
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+  background:transparent;border:1px solid var(--border);color:#999;
+  padding:5px 12px;cursor:pointer;transition:all .15s;
+}
+.chart-tog.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+.chart-tog:hover:not(.active){border-color:rgba(114,80,255,.4);color:var(--text);}
+.chart-wrap{position:relative;height:220px;}
+.chart-wrap canvas{width:100%!important;height:100%!important;}
+.chart-empty{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:10px;color:#666;letter-spacing:.08em;
+  display:none;
+}
+@media(max-width:640px){
+  .chart-card{padding:14px 12px 12px;}
+  .chart-meta{gap:12px;}
+  .chart-stat-val{font-size:18px;}
+  .chart-wrap{height:160px;}
+  .chart-header{flex-direction:column;gap:10px;}
+}
+
 /* TRADE JOURNAL */
 .journal-section{margin-bottom:28px;}
 .journal-card{
@@ -1465,6 +1502,39 @@ header{
   </div><!-- end inner panel -->
   </div><!-- end pnlCalendarSection -->
 
+  <!-- PNL GROWTH CHART -->
+  <div class="sl"><span class="sl-icon">📈</span>PnL Growth Chart</div>
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-meta">
+        <div class="chart-stat" id="chartTotalEl">
+          <div class="chart-stat-lbl">Cumulative PnL</div>
+          <div class="chart-stat-val" id="chartTotal">—</div>
+        </div>
+        <div class="chart-stat">
+          <div class="chart-stat-lbl">Best Day</div>
+          <div class="chart-stat-val pos" id="chartBest">—</div>
+        </div>
+        <div class="chart-stat">
+          <div class="chart-stat-lbl">Worst Day</div>
+          <div class="chart-stat-val neg" id="chartWorst">—</div>
+        </div>
+        <div class="chart-stat">
+          <div class="chart-stat-lbl">Win Rate</div>
+          <div class="chart-stat-val" id="chartWinRate" style="color:var(--purple-lt)">—</div>
+        </div>
+      </div>
+      <div class="chart-toggles">
+        <button class="chart-tog active" onclick="setChartView('cumulative',this)">Cumulative</button>
+        <button class="chart-tog" onclick="setChartView('daily',this)">Daily</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="pnlChart"></canvas>
+      <div class="chart-empty" id="chartEmpty">No data yet — add entries to your daily sheet</div>
+    </div>
+  </div>
+
   <!-- TRADE JOURNAL (before Growth Channels) -->
   <div class="sl"><span class="sl-icon">📒</span>Trade Journal</div>
   <div class="journal-section">
@@ -1758,6 +1828,7 @@ function setCurrency(c){
   // re-render with current data if available
   if(window._lastRenderData)render(window._lastRenderData);
   renderCalendar();
+  renderPnlChart();
 }
 
 function getUSDTarget(){return Math.round(10000000/usdInr);}
@@ -2627,6 +2698,170 @@ document.getElementById('msClose').addEventListener('click',()=>{
   if(stopConfetti){stopConfetti();stopConfetti=null;}
 });
 
+// ── PNL GROWTH CHART ──
+let chartView='cumulative';
+
+function setChartView(view,btn){
+  chartView=view;
+  document.querySelectorAll('.chart-tog').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPnlChart();
+}
+
+function renderPnlChart(){
+  const canvas=document.getElementById('pnlChart');
+  const empty=document.getElementById('chartEmpty');
+  if(!canvas)return;
+
+  // Sort data by date
+  const sorted=[...calData].filter(d=>d.date&&d.total!==undefined)
+    .sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+  if(!sorted.length){
+    canvas.style.display='none';
+    empty.style.display='flex';
+    return;
+  }
+  canvas.style.display='block';
+  empty.style.display='none';
+
+  // Build cumulative series
+  let running=0;
+  const points=sorted.map(d=>{
+    running+=d.total;
+    return{date:d.date,daily:d.total,cumulative:running};
+  });
+
+  // Update header stats
+  const allVals=sorted.map(d=>d.total);
+  const cumTotal=points[points.length-1].cumulative;
+  const best=Math.max(...allVals);
+  const worst=Math.min(...allVals);
+  const wins=allVals.filter(v=>v>0).length;
+  const winRate=Math.round(wins/allVals.length*100);
+
+  const el=id=>document.getElementById(id);
+  el('chartTotal').textContent=fmtMoney(cumTotal);
+  el('chartTotal').style.color=cumTotal>=0?'var(--mint)':'var(--red)';
+  el('chartBest').textContent=fmtPnl(best);
+  el('chartWorst').textContent=fmtPnl(worst);
+  el('chartWinRate').textContent=winRate+'%';
+
+  // Draw canvas
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.parentElement.getBoundingClientRect();
+  const W=rect.width||600;
+  const H=rect.height||220;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+
+  const isLight=document.body.classList.contains('light');
+  const textColor=isLight?'#888':'#888';
+  const gridColor=isLight?'rgba(0,0,0,.06)':'rgba(255,255,255,.05)';
+  const zeroBg=isLight?'rgba(0,0,0,.08)':'rgba(255,255,255,.06)';
+
+  const pad={top:16,right:16,bottom:36,left:60};
+  const gW=W-pad.left-pad.right;
+  const gH=H-pad.top-pad.bottom;
+
+  const vals=points.map(p=>chartView==='cumulative'?p.cumulative:p.daily);
+  const minV=Math.min(...vals,0);
+  const maxV=Math.max(...vals,0);
+  const range=maxV-minV||1;
+
+  const xOf=(i)=>pad.left+i*(gW/(Math.max(points.length-1,1)));
+  const yOf=(v)=>pad.top+gH-(((v-minV)/range)*gH);
+
+  // Clear
+  ctx.clearRect(0,0,W,H);
+
+  // Grid lines + Y labels
+  const yTicks=5;
+  for(let i=0;i<=yTicks;i++){
+    const v=minV+(range/yTicks)*i;
+    const y=yOf(v);
+    ctx.strokeStyle=gridColor;ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(W-pad.right,y);ctx.stroke();
+    ctx.fillStyle=textColor;ctx.font=`10px monospace`;ctx.textAlign='right';
+    ctx.fillText(fmtMoney(v).replace('+',''),pad.left-6,y+3);
+  }
+
+  // Zero line
+  if(minV<0&&maxV>0){
+    const zy=yOf(0);
+    ctx.strokeStyle=zeroBg;ctx.lineWidth=1.5;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(pad.left,zy);ctx.lineTo(W-pad.right,zy);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // X axis labels (show up to 8 dates)
+  const step=Math.max(1,Math.floor(points.length/8));
+  ctx.fillStyle=textColor;ctx.font='9px monospace';ctx.textAlign='center';
+  points.forEach((p,i)=>{
+    if(i%step===0||i===points.length-1){
+      const x=xOf(i);
+      const d=new Date(p.date+'T00:00:00');
+      const label=`${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}`;
+      ctx.fillText(label,x,H-pad.bottom+16);
+    }
+  });
+
+  if(points.length===1){
+    // Single point — draw dot
+    ctx.fillStyle='#06DAAE';
+    ctx.beginPath();ctx.arc(xOf(0),yOf(vals[0]),5,0,Math.PI*2);ctx.fill();
+    return;
+  }
+
+  // Area fill under curve
+  const grad=ctx.createLinearGradient(0,pad.top,0,pad.top+gH);
+  const isPos=vals[vals.length-1]>=0;
+  if(isPos){
+    grad.addColorStop(0,'rgba(6,218,174,.25)');
+    grad.addColorStop(1,'rgba(6,218,174,.01)');
+  }else{
+    grad.addColorStop(0,'rgba(255,59,92,.01)');
+    grad.addColorStop(1,'rgba(255,59,92,.2)');
+  }
+  ctx.beginPath();
+  ctx.moveTo(xOf(0),yOf(0));
+  points.forEach((p,i)=>ctx.lineTo(xOf(i),yOf(vals[i])));
+  ctx.lineTo(xOf(points.length-1),yOf(0));
+  ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle=isPos?'#06DAAE':'#FF3B5C';
+  ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+  points.forEach((p,i)=>{
+    if(i===0)ctx.moveTo(xOf(i),yOf(vals[i]));
+    else ctx.lineTo(xOf(i),yOf(vals[i]));
+  });
+  ctx.stroke();
+
+  // Dots on each data point
+  points.forEach((p,i)=>{
+    const v=vals[i];
+    const color=chartView==='daily'?(v>0?'#06DAAE':v<0?'#FF3B5C':'#666'):(isPos?'#06DAAE':'#FF3B5C');
+    ctx.beginPath();
+    ctx.arc(xOf(i),yOf(v),3,0,Math.PI*2);
+    ctx.fillStyle=color;ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=1;ctx.stroke();
+  });
+
+  // Last point label
+  const lastX=xOf(points.length-1);
+  const lastY=yOf(vals[vals.length-1]);
+  const lastLabel=fmtMoney(vals[vals.length-1]);
+  ctx.font='bold 11px monospace';ctx.textAlign='right';
+  ctx.fillStyle=isPos?'#06DAAE':'#FF3B5C';
+  ctx.fillText(lastLabel,lastX+2,lastY-10);
+}
+
 // ── TRADE JOURNAL (teaser only — static dummy data, no fetch needed) ──
 
 async function init(){
@@ -2638,6 +2873,7 @@ async function init(){
   setTimeout(()=>{
     render(d);
     renderCalendar();
+    renderPnlChart();
     const tot=d.trading+d.airdrop+d.content;
     checkMilestone(tot);
     const ov=$('loadingOverlay');ov.classList.add('hidden');
@@ -2648,6 +2884,7 @@ async function init(){
       calData=daily;
       render(d);
       renderCalendar();
+      renderPnlChart();
     },60000);
     // Defer exchange rate fetch after page is visible
     setTimeout(()=>{
@@ -2655,6 +2892,7 @@ async function init(){
     },500);
   },600);
 }
+window.addEventListener('resize',()=>{renderPnlChart();});
 init();
 </script>
 </body>
