@@ -1530,7 +1530,7 @@ header{
       </div>
     </div>
     <div class="chart-wrap">
-      <canvas id="pnlChart"></canvas>
+      <canvas id="pnlChart" style="cursor:crosshair;"></canvas>
       <div class="chart-empty" id="chartEmpty">No data yet — add entries to your daily sheet</div>
     </div>
   </div>
@@ -2708,13 +2708,21 @@ function setChartView(view,btn){
   renderPnlChart();
 }
 
+// ── PNL CHART STATE ──
+let _chartPoints=[];
+let _chartPad={};
+let _chartDims={};
+let _chartVals=[];
+
 function renderPnlChart(){
   const canvas=document.getElementById('pnlChart');
   const empty=document.getElementById('chartEmpty');
   if(!canvas)return;
 
-  // Sort data by date
-  const sorted=[...calData].filter(d=>d.date&&d.total!==undefined)
+  // Filter to today and earlier only — no future dates
+  const today=new Date();today.setHours(23,59,59,999);
+  const sorted=[...calData]
+    .filter(d=>d.date&&d.total!==undefined&&new Date(d.date+'T00:00:00')<=today)
     .sort((a,b)=>new Date(a.date)-new Date(b.date));
 
   if(!sorted.length){
@@ -2731,15 +2739,15 @@ function renderPnlChart(){
     running+=d.total;
     return{date:d.date,daily:d.total,cumulative:running};
   });
+  _chartPoints=points;
 
-  // Update header stats
+  // Header stats
   const allVals=sorted.map(d=>d.total);
   const cumTotal=points[points.length-1].cumulative;
   const best=Math.max(...allVals);
   const worst=Math.min(...allVals);
   const wins=allVals.filter(v=>v>0).length;
   const winRate=Math.round(wins/allVals.length*100);
-
   const el=id=>document.getElementById(id);
   el('chartTotal').textContent=fmtMoney(cumTotal);
   el('chartTotal').style.color=cumTotal>=0?'var(--mint)':'var(--red)';
@@ -2747,10 +2755,10 @@ function renderPnlChart(){
   el('chartWorst').textContent=fmtPnl(worst);
   el('chartWinRate').textContent=winRate+'%';
 
-  // Draw canvas
+  // Canvas setup
   const dpr=window.devicePixelRatio||1;
   const rect=canvas.parentElement.getBoundingClientRect();
-  const W=rect.width||600;
+  const W=Math.max(rect.width,280);
   const H=rect.height||220;
   canvas.width=W*dpr;canvas.height=H*dpr;
   canvas.style.width=W+'px';canvas.style.height=H+'px';
@@ -2758,109 +2766,199 @@ function renderPnlChart(){
   ctx.scale(dpr,dpr);
 
   const isLight=document.body.classList.contains('light');
-  const textColor=isLight?'#888':'#888';
-  const gridColor=isLight?'rgba(0,0,0,.06)':'rgba(255,255,255,.05)';
-  const zeroBg=isLight?'rgba(0,0,0,.08)':'rgba(255,255,255,.06)';
+  const textColor='#888';
+  const gridColor=isLight?'rgba(0,0,0,.07)':'rgba(255,255,255,.06)';
 
-  const pad={top:16,right:16,bottom:36,left:60};
+  const pad={top:20,right:20,bottom:36,left:W<400?48:62};
+  _chartPad=pad;_chartDims={W,H};
   const gW=W-pad.left-pad.right;
   const gH=H-pad.top-pad.bottom;
 
   const vals=points.map(p=>chartView==='cumulative'?p.cumulative:p.daily);
+  _chartVals=vals;
   const minV=Math.min(...vals,0);
   const maxV=Math.max(...vals,0);
   const range=maxV-minV||1;
+  // add 10% padding top/bottom
+  const minVp=minV-range*.08;
+  const maxVp=maxV+range*.08;
+  const rangep=maxVp-minVp;
 
   const xOf=(i)=>pad.left+i*(gW/(Math.max(points.length-1,1)));
-  const yOf=(v)=>pad.top+gH-(((v-minV)/range)*gH);
+  const yOf=(v)=>pad.top+gH-(((v-minVp)/rangep)*gH);
 
-  // Clear
   ctx.clearRect(0,0,W,H);
 
   // Grid lines + Y labels
-  const yTicks=5;
+  const yTicks=4;
   for(let i=0;i<=yTicks;i++){
-    const v=minV+(range/yTicks)*i;
+    const v=minVp+(rangep/yTicks)*i;
     const y=yOf(v);
     ctx.strokeStyle=gridColor;ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(W-pad.right,y);ctx.stroke();
-    ctx.fillStyle=textColor;ctx.font=`10px monospace`;ctx.textAlign='right';
-    ctx.fillText(fmtMoney(v).replace('+',''),pad.left-6,y+3);
+    ctx.fillStyle=textColor;ctx.font=`${W<400?8:10}px monospace`;ctx.textAlign='right';
+    ctx.fillText(fmtMoney(v).replace('+',''),pad.left-5,y+3);
   }
 
   // Zero line
   if(minV<0&&maxV>0){
     const zy=yOf(0);
-    ctx.strokeStyle=zeroBg;ctx.lineWidth=1.5;
-    ctx.setLineDash([4,4]);
+    ctx.strokeStyle=isLight?'rgba(0,0,0,.15)':'rgba(255,255,255,.12)';
+    ctx.lineWidth=1;ctx.setLineDash([5,4]);
     ctx.beginPath();ctx.moveTo(pad.left,zy);ctx.lineTo(W-pad.right,zy);ctx.stroke();
     ctx.setLineDash([]);
+    ctx.fillStyle=textColor;ctx.font='8px monospace';ctx.textAlign='left';
+    ctx.fillText('₹0',pad.left+4,zy-3);
   }
 
-  // X axis labels (show up to 8 dates)
-  const step=Math.max(1,Math.floor(points.length/8));
-  ctx.fillStyle=textColor;ctx.font='9px monospace';ctx.textAlign='center';
+  // X labels
+  const maxLabels=W<400?4:7;
+  const step=Math.max(1,Math.floor(points.length/maxLabels));
+  const mnths=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  ctx.fillStyle=textColor;ctx.font=`${W<400?8:9}px monospace`;ctx.textAlign='center';
   points.forEach((p,i)=>{
     if(i%step===0||i===points.length-1){
       const x=xOf(i);
       const d=new Date(p.date+'T00:00:00');
-      const label=`${d.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]}`;
-      ctx.fillText(label,x,H-pad.bottom+16);
+      ctx.fillText(`${d.getDate()} ${mnths[d.getMonth()]}`,x,H-6);
     }
   });
 
   if(points.length===1){
-    // Single point — draw dot
-    ctx.fillStyle='#06DAAE';
+    const isPos=vals[0]>=0;
+    ctx.fillStyle=isPos?'#06DAAE':'#FF3B5C';
     ctx.beginPath();ctx.arc(xOf(0),yOf(vals[0]),5,0,Math.PI*2);ctx.fill();
     return;
   }
 
-  // Area fill under curve
-  const grad=ctx.createLinearGradient(0,pad.top,0,pad.top+gH);
   const isPos=vals[vals.length-1]>=0;
-  if(isPos){
-    grad.addColorStop(0,'rgba(6,218,174,.25)');
-    grad.addColorStop(1,'rgba(6,218,174,.01)');
-  }else{
-    grad.addColorStop(0,'rgba(255,59,92,.01)');
-    grad.addColorStop(1,'rgba(255,59,92,.2)');
-  }
-  ctx.beginPath();
-  ctx.moveTo(xOf(0),yOf(0));
-  points.forEach((p,i)=>ctx.lineTo(xOf(i),yOf(vals[i])));
-  ctx.lineTo(xOf(points.length-1),yOf(0));
-  ctx.closePath();
-  ctx.fillStyle=grad;ctx.fill();
 
-  // Line
-  ctx.beginPath();
-  ctx.strokeStyle=isPos?'#06DAAE':'#FF3B5C';
-  ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
-  points.forEach((p,i)=>{
-    if(i===0)ctx.moveTo(xOf(i),yOf(vals[i]));
-    else ctx.lineTo(xOf(i),yOf(vals[i]));
-  });
+  // Smooth bezier area fill
+  const areaGrad=ctx.createLinearGradient(0,pad.top,0,pad.top+gH);
+  if(isPos){
+    areaGrad.addColorStop(0,'rgba(6,218,174,.3)');
+    areaGrad.addColorStop(0.7,'rgba(6,218,174,.08)');
+    areaGrad.addColorStop(1,'rgba(6,218,174,.01)');
+  }else{
+    areaGrad.addColorStop(0,'rgba(255,59,92,.02)');
+    areaGrad.addColorStop(0.3,'rgba(255,59,92,.1)');
+    areaGrad.addColorStop(1,'rgba(255,59,92,.28)');
+  }
+
+  // Build smooth path using cardinal spline
+  function smoothPath(pts){
+    ctx.beginPath();
+    ctx.moveTo(xOf(0),yOf(pts[0]));
+    for(let i=0;i<pts.length-1;i++){
+      const x0=xOf(i),y0=yOf(pts[i]);
+      const x1=xOf(i+1),y1=yOf(pts[i+1]);
+      const cpx=(x0+x1)/2;
+      ctx.bezierCurveTo(cpx,y0,cpx,y1,x1,y1);
+    }
+  }
+
+  // Area
+  ctx.save();
+  smoothPath(vals);
+  ctx.lineTo(xOf(points.length-1),yOf(minVp));
+  ctx.lineTo(xOf(0),yOf(minVp));
+  ctx.closePath();
+  ctx.fillStyle=areaGrad;ctx.fill();
+  ctx.restore();
+
+  // Line stroke
+  smoothPath(vals);
+  const lineGrad=ctx.createLinearGradient(xOf(0),0,xOf(points.length-1),0);
+  if(isPos){
+    lineGrad.addColorStop(0,'#04B08C');lineGrad.addColorStop(1,'#06DAAE');
+  }else{
+    lineGrad.addColorStop(0,'#FF3B5C');lineGrad.addColorStop(1,'#cc1a35');
+  }
+  ctx.strokeStyle=lineGrad;ctx.lineWidth=2.5;
+  ctx.lineJoin='round';ctx.lineCap='round';
   ctx.stroke();
 
-  // Dots on each data point
-  points.forEach((p,i)=>{
-    const v=vals[i];
-    const color=chartView==='daily'?(v>0?'#06DAAE':v<0?'#FF3B5C':'#666'):(isPos?'#06DAAE':'#FF3B5C');
-    ctx.beginPath();
-    ctx.arc(xOf(i),yOf(v),3,0,Math.PI*2);
-    ctx.fillStyle=color;ctx.fill();
-    ctx.strokeStyle='rgba(0,0,0,.4)';ctx.lineWidth=1;ctx.stroke();
+  // End dot
+  const lx=xOf(points.length-1),ly=yOf(vals[vals.length-1]);
+  ctx.beginPath();ctx.arc(lx,ly,5,0,Math.PI*2);
+  ctx.fillStyle=isPos?'#06DAAE':'#FF3B5C';ctx.fill();
+  ctx.strokeStyle=isLight?'#fff':'#050505';ctx.lineWidth=2;ctx.stroke();
+
+  // End label
+  ctx.font=`bold ${W<400?10:12}px monospace`;
+  ctx.fillStyle=isPos?'#06DAAE':'#FF3B5C';ctx.textAlign='right';
+  const lbl=fmtMoney(vals[vals.length-1]);
+  const lblX=Math.min(lx+2,W-pad.right);
+  ctx.fillText(lbl,lblX,ly-(ly<pad.top+20?-16:12));
+}
+
+// ── CHART HOVER TOOLTIP ──
+(function setupChartHover(){
+  const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let tip=null;
+
+  function getOrCreateTip(){
+    if(!tip){
+      tip=document.createElement('div');
+      tip.id='chart-tip';
+      tip.style.cssText=`position:fixed;z-index:999;pointer-events:none;display:none;
+        background:#0D0D0D;border:1px solid rgba(114,80,255,.5);
+        padding:8px 12px;font-family:'DM Mono',monospace;font-size:11px;
+        color:#fff;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.5);`;
+      document.body.appendChild(tip);
+    }
+    return tip;
+  }
+
+  function onMove(e){
+    const canvas=document.getElementById('pnlChart');
+    if(!canvas||!_chartPoints.length)return;
+    const t=getOrCreateTip();
+    const r=canvas.getBoundingClientRect();
+    const clientX=e.touches?e.touches[0].clientX:e.clientX;
+    const clientY=e.touches?e.touches[0].clientY:e.clientY;
+    const mx=clientX-r.left;
+    const {W}=_chartDims,pad=_chartPad;
+    const gW=W-pad.left-pad.right;
+    const n=_chartPoints.length;
+    const idx=Math.round(((mx-pad.left)/gW)*(n-1));
+    if(idx<0||idx>=n){t.style.display='none';return;}
+    const p=_chartPoints[idx];
+    const v=_chartVals[idx];
+    const d=new Date(p.date+'T00:00:00');
+    const dateStr=`${d.getDate()} ${MN[d.getMonth()]} ${d.getFullYear()}`;
+    const sign=v>=0?'+':'-';
+    const color=v>=0?'#06DAAE':'#FF3B5C';
+    const cum=chartView==='cumulative';
+    t.innerHTML=`<div style="color:#999;font-size:9px;margin-bottom:4px">${dateStr}</div>
+<div style="color:${color};font-size:13px;font-weight:700">${fmtPnl(v)}</div>
+<div style="color:#666;font-size:9px;margin-top:2px">${cum?'Cumulative':'Daily PnL'}</div>`;
+    t.style.display='block';
+    const tw=t.offsetWidth;
+    let tx=clientX+14;
+    if(tx+tw>window.innerWidth-10)tx=clientX-tw-14;
+    t.style.left=tx+'px';
+    t.style.top=(clientY-20)+'px';
+  }
+
+  function onLeave(){
+    const t=getOrCreateTip();
+    if(t)t.style.display='none';
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{
+    const canvas=document.getElementById('pnlChart');
+    if(!canvas)return;
+    canvas.addEventListener('mousemove',onMove);
+    canvas.addEventListener('mouseleave',onLeave);
+    canvas.addEventListener('touchmove',onMove,{passive:true});
+    canvas.addEventListener('touchend',onLeave);
   });
 
-  // Last point label
-  const lastX=xOf(points.length-1);
-  const lastY=yOf(vals[vals.length-1]);
-  const lastLabel=fmtMoney(vals[vals.length-1]);
-  ctx.font='bold 11px monospace';ctx.textAlign='right';
-  ctx.fillStyle=isPos?'#06DAAE':'#FF3B5C';
-  ctx.fillText(lastLabel,lastX+2,lastY-10);
-}
+  // Re-attach after chart renders
+  const origRender=window.renderPnlChart;
+  window._chartHoverReady=true;
+})();
 
 // ── TRADE JOURNAL (teaser only — static dummy data, no fetch needed) ──
 
@@ -2893,6 +2991,15 @@ async function init(){
   },600);
 }
 window.addEventListener('resize',()=>{renderPnlChart();});
+// Attach chart hover after DOM ready
+document.addEventListener('DOMContentLoaded',()=>{
+  const canvas=document.getElementById('pnlChart');
+  if(canvas){
+    canvas.addEventListener('mousemove',(e)=>{
+      if(typeof onMove==='function')onMove(e);
+    });
+  }
+});
 init();
 </script>
 </body>
