@@ -251,6 +251,24 @@ header{
   letter-spacing:.2em;color:#888;margin-top:6px;text-transform:uppercase;
 }
 
+/* DAY BADGE */
+.day-badge{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:rgba(6,218,174,.08);border:1px solid rgba(6,218,174,.25);
+  padding:6px 14px;flex-shrink:0;
+}
+.day-lbl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.2em;color:var(--mint);text-transform:uppercase;opacity:.7;}
+.day-num{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:var(--mint);line-height:1;letter-spacing:.02em;}
+@media(max-width:640px){
+  .day-badge{padding:4px 10px;}
+  .day-num{font-size:20px;}
+  .day-lbl{font-size:6px;}
+}
+@media(max-width:480px){
+  .day-badge{padding:3px 7px;}
+  .day-num{font-size:16px;}
+}
+
 /* DEADLINE */
 .dl-wrap{
   text-align:right;flex-shrink:0;
@@ -1349,6 +1367,10 @@ header{
       </div>
     </div>
     <div class="dl-wrap">
+      <div class="day-badge">
+        <div class="day-lbl">Day</div>
+        <div class="day-num" id="challengeDay">—</div>
+      </div>
       <div class="dl-badge">
         <div class="dl-emoji">🏁</div>
         <div>
@@ -1895,9 +1917,16 @@ function render(d){
 }
 function tick(){
   const diff=new Date('2026-08-31T00:00:00+05:30')-Date.now(),el=$('countdown');
-  if(diff<=0){el.textContent='🏁 DEADLINE REACHED';return;}
-  const d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4);
-  el.innerHTML=`<div class="cd-unit"><span class="cd-n">${d}</span><span class="cd-l">days</span></div><div class="cd-unit"><span class="cd-n">${h}</span><span class="cd-l">hrs</span></div><div class="cd-unit"><span class="cd-n">${m}</span><span class="cd-l">min</span></div>`;
+  if(diff<=0){el.textContent='🏁 DEADLINE REACHED';}
+  else{
+    const d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4);
+    el.innerHTML=`<div class="cd-unit"><span class="cd-n">${d}</span><span class="cd-l">days</span></div><div class="cd-unit"><span class="cd-n">${h}</span><span class="cd-l">hrs</span></div><div class="cd-unit"><span class="cd-n">${m}</span><span class="cd-l">min</span></div>`;
+  }
+  // Challenge day counter — started 9 Apr 2026
+  const start=new Date('2026-04-09T00:00:00+05:30');
+  const dayNum=Math.max(1,Math.floor((Date.now()-start)/864e5)+1);
+  const dayEl=$('challengeDay');
+  if(dayEl)dayEl.textContent=dayNum;
 }
 async function load(){
   try{
