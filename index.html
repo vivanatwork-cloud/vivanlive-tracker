@@ -805,6 +805,20 @@ header{
 .ms-close:hover{border-color:var(--mint);color:var(--mint);}
 #confettiCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
 
+/* RACE SECTION LABEL */
+.race-sl{
+  text-align:center;margin-bottom:16px;
+}
+.race-sl-sub{
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.28em;
+  color:#888;text-transform:uppercase;margin-bottom:4px;
+}
+.race-sl-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(24px,4vw,38px);letter-spacing:.08em;color:var(--text);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+
 /* THE RACE */
 .race-section{
   display:grid;grid-template-columns:1fr auto 1fr;
@@ -861,8 +875,10 @@ header{
 }
 @media(max-width:640px){
   .race-section{grid-template-columns:1fr;grid-template-rows:auto auto auto;}
-  .race-vs{width:100%;height:40px;flex-direction:row;}
+  .race-vs{width:100%;height:36px;flex-direction:row;}
   .race-vs::before{width:100%;height:1px;}
+  .race-vs-inner{font-size:14px;padding:5px 10px;}
+  .race-card{padding:18px 14px;}
 }
 
 /* FITNESS CARD */
@@ -1626,13 +1642,50 @@ header{
   </div><!-- end inner panel -->
   </div><!-- end pnlCalendarSection -->
 
+  <!-- PNL GROWTH CHART -->
+  <div id="pnlChartSection" style="display:none;margin-top:-14px;margin-bottom:28px;">
+  <div class="chart-card">
+    <div class="chart-header">
+      <div class="chart-meta">
+        <div class="chart-stat" id="chartTotalEl">
+          <div class="chart-stat-lbl">Cumulative PnL</div>
+          <div class="chart-stat-val" id="chartTotal">—</div>
+        </div>
+        <div class="chart-stat">
+          <div class="chart-stat-lbl">Best Day</div>
+          <div class="chart-stat-val pos" id="chartBest">—</div>
+        </div>
+        <div class="chart-stat">
+          <div class="chart-stat-lbl">Worst Day</div>
+          <div class="chart-stat-val neg" id="chartWorst">—</div>
+        </div>
+        <div class="chart-stat">
+          <div class="chart-stat-lbl">Win Rate</div>
+          <div class="chart-stat-val" id="chartWinRate" style="color:var(--purple-lt)">—</div>
+        </div>
+      </div>
+      <div class="chart-toggles">
+        <button class="chart-tog active" onclick="setChartView('cumulative',this)">Cumulative</button>
+        <button class="chart-tog" onclick="setChartView('daily',this)">Daily</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="pnlChart" style="cursor:crosshair;"></canvas>
+      <div class="chart-empty" id="chartEmpty">No data yet — add entries to your daily sheet</div>
+    </div>
+  </div>
+  </div><!-- end pnlChartSection -->
+
   <!-- THE RACE -->
-  <div class="sl"><span class="sl-icon">⚡</span>The Race</div>
+  <div class="race-sl">
+    <div class="race-sl-sub">What happens first?</div>
+    <div class="race-sl-title"><span class="sl-icon">⚡</span> THE RACE</div>
+  </div>
   <div class="race-section">
     <div class="race-card money-race">
-      <div class="race-bg-text">₹1CR</div>
+      <div class="race-bg-text" id="raceBgText">₹1CR</div>
       <div class="race-icon">💰</div>
-      <div class="race-title">₹1 Crore</div>
+      <div class="race-title" id="raceMoneyTitle">₹1 Crore</div>
       <div class="race-progress-wrap">
         <div class="race-bar-track">
           <div class="race-bar-fill money-fill" id="raceMoneyBar" style="width:0%"></div>
@@ -1645,7 +1698,7 @@ header{
           <div class="race-stat-lbl">Earned</div>
         </div>
         <div class="race-stat">
-          <div class="race-stat-val">₹1Cr</div>
+          <div class="race-stat-val" id="raceGoalLabel">₹1Cr</div>
           <div class="race-stat-lbl">Goal</div>
         </div>
         <div class="race-stat">
@@ -1728,39 +1781,7 @@ header{
     </div>
   </div>
 
-  <!-- PNL GROWTH CHART -->
-  <div id="pnlChartSection" style="display:none;margin-top:-14px;margin-bottom:28px;">
-  <div class="chart-card">
-    <div class="chart-header">
-      <div class="chart-meta">
-        <div class="chart-stat" id="chartTotalEl">
-          <div class="chart-stat-lbl">Cumulative PnL</div>
-          <div class="chart-stat-val" id="chartTotal">—</div>
-        </div>
-        <div class="chart-stat">
-          <div class="chart-stat-lbl">Best Day</div>
-          <div class="chart-stat-val pos" id="chartBest">—</div>
-        </div>
-        <div class="chart-stat">
-          <div class="chart-stat-lbl">Worst Day</div>
-          <div class="chart-stat-val neg" id="chartWorst">—</div>
-        </div>
-        <div class="chart-stat">
-          <div class="chart-stat-lbl">Win Rate</div>
-          <div class="chart-stat-val" id="chartWinRate" style="color:var(--purple-lt)">—</div>
-        </div>
-      </div>
-      <div class="chart-toggles">
-        <button class="chart-tog active" onclick="setChartView('cumulative',this)">Cumulative</button>
-        <button class="chart-tog" onclick="setChartView('daily',this)">Daily</button>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="pnlChart" style="cursor:crosshair;"></canvas>
-      <div class="chart-empty" id="chartEmpty">No data yet — add entries to your daily sheet</div>
-    </div>
-  </div>
-  </div><!-- end pnlChartSection -->
+
 
   <!-- TRADE JOURNAL -->
   <div class="journal-locked-card">
@@ -2095,6 +2116,13 @@ function setCurrency(c){
   $('challengeTitle').textContent=c==='INR'?'₹1 Crore Challenge':'$'+getUSDTarget().toLocaleString()+' Challenge';
   $('videoGoalLabel').textContent=c==='INR'?'₹1Cr':'$'+getUSDTarget().toLocaleString();
   $('targetLabel').textContent=currency==='INR'?'₹1,00,00,000':'$'+getUSDTarget().toLocaleString();
+  // Update race section
+  const raceTitle=document.getElementById('raceMoneyTitle');
+  const raceBg=document.getElementById('raceBgText');
+  const raceGoal=document.getElementById('raceGoalLabel');
+  if(raceTitle)raceTitle.textContent=c==='INR'?'₹1 Crore':'$'+getUSDTarget().toLocaleString();
+  if(raceBg)raceBg.textContent=c==='INR'?'₹1CR':'$'+Math.round(getUSDTarget()/1000)+'K';
+  if(raceGoal)raceGoal.textContent=c==='INR'?'₹1Cr':'$'+getUSDTarget().toLocaleString();
   // re-render with current data if available
   if(window._lastRenderData)render(window._lastRenderData);
   renderCalendar();
@@ -2151,10 +2179,12 @@ function render(d){
   // ── THE RACE ──
   const usdT=getUSDTarget();
   const moneyPct=Math.min(100,(tot/usdT)*100);
-  // Body fat: start ~20%, target 10% — progress = how far from start to target
   const bfStart=20,bfTarget=10,bf=d.bodyfat||18;
   const absPct=Math.min(100,Math.max(0,((bfStart-bf)/(bfStart-bfTarget))*100));
   const $r=id=>document.getElementById(id);
+  if($r('raceMoneyTitle'))$r('raceMoneyTitle').textContent=currency==='INR'?'₹1 Crore':'$'+usdT.toLocaleString();
+  if($r('raceBgText'))$r('raceBgText').textContent=currency==='INR'?'₹1CR':'$'+Math.round(usdT/1000)+'K';
+  if($r('raceGoalLabel'))$r('raceGoalLabel').textContent=currency==='INR'?'₹1Cr':'$'+usdT.toLocaleString();
   if($r('raceMoneyBar'))$r('raceMoneyBar').style.width=moneyPct+'%';
   if($r('raceMoneyPct'))$r('raceMoneyPct').textContent=moneyPct.toFixed(1)+'%';
   if($r('raceMoneyEarned'))$r('raceMoneyEarned').textContent=fmtMoney(tot);
