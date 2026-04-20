@@ -805,6 +805,88 @@ header{
 .ms-close:hover{border-color:var(--mint);color:var(--mint);}
 #confettiCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
 
+/* THE RACE */
+.race-section{
+  display:grid;grid-template-columns:1fr auto 1fr;
+  gap:0;margin-bottom:28px;align-items:stretch;
+}
+.race-card{
+  background:var(--s1);border:1px solid var(--border);
+  padding:24px 20px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;
+}
+.money-race{border-color:rgba(6,218,174,.25);}
+.abs-race{border-color:rgba(114,80,255,.25);}
+.race-bg-text{
+  position:absolute;right:-10px;top:-20px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:100px;line-height:1;pointer-events:none;user-select:none;
+  opacity:.04;
+}
+.money-race .race-bg-text{color:var(--mint);}
+.abs-race .race-bg-text{color:var(--purple);}
+.race-icon{font-size:32px;line-height:1;}
+.abs-art{display:flex;justify-content:center;}
+.abs-svg{width:80px;height:auto;filter:drop-shadow(0 0 12px rgba(6,218,174,.3));}
+.race-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:28px;color:var(--text);letter-spacing:.04em;line-height:1;
+}
+.race-sub{font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:.12em;text-transform:uppercase;}
+.race-progress-wrap{display:flex;align-items:center;gap:10px;width:100%;}
+.race-bar-track{flex:1;height:8px;background:var(--s3);border:1px solid var(--border);overflow:hidden;}
+.race-bar-fill{height:100%;transition:width 1.4s cubic-bezier(.16,1,.3,1);}
+.money-fill{background:linear-gradient(90deg,#04B08C,#06DAAE);}
+.abs-fill{background:linear-gradient(90deg,var(--purple-dk),var(--purple-lt));}
+.race-pct{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:var(--dim);flex-shrink:0;min-width:40px;text-align:right;}
+.race-stats{display:flex;gap:0;border-top:1px solid var(--border);padding-top:12px;width:100%;}
+.race-stat{flex:1;text-align:center;padding:0 4px;}
+.race-stat:not(:last-child){border-right:1px solid var(--border);}
+.race-stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:var(--text);line-height:1;}
+.race-stat-lbl{font-family:'DM Mono',monospace;font-size:7px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.race-vs{
+  display:flex;align-items:center;justify-content:center;
+  width:60px;flex-shrink:0;position:relative;
+}
+.race-vs-inner{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:20px;letter-spacing:.08em;color:var(--muted);
+  background:var(--bg);border:1px solid var(--border);
+  padding:8px 6px;z-index:1;
+}
+.race-vs::before{
+  content:'';position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:1px;height:100%;background:var(--border);
+}
+@media(max-width:640px){
+  .race-section{grid-template-columns:1fr;grid-template-rows:auto auto auto;}
+  .race-vs{width:100%;height:40px;flex-direction:row;}
+  .race-vs::before{width:100%;height:1px;}
+}
+
+/* FITNESS CARD */
+.bottom-row.three-col{grid-template-columns:1fr 1fr 1fr;}
+@media(max-width:860px){.bottom-row.three-col{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.bottom-row.three-col{grid-template-columns:1fr;}}
+.fitness-card{
+  background:var(--s1);border:1px solid var(--border);
+  padding:20px;position:relative;overflow:hidden;
+}
+.fitness-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.abs-mini-art svg{width:44px;height:auto;filter:drop-shadow(0 0 8px rgba(6,218,174,.25));}
+.fitness-stats{display:flex;gap:0;margin-bottom:14px;}
+.fit-stat{flex:1;text-align:center;padding:10px 6px;background:var(--s2);border:1px solid var(--border);}
+.fit-stat:not(:last-child){border-right:none;}
+.fit-val{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:26px;color:var(--text);line-height:1;}
+.fit-val.streak{color:var(--gold);}
+.fit-lbl{font-family:'DM Mono',monospace;font-size:7px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
+.fit-target{font-family:'DM Mono',monospace;font-size:8px;color:var(--mint);margin-top:3px;}
+.fit-bf-bar-wrap{margin-top:4px;}
+.fit-bf-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:8px;color:#888;margin-bottom:5px;}
+.fit-bf-bar{height:6px;background:var(--s3);border:1px solid var(--border);overflow:hidden;}
+.fit-bf-fill{height:100%;background:linear-gradient(90deg,var(--purple),var(--purple-lt));transition:width 1.4s cubic-bezier(.16,1,.3,1);}
+
 /* PNL GROWTH CHART */
 .chart-card{
   background:var(--s1);border:1px solid var(--border);
@@ -841,6 +923,26 @@ header{
   .chart-wrap{height:160px;}
   .chart-header{flex-direction:column;gap:10px;}
 }
+
+/* LOCKED TRADE JOURNAL */
+.journal-locked-card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--s1);border:1px solid var(--border);
+  padding:36px 24px;margin-bottom:28px;text-align:center;gap:10px;
+  position:relative;overflow:hidden;
+}
+.journal-locked-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--purple),var(--mint));}
+.jl-icon{font-size:32px;}
+.jl-title{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:24px;letter-spacing:.04em;color:var(--text);}
+.jl-sub{font-family:'DM Mono',monospace;font-size:10px;color:#888;letter-spacing:.1em;text-transform:uppercase;}
+.jl-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--purple);color:#fff;text-decoration:none;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:11px 24px;margin-top:6px;
+  transition:background .2s,transform .15s;
+}
+.jl-btn:hover{background:var(--purple-lt);transform:translateY(-1px);}
 
 /* TRADE JOURNAL */
 .journal-section{margin-bottom:28px;}
@@ -1441,9 +1543,9 @@ header{
       <div class="sc" id="tradingCard" style="cursor:pointer" title="Click to view PnL Calendar">
         <div class="sc-head">
           <div class="sc-icon">📈</div>
-          <div class="ib" data-tip="Crypto · Stocks · Prediction Markets">i</div>
+          <div class="ib" data-tip="Crypto · Stocks">i</div>
         </div>
-        <div class="sc-label">Trading <span id="calToggleHint" class="cal-toggle-pill">📅 PnL</span></div>
+        <div class="sc-label">Trading <span id="calToggleHint" class="cal-toggle-pill">📅 PnL</span> <span id="chartToggleHint" class="cal-toggle-pill" style="margin-left:2px;">📊 Chart</span></div>
         <div class="sc-amt" id="tradingAmt">₹0</div>
         <div class="mini-bar"><div class="mini-fill" id="tradingBar" style="width:0%"></div></div>
       </div>
@@ -1524,8 +1626,110 @@ header{
   </div><!-- end inner panel -->
   </div><!-- end pnlCalendarSection -->
 
+  <!-- THE RACE -->
+  <div class="sl"><span class="sl-icon">⚡</span>The Race</div>
+  <div class="race-section">
+    <div class="race-card money-race">
+      <div class="race-bg-text">₹1CR</div>
+      <div class="race-icon">💰</div>
+      <div class="race-title">₹1 Crore</div>
+      <div class="race-progress-wrap">
+        <div class="race-bar-track">
+          <div class="race-bar-fill money-fill" id="raceMoneyBar" style="width:0%"></div>
+        </div>
+        <div class="race-pct" id="raceMoneyPct">0%</div>
+      </div>
+      <div class="race-stats">
+        <div class="race-stat">
+          <div class="race-stat-val" id="raceMoneyEarned">₹0</div>
+          <div class="race-stat-lbl">Earned</div>
+        </div>
+        <div class="race-stat">
+          <div class="race-stat-val">₹1Cr</div>
+          <div class="race-stat-lbl">Goal</div>
+        </div>
+        <div class="race-stat">
+          <div class="race-stat-val" id="raceMoneyEta">—</div>
+          <div class="race-stat-lbl">Est. Done</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="race-vs">
+      <div class="race-vs-inner">VS</div>
+    </div>
+
+    <div class="race-card abs-race">
+      <div class="race-bg-text">ABS</div>
+      <!-- Aesthetic SVG abs silhouette -->
+      <div class="abs-art">
+        <svg viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" class="abs-svg">
+          <defs>
+            <linearGradient id="absGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#06DAAE" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#7250FF" stop-opacity="0.7"/>
+            </linearGradient>
+            <filter id="absGlow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- Torso outline -->
+          <path d="M35,10 Q30,8 28,20 L24,80 Q22,100 30,120 L40,145 Q45,155 60,155 Q75,155 80,145 L90,120 Q98,100 96,80 L92,20 Q90,8 85,10 Q75,5 60,5 Q45,5 35,10Z" fill="none" stroke="url(#absGrad)" stroke-width="1.5" opacity="0.4"/>
+          <!-- Chest line -->
+          <path d="M38,30 Q60,35 82,30" fill="none" stroke="url(#absGrad)" stroke-width="1" opacity="0.5"/>
+          <!-- Center line -->
+          <line x1="60" y1="32" x2="60" y2="130" stroke="url(#absGrad)" stroke-width="1" opacity="0.35"/>
+          <!-- Abs grid — 3 rows x 2 cols -->
+          <!-- Row 1 -->
+          <rect x="38" y="36" width="19" height="18" rx="3" fill="url(#absGrad)" opacity="0.2" filter="url(#absGlow)"/>
+          <rect x="63" y="36" width="19" height="18" rx="3" fill="url(#absGrad)" opacity="0.2" filter="url(#absGlow)"/>
+          <!-- Row 2 -->
+          <rect x="36" y="58" width="20" height="18" rx="3" fill="url(#absGrad)" opacity="0.25"/>
+          <rect x="64" y="58" width="20" height="18" rx="3" fill="url(#absGrad)" opacity="0.25"/>
+          <!-- Row 3 -->
+          <rect x="35" y="80" width="21" height="18" rx="3" fill="url(#absGrad)" opacity="0.2"/>
+          <rect x="64" y="80" width="21" height="18" rx="3" fill="url(#absGrad)" opacity="0.2"/>
+          <!-- Obliques -->
+          <path d="M28,55 Q24,75 27,95" fill="none" stroke="url(#absGrad)" stroke-width="1.5" opacity="0.3"/>
+          <path d="M92,55 Q96,75 93,95" fill="none" stroke="url(#absGrad)" stroke-width="1.5" opacity="0.3"/>
+          <!-- V-line hints -->
+          <path d="M48,100 Q45,120 42,135" fill="none" stroke="url(#absGrad)" stroke-width="1" opacity="0.35"/>
+          <path d="M72,100 Q75,120 78,135" fill="none" stroke="url(#absGrad)" stroke-width="1" opacity="0.35"/>
+          <!-- Glow dots on abs -->
+          <circle cx="47" cy="45" r="2" fill="#06DAAE" opacity="0.5"/>
+          <circle cx="73" cy="45" r="2" fill="#06DAAE" opacity="0.5"/>
+          <circle cx="46" cy="67" r="2" fill="#7250FF" opacity="0.5"/>
+          <circle cx="74" cy="67" r="2" fill="#7250FF" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="race-title">Six Pack</div>
+      <div class="race-sub">Body Fat % Goal</div>
+      <div class="race-progress-wrap">
+        <div class="race-bar-track">
+          <div class="race-bar-fill abs-fill" id="raceAbsBar" style="width:0%"></div>
+        </div>
+        <div class="race-pct" id="raceAbsPct">0%</div>
+      </div>
+      <div class="race-stats">
+        <div class="race-stat">
+          <div class="race-stat-val" id="raceAbsCur">—%</div>
+          <div class="race-stat-lbl">Body Fat</div>
+        </div>
+        <div class="race-stat">
+          <div class="race-stat-val">10%</div>
+          <div class="race-stat-lbl">Target BF</div>
+        </div>
+        <div class="race-stat">
+          <div class="race-stat-val" id="raceAbsEta">—</div>
+          <div class="race-stat-lbl">Est. Done</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- PNL GROWTH CHART -->
-  <div class="sl"><span class="sl-icon">📈</span>PnL Growth Chart</div>
+  <div id="pnlChartSection" style="display:none;margin-top:-14px;margin-bottom:28px;">
   <div class="chart-card">
     <div class="chart-header">
       <div class="chart-meta">
@@ -1556,34 +1760,17 @@ header{
       <div class="chart-empty" id="chartEmpty">No data yet — add entries to your daily sheet</div>
     </div>
   </div>
+  </div><!-- end pnlChartSection -->
 
-  <!-- TRADE JOURNAL (before Growth Channels) -->
-  <div class="sl"><span class="sl-icon">📒</span>Trade Journal</div>
-  <div class="journal-section">
-    <div class="journal-card">
-      <div class="journal-header">
-        <div class="journal-title">Recent Trades</div>
-        <div class="journal-count">Live · Updated Daily</div>
-      </div>
-      <div class="journal-teaser">
-        <div class="teaser-rows">
-          <div class="teaser-row"><span class="teaser-date">24 Mar</span><span class="teaser-badge long">LONG</span><span class="teaser-market">BTC</span><span class="teaser-strat">Pair Candle Breakout</span><span class="teaser-entry">$84,220</span><span class="teaser-arrow">→</span><span class="teaser-exit">$86,100</span><span class="teaser-r">+2.4R</span><span class="teaser-pnl pos">+$1,880</span></div>
-          <div class="teaser-row"><span class="teaser-date">23 Mar</span><span class="teaser-badge short">SHORT</span><span class="teaser-market">ETH</span><span class="teaser-strat">Momentum Fade</span><span class="teaser-entry">$2,041</span><span class="teaser-arrow">→</span><span class="teaser-exit">$1,998</span><span class="teaser-r">+1.8R</span><span class="teaser-pnl pos">+$655</span></div>
-          <div class="teaser-row"><span class="teaser-date">22 Mar</span><span class="teaser-badge long">LONG</span><span class="teaser-market">SOL</span><span class="teaser-strat">Pair Candle Breakout</span><span class="teaser-entry">$128.40</span><span class="teaser-arrow">→</span><span class="teaser-exit">$124.10</span><span class="teaser-r">-1R</span><span class="teaser-pnl neg">-$430</span></div>
-          <div class="teaser-row"><span class="teaser-date">21 Mar</span><span class="teaser-badge long">LONG</span><span class="teaser-market">HYPE</span><span class="teaser-strat">Breakout Retest</span><span class="teaser-entry">$14.22</span><span class="teaser-arrow">→</span><span class="teaser-exit">$16.80</span><span class="teaser-r">+3.1R</span><span class="teaser-pnl pos">+$3,200</span></div>
-          <div class="teaser-row"><span class="teaser-date">20 Mar</span><span class="teaser-badge short">SHORT</span><span class="teaser-market">BTC</span><span class="teaser-strat">Range Fade</span><span class="teaser-entry">$86,500</span><span class="teaser-arrow">→</span><span class="teaser-exit">$84,200</span><span class="teaser-r">+2.0R</span><span class="teaser-pnl pos">+$3,147</span></div>
-        </div>
-        <div class="teaser-overlay">
-          <div class="teaser-lock">🔒</div>
-          <div class="teaser-cta-title">Real-time Trade Journal</div>
-          <div class="teaser-cta-sub">Entry · Exit · Strategy · R-Multiple · Emotion Score</div>
-          <a class="teaser-cta-btn" href="https://hi.switchy.io/VivanLive" target="_blank">Join Inner Circle to Get Access ↗</a>
-        </div>
-      </div>
-    </div>
+  <!-- TRADE JOURNAL -->
+  <div class="journal-locked-card">
+    <div class="jl-icon">🔒</div>
+    <div class="jl-title">Real-time Trade Journal</div>
+    <div class="jl-sub">Entry · Exit · Strategy · R-Multiple · Emotion Score</div>
+    <a class="jl-btn" href="https://hi.switchy.io/VivanLive" target="_blank">Join Inner Circle to Get Access ↗</a>
   </div>
 
-  <!-- COURSE CTA -->
+    <!-- COURSE CTA -->
   <div class="course-cta-bar">
     <div class="course-cta-left">
       <div class="course-cta-tag">🎓 COURSE</div>
@@ -1593,8 +1780,14 @@ header{
     <a class="course-cta-btn" href="https://www.cryptocourse.in/courses/crypto-trading-playbook-proven-strategies-for-profitable-trades-from-vivan-68878b6aa882204f18bbabc1" target="_blank">Enroll Now ↗</a>
   </div>
 
-  <!-- GROWTH CHANNELS -->
-  <div class="sl"><span class="sl-icon">📣</span>Growth Channels</div>
+  <!-- GROWTH CHANNELS ACCORDION -->
+  <div class="accordion-section" id="growthAccordion">
+    <button class="accordion-header" onclick="toggleAccordion('growthBody','growthArrow')">
+      <span><span class="sl-icon">📣</span>Growth Channels</span>
+      <span class="accordion-arrow" id="growthArrow">▼</span>
+    </button>
+    <div class="accordion-body" id="growthBody">
+      <div style="padding:16px 0 0;">
   <div class="goals-grid">
     <div class="gc yt">
       <div class="gc-tag"><span class="gc-icon">▶️</span>YouTube</div>
@@ -1629,8 +1822,11 @@ header{
       <div class="gc-meta"><span id="twRem">4,000 to go</span><em id="twPct">0%</em></div>
     </div>
   </div>
+      </div>
+    </div>
+  </div>
 
-  <!-- 2026 GOALS ACCORDION -->
+    <!-- 2026 GOALS ACCORDION -->
   <div class="accordion-section" id="goals2026">
     <button class="accordion-header" onclick="toggleAccordion('goals2026Body','goals2026Arrow')">
       <span><span class="sl-icon">🌟</span>2026 Goals</span>
@@ -1638,8 +1834,8 @@ header{
     </button>
     <div class="accordion-body" id="goals2026Body">
 
-  <!-- Row 1: Travel + VO2 -->
-  <div class="bottom-row" style="margin-bottom:16px;">
+  <!-- Row 1: VO2 + Travel + Fitness -->
+  <div class="bottom-row three-col" style="margin-bottom:16px;">
     <div class="vo2-card">
       <div class="card-head"><span class="card-head-icon">🫀</span><div class="card-head-title">VO2 Max</div></div>
       <div class="card-sub">💪 Fitness · Target: 50</div>
@@ -1681,6 +1877,58 @@ header{
         <span id="tLeft">20 to go</span>
         <div class="t-bar" style="flex:1"><div class="t-fill" id="tBarFill" style="width:0%"></div></div>
         <span id="tPct">0%</span>
+      </div>
+    </div>
+    <!-- Fitness Card -->
+    <div class="fitness-card">
+      <div class="fitness-header">
+        <div class="abs-mini-art">
+          <svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="fG" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#06DAAE" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#7250FF" stop-opacity="0.6"/>
+              </linearGradient>
+            </defs>
+            <line x1="30" y1="16" x2="30" y2="65" stroke="url(#fG)" stroke-width="0.8" opacity="0.4"/>
+            <rect x="18" y="18" width="10" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
+            <rect x="32" y="18" width="10" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
+            <rect x="17" y="30" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.4"/>
+            <rect x="32" y="30" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.4"/>
+            <rect x="17" y="42" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
+            <rect x="32" y="42" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
+          </svg>
+        </div>
+        <div>
+          <div class="card-head-title">Fitness</div>
+          <div class="card-sub">🎯 Six Pack by 31 Aug 2026</div>
+        </div>
+      </div>
+      <div class="fitness-stats">
+        <div class="fit-stat">
+          <div class="fit-val" id="fitBF">—%</div>
+          <div class="fit-lbl">Body Fat</div>
+          <div class="fit-target">→ 10%</div>
+        </div>
+        <div class="fit-stat">
+          <div class="fit-val" id="fitWeight">—</div>
+          <div class="fit-lbl">Weight (kg)</div>
+          <div class="fit-target">→ goal</div>
+        </div>
+        <div class="fit-stat">
+          <div class="fit-val streak" id="fitStreak">—</div>
+          <div class="fit-lbl">Day Streak</div>
+          <div class="fit-target">🔥 workouts</div>
+        </div>
+      </div>
+      <div class="fit-bf-bar-wrap">
+        <div class="fit-bf-labels">
+          <span>Body Fat Progress</span>
+          <span id="fitBFPct">0%</span>
+        </div>
+        <div class="fit-bf-bar">
+          <div class="fit-bf-fill" id="fitBFBar" style="width:0%"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1868,7 +2116,7 @@ function fmtMoney(usdVal){
 const SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vRQtO8kCl5EoaseHwo98-m1h6G9_aidcVHsdsWxFufjlje3yq4IhdIHtpXhLIf6LRuRhiitDSdg35zu/pub?output=csv';
 const FLAGS={'singapore':'🇸🇬','malaysia':'🇲🇾','usa':'🇺🇸','united states':'🇺🇸','india':'🇮🇳','japan':'🇯🇵','thailand':'🇹🇭','france':'🇫🇷','germany':'🇩🇪','uk':'🇬🇧','united kingdom':'🇬🇧','australia':'🇦🇺','canada':'🇨🇦','italy':'🇮🇹','spain':'🇪🇸','portugal':'🇵🇹','netherlands':'🇳🇱','switzerland':'🇨🇭','uae':'🇦🇪','dubai':'🇦🇪','abu dhabi':'🇦🇪','indonesia':'🇮🇩','bali':'🇮🇩','vietnam':'🇻🇳','cambodia':'🇰🇭','nepal':'🇳🇵','sri lanka':'🇱🇰','maldives':'🇲🇻','mexico':'🇲🇽','brazil':'🇧🇷','argentina':'🇦🇷','colombia':'🇨🇴','peru':'🇵🇪','south korea':'🇰🇷','china':'🇨🇳','hong kong':'🇭🇰','taiwan':'🇹🇼','turkey':'🇹🇷','greece':'🇬🇷','croatia':'🇭🇷','czech republic':'🇨🇿','austria':'🇦🇹','poland':'🇵🇱','hungary':'🇭🇺','sweden':'🇸🇪','norway':'🇳🇴','denmark':'🇩🇰','finland':'🇫🇮','new zealand':'🇳🇿','south africa':'🇿🇦','kenya':'🇰🇪','egypt':'🇪🇬','morocco':'🇲🇦','miami':'🇺🇸','new york':'🇺🇸','london':'🇬🇧','paris':'🇫🇷','barcelona':'🇪🇸','amsterdam':'🇳🇱','rome':'🇮🇹','philippines':'🇵🇭','myanmar':'🇲🇲','laos':'🇱🇦','bhutan':'🇧🇹','bahrain':'🇧🇭','qatar':'🇶🇦','saudi arabia':'🇸🇦','oman':'🇴🇲','jordan':'🇯🇴','israel':'🇮🇱','georgia':'🇬🇪','armenia':'🇦🇲','russia':'🇷🇺','ukraine':'🇺🇦','iceland':'🇮🇸','ireland':'🇮🇪','scotland':'🏴󠁧󠁢󠁳󠁣󠁴󠁿','wales':'🏴󠁧󠁢󠁷󠁬󠁳󠁿'};
 const flag=n=>FLAGS[n.toLowerCase()]||'🏳️';
-const FB={trading:0,airdrop:0,content:0,yt:0,ig:0,nl:0,tw:0,vo2:41,countries:['Singapore','Malaysia','USA'],lastUpdated:'—'};
+const FB={trading:0,airdrop:0,content:0,yt:0,ig:0,nl:0,tw:0,vo2:41,bodyfat:18,weight:0,streak:0,countries:['Singapore','Malaysia','USA'],lastUpdated:'—'};
 function parse(csv){
   const d={};
   csv.trim().split('\n').forEach(line=>{
@@ -1877,7 +2125,7 @@ function parse(csv){
     const v=(row[1]||'').trim().replace(/^"|"$/g,'').replace(/,/g,'');
     if(k&&k!=='key')d[k.toLowerCase()]=v;
   });
-  return{trading:+d.trading||0,airdrop:+d.airdrop||0,content:+d.content||0,yt:+d.yt||0,ig:+d.ig||0,nl:+d.nl||0,tw:+d.tw||0,vo2:+d.vo2||41,countries:d.countries?d.countries.split('|').map(c=>c.trim()).filter(Boolean):FB.countries,lastUpdated:d.lastupdated||d.lastUpdated||'—'};
+  return{trading:+d.trading||0,airdrop:+d.airdrop||0,content:+d.content||0,yt:+d.yt||0,ig:+d.ig||0,nl:+d.nl||0,tw:+d.tw||0,vo2:+d.vo2||41,bodyfat:+d.bodyfat||18,weight:+d.weight||0,streak:+d.streak||0,countries:d.countries?d.countries.split('|').map(c=>c.trim()).filter(Boolean):FB.countries,lastUpdated:d.lastupdated||d.lastUpdated||'—'};
 }
 const fmt=n=>n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+Math.round(n).toLocaleString();
 const $=id=>document.getElementById(id);
@@ -1900,6 +2148,37 @@ function render(d){
     const rem=Math.max(0,t-v);$(`${k}Rem`).textContent=rem>=1000?(rem/1000).toFixed(1)+'K to go':rem+' to go';
     $(`${k}Pct`).textContent=p.toFixed(1)+'%';
   });
+  // ── THE RACE ──
+  const usdT=getUSDTarget();
+  const moneyPct=Math.min(100,(tot/usdT)*100);
+  // Body fat: start ~20%, target 10% — progress = how far from start to target
+  const bfStart=20,bfTarget=10,bf=d.bodyfat||18;
+  const absPct=Math.min(100,Math.max(0,((bfStart-bf)/(bfStart-bfTarget))*100));
+  const $r=id=>document.getElementById(id);
+  if($r('raceMoneyBar'))$r('raceMoneyBar').style.width=moneyPct+'%';
+  if($r('raceMoneyPct'))$r('raceMoneyPct').textContent=moneyPct.toFixed(1)+'%';
+  if($r('raceMoneyEarned'))$r('raceMoneyEarned').textContent=fmtMoney(tot);
+  // ETA for money — at current daily pace
+  const daysElapsed=Math.max(1,Math.floor((Date.now()-new Date('2026-04-09'))/864e5));
+  const dailyPace=tot/daysElapsed;
+  const daysToMoney=dailyPace>0?Math.ceil((usdT-tot)/dailyPace):null;
+  if($r('raceMoneyEta'))$r('raceMoneyEta').textContent=daysToMoney?`~${daysToMoney}d`:'—';
+  if($r('raceAbsBar'))$r('raceAbsBar').style.width=absPct+'%';
+  if($r('raceAbsPct'))$r('raceAbsPct').textContent=absPct.toFixed(1)+'%';
+  if($r('raceAbsCur'))$r('raceAbsCur').textContent=bf+'%';
+  // ETA for abs — assume 0.5% BF loss per week with consistent training
+  const bfRemaining=Math.max(0,bf-bfTarget);
+  const weeksToAbs=Math.ceil(bfRemaining/0.5);
+  const absEtaDate=new Date();absEtaDate.setDate(absEtaDate.getDate()+weeksToAbs*7);
+  const absEtaStr=absEtaDate<=new Date('2026-08-31')?
+    `${absEtaDate.getDate()} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][absEtaDate.getMonth()]}`:'After Aug';
+  if($r('raceAbsEta'))$r('raceAbsEta').textContent=absEtaStr;
+  // ── FITNESS CARD ──
+  if($r('fitBF'))$r('fitBF').textContent=bf+'%';
+  if($r('fitWeight'))$r('fitWeight').textContent=d.weight||'—';
+  if($r('fitStreak'))$r('fitStreak').textContent=d.streak||'—';
+  if($r('fitBFBar'))$r('fitBFBar').style.width=absPct+'%';
+  if($r('fitBFPct'))$r('fitBFPct').textContent=absPct.toFixed(0)+'% to goal';
   const v=d.vo2;
   $('vo2Num').textContent=v.toFixed(1);$('vo2CurS').textContent=v.toFixed(1);$('vo2Gap').textContent='+'+Math.max(0,50-v).toFixed(1);
   const arc=Math.PI*80,f=Math.min(1,Math.max(0,(v-20)/50));
@@ -1928,19 +2207,45 @@ function tick(){
   const dayEl=$('challengeDay');
   if(dayEl)dayEl.textContent=dayNum;
 }
+async function fetchWithRetry(url, retries=3){
+  for(let i=0;i<retries;i++){
+    try{
+      const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
+      const r=await fetch(url+'&cachebust='+bust);
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const text=await r.text();
+      if(!text||text.length<10)throw new Error('Empty response');
+      return text;
+    }catch(e){
+      console.warn(`Fetch attempt ${i+1} failed:`,e.message);
+      if(i<retries-1)await new Promise(res=>setTimeout(res,1000*(i+1)));
+      else throw e;
+    }
+  }
+}
+
 async function load(){
   try{
-    const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
-    const r=await fetch(SHEET+'&cachebust='+bust);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const text=await r.text();
-    if(!text||text.length<10)throw new Error('Empty response');
+    const text=await fetchWithRetry(SHEET);
     const d=parse(text);
+    $('errorBanner').style.display='none';
     return(d.trading||d.airdrop||d.content||d.yt||d.ig)?d:FB;
   }catch(e){
     console.error('Main sheet fetch failed:',e);
     $('errorBanner').style.display='flex';
     return FB;
+  }
+}
+
+async function loadDaily(){
+  try{
+    const text=await fetchWithRetry(DAILY_SHEET);
+    const result=parseDaily(text);
+    console.log('Daily sheet loaded:',result.length,'rows');
+    return result;
+  }catch(e){
+    console.error('Daily sheet fetch failed:',e);
+    return[];
   }
 }
 const DAILY_SHEET='https://docs.google.com/spreadsheets/d/e/2PACX-1vRQtO8kCl5EoaseHwo98-m1h6G9_aidcVHsdsWxFufjlje3yq4IhdIHtpXhLIf6LRuRhiitDSdg35zu/pub?gid=1958217971&single=true&output=csv';
@@ -2162,21 +2467,6 @@ function renderBucketChart(){
   });
 }
 
-async function loadDaily(){
-  try{
-    const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
-    const r=await fetch(DAILY_SHEET+'&cachebust='+bust);
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const text=await r.text();
-    if(!text||text.length<10)throw new Error('Empty response');
-    const result=parseDaily(text);
-    console.log('Daily sheet loaded:',result.length,'rows');
-    return result;
-  }catch(e){
-    console.error('Daily sheet fetch failed:',e);
-    return[];
-  }
-}
 
 // calendar navigation
 document.getElementById('calPrev').addEventListener('click',()=>{
@@ -2195,19 +2485,27 @@ document.getElementById('tradingCard').addEventListener('click',()=>{
   const hint=document.getElementById('calToggleHint');
   const isOpen=sec.style.display!=='none';
   sec.style.display=isOpen?'none':'block';
-  hint.textContent=isOpen?'📅 PnL':'✕ Close';
+  hint.textContent=isOpen?'📅 PnL':'✕ Cal';
   hint.classList.toggle('open',!isOpen);
-  // Refresh data when opening calendar - hard fetch, no cache
   if(!isOpen){
     const bust=Date.now()+'_'+Math.random().toString(36).slice(2);
     fetch(DAILY_SHEET+'&cachebust='+bust)
       .then(r=>r.text())
-      .then(text=>{
-        calData=parseDaily(text);
-        renderCalendar();
-      })
+      .then(text=>{calData=parseDaily(text);renderCalendar();})
       .catch(()=>renderCalendar());
   }
+});
+
+// Chart pill — independent toggle
+document.getElementById('chartToggleHint').addEventListener('click',(e)=>{
+  e.stopPropagation();
+  const sec=document.getElementById('pnlChartSection');
+  const hint=document.getElementById('chartToggleHint');
+  const isOpen=sec.style.display!=='none';
+  sec.style.display=isOpen?'none':'block';
+  hint.textContent=isOpen?'📊 Chart':'✕ Chart';
+  hint.classList.toggle('open',!isOpen);
+  if(!isOpen)setTimeout(renderPnlChart,50);
 });
 document.getElementById('calClose').addEventListener('click',(e)=>{
   e.stopPropagation();
