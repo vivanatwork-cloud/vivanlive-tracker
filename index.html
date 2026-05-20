@@ -1553,12 +1553,10 @@ header{
         <span id="megaPctLabel">0% complete</span>
       </div>
       <div class="mega-bar"><div class="mega-fill" id="megaBar" style="width:0%"></div></div>
-      <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.06em;margin-top:6px;opacity:.6;">🎬 1 video every day until I make <span id="videoGoalLabel">₹1Cr</span></div>
     </div>
     <div class="streams">
       <div class="sc" id="tradingCard" style="cursor:pointer" title="Click to view PnL Calendar">
         <div class="sc-head">
-          <div class="sc-icon">📈</div>
           <div class="ib" data-tip="Crypto · Stocks">i</div>
         </div>
         <div class="sc-label">Trading <span id="calToggleHint" class="cal-toggle-pill">📅 PnL</span> <span id="chartToggleHint" class="cal-toggle-pill" style="margin-left:2px;">📊 Chart</span></div>
@@ -1855,8 +1853,8 @@ header{
     </button>
     <div class="accordion-body" id="goals2026Body">
 
-  <!-- Row 1: VO2 + Travel + Fitness -->
-  <div class="bottom-row three-col" style="margin-bottom:16px;">
+  <!-- Row 1: VO2 + Travel -->
+  <div class="bottom-row" style="margin-bottom:16px;">
     <div class="vo2-card">
       <div class="card-head"><span class="card-head-icon">🫀</span><div class="card-head-title">VO2 Max</div></div>
       <div class="card-sub">💪 Fitness · Target: 50</div>
@@ -1898,58 +1896,6 @@ header{
         <span id="tLeft">20 to go</span>
         <div class="t-bar" style="flex:1"><div class="t-fill" id="tBarFill" style="width:0%"></div></div>
         <span id="tPct">0%</span>
-      </div>
-    </div>
-    <!-- Fitness Card -->
-    <div class="fitness-card">
-      <div class="fitness-header">
-        <div class="abs-mini-art">
-          <svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="fG" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#06DAAE" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#7250FF" stop-opacity="0.6"/>
-              </linearGradient>
-            </defs>
-            <line x1="30" y1="16" x2="30" y2="65" stroke="url(#fG)" stroke-width="0.8" opacity="0.4"/>
-            <rect x="18" y="18" width="10" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
-            <rect x="32" y="18" width="10" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
-            <rect x="17" y="30" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.4"/>
-            <rect x="32" y="30" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.4"/>
-            <rect x="17" y="42" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
-            <rect x="32" y="42" width="11" height="9" rx="2" fill="url(#fG)" opacity="0.3"/>
-          </svg>
-        </div>
-        <div>
-          <div class="card-head-title">Fitness</div>
-          <div class="card-sub">🎯 Six Pack by 31 Aug 2026</div>
-        </div>
-      </div>
-      <div class="fitness-stats">
-        <div class="fit-stat">
-          <div class="fit-val" id="fitBF">—%</div>
-          <div class="fit-lbl">Body Fat</div>
-          <div class="fit-target">→ 10%</div>
-        </div>
-        <div class="fit-stat">
-          <div class="fit-val" id="fitWeight">—</div>
-          <div class="fit-lbl">Weight (kg)</div>
-          <div class="fit-target">→ goal</div>
-        </div>
-        <div class="fit-stat">
-          <div class="fit-val streak" id="fitStreak">—</div>
-          <div class="fit-lbl">Day Streak</div>
-          <div class="fit-target">🔥 workouts</div>
-        </div>
-      </div>
-      <div class="fit-bf-bar-wrap">
-        <div class="fit-bf-labels">
-          <span>Body Fat Progress</span>
-          <span id="fitBFPct">0%</span>
-        </div>
-        <div class="fit-bf-bar">
-          <div class="fit-bf-fill" id="fitBFBar" style="width:0%"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -2307,7 +2253,8 @@ function parseDaily(csv){
   return data;
 }
 
-let calData=[],calYear=2026,calMonth=3; // April = month index 3
+const _now=new Date();
+let calData=[],calYear=_now.getFullYear(),calMonth=_now.getMonth();
 let bucketChart=null;
 let totalEarned=0;
 const CAL_START_YEAR=2026,CAL_START_MONTH=3; // April 2026 minimum
@@ -3166,6 +3113,26 @@ function renderPnlChart(){
     ctx.setLineDash([]);
     ctx.fillStyle=textColor;ctx.font='8px monospace';ctx.textAlign='left';
     ctx.fillText('₹0',pad.left+4,zy-3);
+  }
+
+  // All-time high line
+  const athIdx=vals.indexOf(Math.max(...vals));
+  const athY=yOf(vals[athIdx]);
+  ctx.strokeStyle='rgba(6,218,174,.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(pad.left,athY);ctx.lineTo(W-pad.right,athY);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#06DAAE';ctx.font='bold 9px monospace';ctx.textAlign='left';
+  ctx.fillText('▲ ATH '+fmtMoney(vals[athIdx]).replace('+',''),pad.left+4,athY-4);
+
+  // All-time low line (only if negative)
+  const atlVal=Math.min(...vals);
+  if(atlVal<0){
+    const atlY=yOf(atlVal);
+    ctx.strokeStyle='rgba(255,59,92,.5)';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(pad.left,atlY);ctx.lineTo(W-pad.right,atlY);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#FF3B5C';ctx.font='bold 9px monospace';ctx.textAlign='left';
+    ctx.fillText('▼ ATL '+fmtPnl(atlVal),pad.left+4,atlY+12);
   }
 
   // X labels
