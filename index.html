@@ -2060,8 +2060,7 @@ function setCurrency(c){
   $('btnINR').className='curr-btn'+(c==='INR'?' active':'');
   $('btnUSD').className='curr-btn'+(c==='USD'?' active':'');
   $('challengeTitle').textContent=c==='INR'?'₹1 Crore Challenge':'$'+getUSDTarget().toLocaleString()+' Challenge';
-  $('videoGoalLabel').textContent=c==='INR'?'₹1Cr':'$'+getUSDTarget().toLocaleString();
-  $('targetLabel').textContent=currency==='INR'?'₹1,00,00,000':'$'+getUSDTarget().toLocaleString();
+  $('targetLabel').textContent=c==='INR'?'₹1,00,00,000':'$'+getUSDTarget().toLocaleString();
   // Update race section
   const raceTitle=document.getElementById('raceMoneyTitle');
   const raceBg=document.getElementById('raceBgText');
@@ -2069,7 +2068,7 @@ function setCurrency(c){
   if(raceTitle)raceTitle.textContent=c==='INR'?'₹1 Crore':'$'+getUSDTarget().toLocaleString();
   if(raceBg)raceBg.textContent=c==='INR'?'₹1CR':'$'+Math.round(getUSDTarget()/1000)+'K';
   if(raceGoal)raceGoal.textContent=c==='INR'?'₹1Cr':'$'+getUSDTarget().toLocaleString();
-  // re-render with current data if available
+  // re-render everything with new currency
   if(window._lastRenderData)render(window._lastRenderData);
   renderCalendar();
   renderPnlChart();
