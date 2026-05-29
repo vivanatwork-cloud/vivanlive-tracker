@@ -327,6 +327,34 @@ header{
   padding:12px 18px;margin-bottom:20px;font-family:'DM Mono',monospace;
   font-size:10px;color:var(--red);letter-spacing:.06em;display:none;align-items:center;gap:10px;}
 
+/* DEC 31 SCENARIO ROW */
+.dec31-row{
+  display:flex;align-items:center;gap:12px;
+  background:rgba(114,80,255,.07);border:1px solid rgba(114,80,255,.2);
+  padding:10px 14px;margin-bottom:14px;
+}
+.dec31-icon{font-size:18px;flex-shrink:0;}
+.dec31-text{flex:1;display:flex;flex-direction:column;gap:2px;}
+.dec31-lbl{font-family:'DM Mono',monospace;font-size:10px;color:#aaa;letter-spacing:.06em;}
+.dec31-lbl strong{color:var(--text);}
+.dec31-need{font-family:'DM Mono',monospace;font-size:10px;color:#999;letter-spacing:.04em;}
+.dec31-need strong{color:var(--purple-lt);}
+.dec31-tag{
+  font-size:9px;font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;
+  padding:1px 6px;border:1px solid;
+}
+.dec31-tag.on-track{color:#06DAAE;border-color:rgba(6,218,174,.3);background:rgba(6,218,174,.08);}
+.dec31-tag.off-track{color:#FF3B5C;border-color:rgba(255,59,92,.3);background:rgba(255,59,92,.08);}
+.dec31-tag.ahead{color:#7250FF;border-color:rgba(114,80,255,.3);background:rgba(114,80,255,.08);}
+.dec31-stat{text-align:right;flex-shrink:0;}
+.dec31-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:var(--purple-lt);line-height:1;}
+.dec31-unit{font-family:'DM Mono',monospace;font-size:7px;color:#888;letter-spacing:.1em;text-transform:uppercase;}
+@media(max-width:480px){
+  .dec31-row{padding:8px 10px;gap:8px;}
+  .dec31-lbl,.dec31-need{font-size:9px;}
+  .dec31-val{font-size:20px;}
+}
+
 /* MONEY CARD */
 .money-card{
   background:var(--s1);border:1px solid #1a1a2e;
@@ -1489,6 +1517,10 @@ header{
         <div class="day-lbl">Day</div>
         <div class="day-num" id="challengeDay">—</div>
       </div>
+      <div class="day-badge" style="background:rgba(114,80,255,.08);border-color:rgba(114,80,255,.25);">
+        <div class="day-lbl" style="color:var(--purple-lt);">2026 Ends</div>
+        <div class="day-num" style="color:var(--purple-lt);" id="daysToEoy">—</div>
+      </div>
       <div class="dl-badge">
         <div class="dl-emoji">🏁</div>
         <div>
@@ -1545,6 +1577,18 @@ header{
       <div class="money-stat-item">
         <div class="money-stat-lbl">Progress</div>
         <div class="money-stat-val" style="font-size:24px"><strong id="totalPct" style="color:var(--mint)">0%</strong></div>
+      </div>
+    </div>
+    <!-- Dec 31 Scenario -->
+    <div class="dec31-row">
+      <div class="dec31-icon">🎯</div>
+      <div class="dec31-text">
+        <span class="dec31-lbl">If completed by <strong>31 Dec 2026</strong></span>
+        <span class="dec31-need">Need <strong id="dec31Daily">—</strong>/day · <span id="dec31Status" class="dec31-tag">—</span></span>
+      </div>
+      <div class="dec31-stat">
+        <div class="dec31-val" id="dec31DaysLeft">—</div>
+        <div class="dec31-unit">days left</div>
       </div>
     </div>
     <div class="bar-row">
@@ -2121,7 +2165,26 @@ function render(d){
     const rem=Math.max(0,t-v);$(`${k}Rem`).textContent=rem>=1000?(rem/1000).toFixed(1)+'K to go':rem+' to go';
     $(`${k}Pct`).textContent=p.toFixed(1)+'%';
   });
-  // ── THE RACE ──
+  // ── DEC 31 SCENARIO ──
+  const dec31=new Date('2027-01-01T00:00:00+05:30');
+  const daysLeftDec=Math.max(1,Math.ceil((dec31-Date.now())/864e5));
+  const dec31Daily=Math.max(0,(usdTarget-tot)/daysLeftDec);
+  const daysElapsed2=Math.max(1,Math.floor((Date.now()-new Date('2026-04-09T00:00:00+05:30'))/864e5));
+  const currentDailyPace=tot/daysElapsed2;
+  const dec31DailyEl=document.getElementById('dec31Daily');
+  const dec31StatusEl=document.getElementById('dec31Status');
+  const dec31DaysEl=document.getElementById('dec31DaysLeft');
+  if(dec31DailyEl)dec31DailyEl.textContent=fmtMoney(dec31Daily);
+  if(dec31DaysEl)dec31DaysEl.textContent=daysLeftDec;
+  if(dec31StatusEl){
+    if(tot>=usdTarget){
+      dec31StatusEl.textContent='DONE 🏆';dec31StatusEl.className='dec31-tag ahead';
+    }else if(currentDailyPace>=dec31Daily){
+      dec31StatusEl.textContent='ON TRACK ✅';dec31StatusEl.className='dec31-tag on-track';
+    }else{
+      dec31StatusEl.textContent='BEHIND 🔴';dec31StatusEl.className='dec31-tag off-track';
+    }
+  }
   const usdT=getUSDTarget();
   const moneyPct=Math.min(100,(tot/usdT)*100);
   const bfStart=20,bfTarget=10,bf=d.bodyfat||18;
@@ -2181,6 +2244,11 @@ function tick(){
   const dayNum=Math.max(1,Math.floor((Date.now()-start)/864e5)+1);
   const dayEl=$('challengeDay');
   if(dayEl)dayEl.textContent=dayNum;
+  // Days to end of 2026
+  const eoy=new Date('2027-01-01T00:00:00+05:30');
+  const daysLeft2026=Math.max(0,Math.ceil((eoy-Date.now())/864e5));
+  const eoyEl=$('daysToEoy');
+  if(eoyEl)eoyEl.textContent=daysLeft2026+'d';
 }
 async function fetchWithRetry(url, retries=3){
   for(let i=0;i<retries;i++){
