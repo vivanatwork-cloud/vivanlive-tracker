@@ -272,8 +272,11 @@ header{
 
 /* DEADLINE */
 .dl-wrap{
-  text-align:right;flex-shrink:0;
+  flex-shrink:0;
   display:flex;flex-direction:column;align-items:flex-end;gap:8px;
+}
+.dl-badges-row{
+  display:flex;align-items:stretch;gap:8px;
 }
 .dl-badge{
   display:inline-flex;align-items:center;gap:12px;
@@ -587,8 +590,16 @@ html::after{
 }
 @keyframes flameFlicker{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.8;transform:scale(1.08);}}
 
-/* ═══ SPARKLINE ═══ */
-.sc-spark{margin-top:8px;height:34px;width:100%;display:block;}
+/* TWO-COLUMN STREAMS */
+.streams-two{grid-template-columns:3fr 2fr!important;}
+@media(max-width:640px){.streams-two{grid-template-columns:1fr!important;}}
+.sc-breakdown{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  font-family:'DM Mono',monospace;font-size:9px;color:#999;
+  margin-bottom:10px;letter-spacing:.04em;
+}
+.sc-bd-item strong{color:var(--text);font-weight:600;}
+.sc-bd-sep{color:#555;}
 
 /* ═══ GRAFFITI MILESTONE ═══ */
 .graffiti-wrap{position:relative;display:inline-block;}
@@ -1318,13 +1329,17 @@ html::after{
   /* header — keep horizontal, tighten */
   header{padding:10px 0 12px;margin-bottom:16px;gap:10px;}
   .logo-type h1{font-size:clamp(32px,9vw,48px);}
-  .logo-type p{display:none;} /* hide subtitle on mobile — saves space */
-  .dl-badge{padding:7px 10px;gap:7px;}
-  .dl-date{font-size:16px;}
-  .dl-lbl{font-size:6px;letter-spacing:.1em;}
-  .dl-emoji{font-size:16px;}
-  .cd-n{font-size:16px;}
-  .cd-unit{padding:3px 6px;min-width:32px;}
+  .logo-type p{display:none;}
+  .dl-badges-row{gap:5px;}
+  .day-badge{padding:4px 8px;}
+  .day-num{font-size:16px;}
+  .day-lbl{font-size:5px;}
+  .dl-badge{padding:5px 8px;gap:5px;}
+  .dl-date{font-size:13px;}
+  .dl-lbl{font-size:5px;letter-spacing:.08em;}
+  .dl-emoji{font-size:13px;}
+  .cd-n{font-size:14px;}
+  .cd-unit{padding:3px 5px;min-width:28px;}
   .dl-wrap{gap:5px;}
   /* CTA bar - tight, button never cut */
   .cta-bar{flex-direction:row;align-items:center;gap:6px;padding:10px 10px 10px 14px;margin-bottom:14px;}
@@ -1384,12 +1399,17 @@ html::after{
   .wrapper{padding:0 8px 40px;}
 
   /* Header — ALWAYS horizontal row, no stacking */
-  header{padding:6px 0 10px;flex-direction:row;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px;}
-  .logo-type h1{font-size:clamp(26px,8vw,38px);letter-spacing:.03em;}
+  header{padding:6px 0 10px;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:10px;}
+  .logo-type h1{font-size:clamp(28px,9vw,40px);letter-spacing:.03em;}
   .logo-type p{display:none;}
-  .dl-wrap{flex-shrink:0;gap:4px;align-items:flex-end;}
-  .dl-badge{padding:5px 7px;gap:5px;}
-  .dl-date{font-size:12px;letter-spacing:.05em;}
+  .dl-wrap{width:100%;flex-shrink:0;gap:5px;align-items:flex-start;}
+  .dl-badges-row{width:100%;justify-content:flex-start;}
+  #countdown{justify-content:flex-start;}
+  .day-badge{padding:3px 7px;}
+  .day-num{font-size:14px;}
+  .day-lbl{font-size:5px;}
+  .dl-badge{padding:4px 7px;gap:5px;}
+  .dl-date{font-size:12px;letter-spacing:.04em;}
   .dl-lbl{font-size:5px;letter-spacing:.06em;}
   .dl-emoji{font-size:12px;}
   .cd-n{font-size:12px;}
@@ -1778,19 +1798,21 @@ html::after{
       </div>
     </div>
     <div class="dl-wrap">
-      <div class="day-badge">
-        <div class="day-lbl">Day</div>
-        <div class="day-num" id="challengeDay">—</div>
-      </div>
-      <div class="day-badge" style="background:rgba(114,80,255,.08);border-color:rgba(114,80,255,.25);">
-        <div class="day-lbl" style="color:var(--purple-lt);">2026 Ends</div>
-        <div class="day-num" style="color:var(--purple-lt);" id="daysToEoy">—</div>
-      </div>
-      <div class="dl-badge">
-        <div class="dl-emoji">🏁</div>
-        <div>
-          <div class="dl-lbl">Final Deadline</div>
-          <div class="dl-date">31 AUG 2026</div>
+      <div class="dl-badges-row">
+        <div class="day-badge">
+          <div class="day-lbl">Day</div>
+          <div class="day-num" id="challengeDay">—</div>
+        </div>
+        <div class="day-badge" style="background:rgba(114,80,255,.08);border-color:rgba(114,80,255,.25);">
+          <div class="day-lbl" style="color:var(--purple-lt);">2026 Ends</div>
+          <div class="day-num" style="color:var(--purple-lt);" id="daysToEoy">—</div>
+        </div>
+        <div class="dl-badge">
+          <div class="dl-emoji">🏁</div>
+          <div>
+            <div class="dl-lbl">Final Deadline</div>
+            <div class="dl-date">31 AUG 2026</div>
+          </div>
         </div>
       </div>
       <div id="countdown"></div>
@@ -1866,23 +1888,20 @@ html::after{
       </div>
       <div class="mega-bar"><div class="mega-fill" id="megaBar" style="width:0%"></div></div>
     </div>
-    <div class="streams">
+    <div class="streams streams-two">
       <div class="sc" id="tradingCard" style="cursor:pointer" title="Click to view PnL Calendar">
         <div class="sc-head">
-          <div class="ib" data-tip="Crypto · Stocks">i</div>
+          <div class="ib" data-tip="Crypto · Stocks · Airdrops">i</div>
         </div>
-        <div class="sc-label">Trading <span id="calToggleHint" class="cal-toggle-pill">📅 PnL</span> <span id="chartToggleHint" class="cal-toggle-pill" style="margin-left:2px;">📊 Chart</span></div>
+        <div class="sc-label">Trading &amp; Airdrop <span id="calToggleHint" class="cal-toggle-pill">📅 PnL</span> <span id="chartToggleHint" class="cal-toggle-pill" style="margin-left:2px;">📊 Chart</span></div>
         <div class="sc-amt" id="tradingAmt">₹0</div>
-        <canvas class="sc-spark" id="tradingSpark"></canvas>
+        <div class="sc-breakdown">
+          <span class="sc-bd-item">📈 Trading <strong id="bdTrading">₹0</strong></span>
+          <span class="sc-bd-sep">·</span>
+          <span class="sc-bd-item">🪂 Airdrop <strong id="bdAirdrop">₹0</strong></span>
+        </div>
         <div class="mini-bar"><div class="mini-fill" id="tradingBar" style="width:0%"></div></div>
-        <div class="spark-wrap"><canvas id="tradingSpark"></canvas></div>
-      </div>
-      <div class="sc">
-        <div class="sc-head"><div class="sc-icon">🪂</div><span></span></div>
-        <div class="sc-label">Airdrop</div>
-        <div class="sc-amt" id="airdropAmt">₹0</div>
-        <div class="mini-bar"><div class="mini-fill" id="airdropBar" style="width:0%"></div></div>
-        <a class="sc-link" href="https://vivanlive.substack.com/p/how-to-make-100k-from-crypto-airdrops" target="_blank">📖 How to make $100K from Airdrops ↗</a>
+        <a class="sc-link" href="https://vivanlive.substack.com/p/how-to-make-100k-from-crypto-airdrops" target="_blank" onclick="event.stopPropagation()">📖 How to make $100K from Airdrops ↗</a>
       </div>
       <div class="sc">
         <div class="sc-head">
@@ -2359,57 +2378,6 @@ function initTypewriter(){
   setTimeout(type,600);
 }
 
-// ═══ SPARKLINE (trading card) ═══
-function renderSparkline(){
-  const canvas=document.getElementById('tradingSpark');
-  if(!canvas||!calData.length)return;
-  const today=new Date();today.setHours(23,59,59,999);
-  const sorted=[...calData]
-    .filter(d=>d.date&&new Date(d.date+'T00:00:00')<=today)
-    .sort((a,b)=>new Date(a.date)-new Date(b.date));
-  if(sorted.length<2){canvas.style.display='none';return;}
-  canvas.style.display='block';
-  // Cumulative trading-only curve
-  let run=0;
-  const vals=sorted.map(d=>{run+=d.trading;return run;});
-  const dpr=window.devicePixelRatio||1;
-  const W=canvas.parentElement.getBoundingClientRect().width-4;
-  const H=34;
-  canvas.width=W*dpr;canvas.height=H*dpr;
-  canvas.style.width=W+'px';canvas.style.height=H+'px';
-  const ctx=canvas.getContext('2d');
-  ctx.scale(dpr,dpr);
-  const minV=Math.min(...vals),maxV=Math.max(...vals);
-  const range=(maxV-minV)||1;
-  const xOf=i=>2+i*((W-4)/(vals.length-1));
-  const yOf=v=>3+(H-6)-(((v-minV)/range)*(H-6));
-  const isPos=vals[vals.length-1]>=vals[0];
-  const color=isPos?'#06DAAE':'#FF3B5C';
-  // area
-  ctx.beginPath();
-  ctx.moveTo(xOf(0),yOf(vals[0]));
-  for(let i=0;i<vals.length-1;i++){
-    const cpx=(xOf(i)+xOf(i+1))/2;
-    ctx.bezierCurveTo(cpx,yOf(vals[i]),cpx,yOf(vals[i+1]),xOf(i+1),yOf(vals[i+1]));
-  }
-  ctx.lineTo(xOf(vals.length-1),H);ctx.lineTo(xOf(0),H);ctx.closePath();
-  const g=ctx.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,isPos?'rgba(6,218,174,.28)':'rgba(255,59,92,.25)');
-  g.addColorStop(1,'transparent');
-  ctx.fillStyle=g;ctx.fill();
-  // line
-  ctx.beginPath();
-  ctx.moveTo(xOf(0),yOf(vals[0]));
-  for(let i=0;i<vals.length-1;i++){
-    const cpx=(xOf(i)+xOf(i+1))/2;
-    ctx.bezierCurveTo(cpx,yOf(vals[i]),cpx,yOf(vals[i+1]),xOf(i+1),yOf(vals[i+1]));
-  }
-  ctx.strokeStyle=color;ctx.lineWidth=1.6;ctx.lineCap='round';ctx.stroke();
-  // end dot
-  ctx.beginPath();ctx.arc(xOf(vals.length-1),yOf(vals[vals.length-1]),2.5,0,Math.PI*2);
-  ctx.fillStyle=color;ctx.fill();
-}
-
 // ═══ STREAK FLAME + DAY TINT ═══
 function updateStreakAndTint(){
   const today=new Date();today.setHours(23,59,59,999);
@@ -2621,9 +2589,16 @@ function render(d){
   const days=Math.max(1,Math.ceil((new Date('2026-08-31T00:00:00+05:30')-Date.now())/864e5));
   const dailyUSD=Math.max(0,usdTarget-tot)/days;
   $('dailyTarget').textContent=fmtMoney(dailyUSD);
-  [['trading',usdTarget*0.4],['airdrop',usdTarget*0.3],['content',usdTarget*0.2]].forEach(([k,t])=>{
-    const v=d[k];$(`${k}Amt`).textContent=fmtMoney(v);$(`${k}Bar`).style.width=Math.min(100,(v/t)*100)+'%';
-  });
+  // Combined Trading & Airdrop card
+  const taTotal=d.trading+d.airdrop;
+  $('tradingAmt').textContent=fmtMoney(taTotal);
+  $('tradingBar').style.width=Math.min(100,(taTotal/(usdTarget*0.7))*100)+'%';
+  const bdT=document.getElementById('bdTrading'),bdA=document.getElementById('bdAirdrop');
+  if(bdT)bdT.textContent=fmtMoney(d.trading);
+  if(bdA)bdA.textContent=fmtMoney(d.airdrop);
+  // Content card
+  $('contentAmt').textContent=fmtMoney(d.content);
+  $('contentBar').style.width=Math.min(100,(d.content/(usdTarget*0.2))*100)+'%';
   [['yt',10000],['ig',10000],['nl',500],['tw',4000]].forEach(([k,t])=>{
     const v=d[k],p=Math.min(100,(v/t)*100),disp=v>=1000?(v/1000).toFixed(1)+'K':v+'';
     $(`${k}Cur`).textContent=disp;$(`${k}Bar`).style.width=p+'%';
@@ -3832,7 +3807,6 @@ async function init(){
     render(d);
     renderCalendar();
     renderPnlChart();
-    renderSparkline();
     updateStreakAndTint();
     initScrollReveal();
     const tot=d.trading+d.airdrop+d.content;
@@ -3846,8 +3820,7 @@ async function init(){
       render(d);
       renderCalendar();
       renderPnlChart();
-      renderSparkline();
-      updateStreakAndTint();
+        updateStreakAndTint();
     },60000);
     // Defer exchange rate fetch after page is visible
     setTimeout(()=>{
@@ -3855,7 +3828,7 @@ async function init(){
     },500);
   },600);
 }
-window.addEventListener('resize',()=>{renderPnlChart();renderSparkline();});
+window.addEventListener('resize',()=>{renderPnlChart();});
 // Attach chart hover after DOM ready
 document.addEventListener('DOMContentLoaded',()=>{
   const canvas=document.getElementById('pnlChart');
