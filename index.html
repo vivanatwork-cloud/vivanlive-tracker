@@ -3469,15 +3469,21 @@ const MILESTONES=[
   {pct:75,label:'75% DONE 🚀',sub:'₹75L — The final stretch begins',emoji:'🚀'},
   {pct:100,label:'₹1Cr UNLOCKED 🏆',sub:'Mission accomplished. The grind paid off.',emoji:'🏆'},
 ];
-const shownMilestones=new Set(JSON.parse(sessionStorage.getItem('vl_milestones')||'[]'));
+const shownMilestones=new Set(JSON.parse(sessionStorage.getItem('vl_milestones_v2')||'[]'));
 let stopConfetti=null;
 
 function checkMilestone(total){
+  // Test hook: ?milestone=25 (or 50/75/100) forces the popup
+  const testPct=new URLSearchParams(location.search).get('milestone');
+  if(testPct){
+    const tm=MILESTONES.find(m=>m.pct===+testPct);
+    if(tm){showMilestone(tm);return;}
+  }
   const pct=(total/getUSDTarget())*100;
   MILESTONES.forEach(m=>{
     if(pct>=m.pct&&!shownMilestones.has(m.pct)){
       shownMilestones.add(m.pct);
-      sessionStorage.setItem('vl_milestones',JSON.stringify([...shownMilestones]));
+      sessionStorage.setItem('vl_milestones_v2',JSON.stringify([...shownMilestones]));
       showMilestone(m);
     }
   });
