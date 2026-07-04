@@ -500,6 +500,7 @@ header{
 .tweets-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#1DA1F2;}
 .tweets-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .tweets-handle{display:flex;align-items:center;gap:10px;}
+.tw-avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--purple);}
 .tw-avatar{
   width:40px;height:40px;border-radius:50%;
   background:linear-gradient(135deg,var(--purple),var(--mint));
@@ -1833,8 +1834,7 @@ html::after{
     <div class="money-stats-row">
       <div class="money-stat-item">
         <div class="money-stat-lbl">Total Earned</div>
-        <div class="money-stat-val" id="totalDisplay">₹0</div>
-        <span class="streak-flame" id="streakFlame" style="display:none;">🔥<span id="streakNum">0</span></span><span id="streakFlame" style="display:none;"></span>
+        <div class="money-stat-val" id="totalDisplay">₹0</div><span id="streakFlame" style="display:none;"></span>
       </div>
       <div class="money-stat-divider"></div>
       <div class="money-stat-item">
@@ -2119,7 +2119,7 @@ html::after{
   <div class="tweets-card">
     <div class="tweets-header">
       <div class="tweets-handle">
-        <div class="tw-avatar">V</div>
+        <img src="https://unavatar.io/twitter/VivanLive" alt="VivanLive" class="tw-avatar-img" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><div class="tw-avatar" style="display:none;">V</div>
         <div>
           <div class="tw-name">VivanLive</div>
           <div class="tw-user">@VivanLive</div>
@@ -2421,14 +2421,6 @@ function updateStreakAndTint(){
   for(const d of sorted){
     if(d.total>0)streak++;
     else break;
-  }
-  const flame=document.getElementById('streakFlame');
-  if(flame){
-    if(streak>=2){
-      flame.style.display='inline-flex';
-      document.getElementById('streakNum').textContent=streak;
-      flame.style.fontSize=Math.min(26,14+streak*2)+'px';
-    }else flame.style.display='none';
   }
   // Day tint on money card
   const card=document.getElementById('moneyCard');
@@ -3502,7 +3494,7 @@ const MILESTONES=[
   {pct:75,label:'75% DONE 🚀',sub:'₹75L — The final stretch begins',emoji:'🚀'},
   {pct:100,label:'₹1Cr UNLOCKED 🏆',sub:'Mission accomplished. The grind paid off.',emoji:'🏆'},
 ];
-const shownMilestones=new Set();
+const shownMilestones=new Set(JSON.parse(sessionStorage.getItem('vl_milestones')||'[]'));
 let stopConfetti=null;
 
 function checkMilestone(total){
@@ -3510,6 +3502,7 @@ function checkMilestone(total){
   MILESTONES.forEach(m=>{
     if(pct>=m.pct&&!shownMilestones.has(m.pct)){
       shownMilestones.add(m.pct);
+      sessionStorage.setItem('vl_milestones',JSON.stringify([...shownMilestones]));
       showMilestone(m);
     }
   });
@@ -3522,7 +3515,8 @@ function showMilestone(m){
   document.getElementById('msSub').textContent=m.sub;
   ov.style.display='flex';
   stopConfetti=launchConfetti();
-  showGraffiti(m.pct);
+  // Slight delay so overlay is fully visible before graffiti appears
+  setTimeout(()=>showGraffiti(m.pct), 200);
   // play a subtle chime via Web Audio
   try{
     const ac=new AudioContext();
