@@ -22,6 +22,7 @@
 <!-- Fonts with display=swap so page renders immediately without waiting -->
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- Chart.js removed - not used -->
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 <style>
 
 /* LIGHT MODE */
@@ -354,6 +355,268 @@ header{
   .dec31-lbl,.dec31-need{font-size:9px;}
   .dec31-val{font-size:20px;}
 }
+
+/* ═══ VISUAL UPGRADES ═══ */
+
+/* AMBIENT AURORA behind money card */
+.aurora-wrap{position:relative;}
+.aurora-wrap::before{
+  content:'';position:absolute;inset:-40px -20px;
+  background:
+    radial-gradient(ellipse 500px 300px at 20% 30%,rgba(114,80,255,.14),transparent 60%),
+    radial-gradient(ellipse 600px 350px at 80% 70%,rgba(6,218,174,.11),transparent 60%);
+  filter:blur(40px);
+  animation:auroraDrift 14s ease-in-out infinite alternate;
+  pointer-events:none;z-index:0;
+}
+@keyframes auroraDrift{
+  0%{transform:translate(0,0) scale(1);opacity:.8;}
+  50%{transform:translate(20px,-14px) scale(1.06);opacity:1;}
+  100%{transform:translate(-16px,10px) scale(.98);opacity:.85;}
+}
+.aurora-wrap>*{position:relative;z-index:1;}
+
+/* GRAIN TEXTURE */
+.grain-overlay{
+  position:fixed;inset:0;pointer-events:none;z-index:2;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+/* HOVER GLOW on cards */
+.sc:hover,.race-card:hover,.gc:hover{
+  border-color:rgba(114,80,255,.5);
+  box-shadow:0 0 24px rgba(114,80,255,.12),inset 0 0 20px rgba(114,80,255,.03);
+}
+
+/* STREAK FLAME */
+.streak-flame{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.3);
+  padding:3px 10px;margin-left:10px;vertical-align:middle;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;color:#FF9500;
+  animation:flamePulse 1.6s ease-in-out infinite;
+}
+@keyframes flamePulse{0%,100%{box-shadow:0 0 4px rgba(255,140,0,.2)}50%{box-shadow:0 0 14px rgba(255,140,0,.45)}}
+.streak-flame .sf-fire{animation:fireWiggle .8s ease-in-out infinite;display:inline-block;}
+@keyframes fireWiggle{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(4deg) scale(1.1)}}
+
+/* SPARKLINE in trading card */
+.spark-wrap{margin-top:8px;height:36px;position:relative;}
+.spark-wrap canvas{width:100%;height:100%;display:block;}
+
+/* TYPEWRITER cursor */
+.twc{display:inline-block;width:7px;height:1em;background:var(--mint);animation:cursorBlink 1s step-end infinite;margin-left:2px;vertical-align:text-bottom;}
+@keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ═══ GRAFFITI MILESTONE ═══ */
+.graffiti-text{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(60px,14vw,160px);
+  letter-spacing:.02em;line-height:.9;text-align:center;
+  background:linear-gradient(135deg,#06DAAE 0%,#7250FF 50%,#FF3B5C 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 30px rgba(114,80,255,.6));
+  transform:rotate(-4deg);
+  animation:graffitiSpray .8s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes graffitiSpray{
+  0%{transform:rotate(-4deg) scale(3);opacity:0;filter:blur(20px);}
+  60%{transform:rotate(-4deg) scale(.92);opacity:1;filter:blur(0);}
+  80%{transform:rotate(-4deg) scale(1.04);}
+  100%{transform:rotate(-4deg) scale(1);opacity:1;}
+}
+.graffiti-splat{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:splatIn .5s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes splatIn{
+  0%{transform:scale(0);opacity:0;}
+  70%{transform:scale(1.3);opacity:.9;}
+  100%{transform:scale(1);opacity:.7;}
+}
+
+/* LIVE PULSE */
+.live-pulse{
+  display:inline-flex;align-items:center;gap:6px;margin-top:6px;
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;
+  color:var(--mint);text-transform:uppercase;
+}
+.lp-dot{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint);animation:lpPulse 2s ease-in-out infinite;}
+@keyframes lpPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+
+/* BEAT VIVAN CALCULATOR */
+.beat-card{
+  background:var(--s1);border:1px solid rgba(114,80,255,.25);
+  padding:24px;margin-bottom:28px;position:relative;overflow:hidden;
+}
+.beat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--purple),var(--mint));}
+.beat-bg-text{
+  position:absolute;right:10px;top:-10px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:90px;color:rgba(114,80,255,.05);pointer-events:none;line-height:1;
+}
+.beat-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:var(--text);letter-spacing:.02em;}
+.beat-sub{font-family:'Barlow',sans-serif;font-size:13px;color:#999;margin-top:4px;max-width:480px;line-height:1.5;}
+.beat-input-row{display:flex;gap:10px;margin-top:18px;}
+.beat-input-wrap{flex:1;display:flex;align-items:center;background:var(--s2);border:1px solid var(--border);max-width:280px;}
+.beat-curr{padding:0 12px;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:var(--mint);}
+.beat-input-wrap input{
+  flex:1;background:transparent;border:none;outline:none;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--text);
+  padding:12px 12px 12px 0;width:100%;
+}
+.beat-btn{
+  background:var(--purple);color:#fff;border:none;cursor:pointer;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:0 24px;transition:background .2s;
+}
+.beat-btn:hover{background:var(--purple-lt);}
+.beat-result{margin-top:20px;animation:up .4s ease both;}
+.beat-res-grid{display:flex;gap:0;border:1px solid var(--border);}
+.beat-res-item{flex:1;text-align:center;padding:14px 8px;}
+.beat-res-item:not(:last-child){border-right:1px solid var(--border);}
+.beat-res-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:var(--mint);line-height:1;}
+.beat-res-lbl{font-family:'DM Mono',monospace;font-size:8px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
+.beat-cta-line{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  margin-top:14px;padding:12px 16px;background:rgba(6,218,174,.06);border:1px solid rgba(6,218,174,.18);
+}
+#beatVerdict{font-family:'Barlow',sans-serif;font-size:13px;color:var(--text);font-weight:500;}
+.beat-learn{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--gold);
+  text-decoration:none;white-space:nowrap;
+}
+.beat-learn:hover{text-decoration:underline;}
+
+/* TWEETS */
+.tweets-card{
+  background:var(--s1);border:1px solid var(--border);
+  padding:18px;margin-bottom:28px;position:relative;
+}
+.tweets-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#1DA1F2;}
+.tweets-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.tweets-handle{display:flex;align-items:center;gap:10px;}
+.tw-avatar{
+  width:40px;height:40px;border-radius:50%;
+  background:linear-gradient(135deg,var(--purple),var(--mint));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:#fff;
+}
+.tw-name{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:var(--text);line-height:1;}
+.tw-user{font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-top:2px;}
+.tw-follow-btn{
+  background:#fff;color:#000;text-decoration:none;
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.04em;
+  padding:8px 18px;border-radius:20px;transition:opacity .2s;
+}
+.tw-follow-btn:hover{opacity:.85;}
+.tweets-embed{min-height:200px;max-height:500px;overflow-y:auto;border:1px solid var(--border);background:var(--s2);}
+.tw-viewall{
+  display:block;text-align:center;margin-top:12px;
+  font-family:'DM Mono',monospace;font-size:10px;color:#1DA1F2;text-decoration:none;letter-spacing:.06em;
+}
+.tw-viewall:hover{text-decoration:underline;}
+@media(max-width:480px){
+  .beat-card{padding:16px;}
+  .beat-title{font-size:20px;}
+  .beat-input-row{flex-direction:column;}
+  .beat-input-wrap{max-width:none;}
+  .beat-btn{padding:12px;}
+  .beat-res-val{font-size:22px;}
+}
+
+
+/* ═══ AURORA AMBIENT GLOW ═══ */
+.money-card{position:relative;}
+.aurora{
+  position:absolute;inset:-40%;pointer-events:none;z-index:0;opacity:.55;
+  background:
+    radial-gradient(ellipse 40% 35% at 25% 30%, rgba(6,218,174,.14), transparent 60%),
+    radial-gradient(ellipse 45% 40% at 75% 65%, rgba(114,80,255,.16), transparent 60%),
+    radial-gradient(ellipse 30% 30% at 55% 20%, rgba(6,218,174,.08), transparent 55%);
+  animation:auroraDrift 14s ease-in-out infinite alternate;
+  filter:blur(30px);
+}
+@keyframes auroraDrift{
+  0%{transform:translate(0,0) rotate(0deg) scale(1);}
+  50%{transform:translate(4%,-3%) rotate(3deg) scale(1.06);}
+  100%{transform:translate(-4%,3%) rotate(-3deg) scale(1.02);}
+}
+.money-card>*:not(.aurora){position:relative;z-index:1;}
+
+/* PnL-reactive day tint */
+.money-card.day-green{border-color:rgba(6,218,174,.4);box-shadow:0 0 40px rgba(6,218,174,.08);}
+.money-card.day-red{border-color:rgba(255,59,92,.35);box-shadow:0 0 40px rgba(255,59,92,.07);}
+
+/* ═══ GRAIN TEXTURE ═══ */
+html::after{
+  content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.03 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ═══ SCROLL REVEAL ═══ */
+.sr{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1);}
+.sr.vis{opacity:1;transform:translateY(0);}
+
+/* ═══ HOVER GLOW SWEEP ═══ */
+.sc,.gc,.race-card,.chart-card,.tweets-card{position:relative;}
+.sc::before,.gc::before,.race-card::after{
+  content:'';position:absolute;inset:-1px;pointer-events:none;opacity:0;
+  background:linear-gradient(120deg,transparent 30%,rgba(114,80,255,.35),rgba(6,218,174,.3),transparent 70%);
+  background-size:250% 250%;transition:opacity .3s;z-index:0;
+}
+.sc:hover::before,.gc:hover::before{opacity:1;animation:glowSweep 1.6s ease forwards;}
+@keyframes glowSweep{0%{background-position:200% 0;}100%{background-position:-50% 0;}}
+.sc>*,.gc>*{position:relative;z-index:1;}
+
+/* ═══ TYPEWRITER ═══ */
+.tw-cursor{display:inline-block;width:2px;height:1em;background:var(--mint);margin-left:2px;vertical-align:text-bottom;animation:blinkCur 1s step-start infinite;}
+@keyframes blinkCur{50%{opacity:0;}}
+
+/* ═══ STREAK FLAME ═══ */
+.streak-flame{
+  display:inline-flex;align-items:center;gap:4px;margin-left:10px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  color:var(--gold);vertical-align:middle;
+  animation:flameFlicker 1.8s ease-in-out infinite;
+}
+@keyframes flameFlicker{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.8;transform:scale(1.08);}}
+
+/* ═══ SPARKLINE ═══ */
+.sc-spark{margin-top:8px;height:34px;width:100%;display:block;}
+
+/* ═══ GRAFFITI MILESTONE ═══ */
+.graffiti-wrap{position:relative;display:inline-block;}
+.graffiti-text{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(48px,12vw,120px);letter-spacing:.02em;line-height:1;
+  background:linear-gradient(135deg,#06DAAE 0%,#7250FF 50%,#FF3B5C 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  transform:rotate(-4deg);
+  filter:drop-shadow(3px 3px 0 rgba(0,0,0,.8)) drop-shadow(0 0 30px rgba(114,80,255,.5));
+  animation:graffitiSpray .8s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes graffitiSpray{
+  0%{opacity:0;transform:rotate(-4deg) scale(2.4);filter:blur(16px) drop-shadow(3px 3px 0 rgba(0,0,0,.8));}
+  60%{opacity:1;transform:rotate(-4deg) scale(.94);filter:blur(0) drop-shadow(3px 3px 0 rgba(0,0,0,.8));}
+  80%{transform:rotate(-4deg) scale(1.04);}
+  100%{opacity:1;transform:rotate(-4deg) scale(1);filter:blur(0) drop-shadow(3px 3px 0 rgba(0,0,0,.8)) drop-shadow(0 0 30px rgba(114,80,255,.5));}
+}
+.graffiti-drip{
+  position:absolute;width:4px;border-radius:0 0 3px 3px;
+  background:linear-gradient(180deg,rgba(6,218,174,.9),rgba(6,218,174,0));
+  top:90%;animation:dripDown 1.4s ease-in .5s both;
+}
+@keyframes dripDown{0%{height:0;opacity:0;}30%{opacity:1;}100%{height:60px;opacity:.6;}}
+.spray-dot{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:sprayFade 1s ease-out both;
+}
+@keyframes sprayFade{0%{opacity:0;transform:scale(0);}40%{opacity:.8;transform:scale(1.2);}100%{opacity:0;transform:scale(1);}}
 
 /* MONEY CARD */
 .money-card{
@@ -1500,6 +1763,7 @@ header{
   </div>
 </div>
 
+<div class="grain-overlay"></div>
 <div class="wrapper">
 
   <div class="err" id="errorBanner">⚠️ Could not load live data — showing last known values</div>
@@ -1509,7 +1773,7 @@ header{
     <div class="logo-row">
       <div class="logo-type">
         <h1>VIVAN<em>LIVE</em></h1>
-        <p>🎯 The Grind is Live · 2026 Goals Dashboard</p>
+        <p>🎯 <span id="twSubtitle"></span><span class="twc"></span></p>
       </div>
     </div>
     <div class="dl-wrap">
@@ -1553,10 +1817,13 @@ header{
       </div>
     </div>
   </div>
-  <div class="money-card">
+  <div class="aurora-wrap">
+  <div class="money-card" id="moneyCard">
+    <div class="aurora"></div>
     <div class="money-head">
       <div class="money-left-title">
         💸 <span id="challengeTitle">₹1 Crore Challenge</span>
+        <div class="live-pulse"><span class="lp-dot"></span><span id="lpText">LIVE · syncing…</span></div>
       </div>
       <div class="daily-note">
         <span>⚡ Need <strong id="dailyTarget">—</strong>/day</span>
@@ -1567,6 +1834,7 @@ header{
       <div class="money-stat-item">
         <div class="money-stat-lbl">Total Earned</div>
         <div class="money-stat-val" id="totalDisplay">₹0</div>
+        <span class="streak-flame" id="streakFlame" style="display:none;">🔥<span id="streakNum">0</span></span><span id="streakFlame" style="display:none;"></span>
       </div>
       <div class="money-stat-divider"></div>
       <div class="money-stat-item">
@@ -1605,7 +1873,9 @@ header{
         </div>
         <div class="sc-label">Trading <span id="calToggleHint" class="cal-toggle-pill">📅 PnL</span> <span id="chartToggleHint" class="cal-toggle-pill" style="margin-left:2px;">📊 Chart</span></div>
         <div class="sc-amt" id="tradingAmt">₹0</div>
+        <canvas class="sc-spark" id="tradingSpark"></canvas>
         <div class="mini-bar"><div class="mini-fill" id="tradingBar" style="width:0%"></div></div>
+        <div class="spark-wrap"><canvas id="tradingSpark"></canvas></div>
       </div>
       <div class="sc">
         <div class="sc-head"><div class="sc-icon">🪂</div><span></span></div>
@@ -1625,6 +1895,7 @@ header{
       </div>
     </div>
   </div>
+  </div><!-- end aurora-wrap -->
 
   <!-- PNL CALENDAR (revealed on Trading click, inside $100K section) -->
   <div id="pnlCalendarSection" style="display:none;margin-top:-14px;margin-bottom:28px;">
@@ -1843,6 +2114,25 @@ header{
     <a class="course-cta-btn" href="https://www.cryptocourse.in/courses/crypto-trading-playbook-proven-strategies-for-profitable-trades-from-vivan-68878b6aa882204f18bbabc1" target="_blank">Enroll Now ↗</a>
   </div>
 
+  <!-- LATEST TWEETS -->
+  <div class="sl"><span class="sl-icon">𝕏</span>Latest from @VivanLive</div>
+  <div class="tweets-card">
+    <div class="tweets-header">
+      <div class="tweets-handle">
+        <div class="tw-avatar">V</div>
+        <div>
+          <div class="tw-name">VivanLive</div>
+          <div class="tw-user">@VivanLive</div>
+        </div>
+      </div>
+      <a href="https://x.com/VivanLive" target="_blank" class="tw-follow-btn">Follow</a>
+    </div>
+    <div class="tweets-embed" id="tweetsEmbed">
+      <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent noborders" data-tweet-limit="3" data-height="500" href="https://twitter.com/VivanLive?ref_src=twsrc%5Etfw">Tweets by VivanLive</a>
+    </div>
+    <a href="https://x.com/VivanLive" target="_blank" class="tw-viewall">View all tweets on X ↗</a>
+  </div>
+
   <!-- GROWTH CHANNELS ACCORDION -->
   <div class="accordion-section" id="growthAccordion">
     <button class="accordion-header" onclick="toggleAccordion('growthBody','growthArrow')">
@@ -2015,6 +2305,181 @@ header{
 </div>
 
 <script>
+// ── LIVE PULSE ──
+let _lastSyncTime=Date.now();
+function updatePulse(){
+  const el=document.getElementById('lpText');
+  if(!el)return;
+  const secs=Math.floor((Date.now()-_lastSyncTime)/1000);
+  if(secs<10)el.textContent='LIVE · just synced';
+  else if(secs<60)el.textContent='LIVE · synced '+secs+'s ago';
+  else el.textContent='LIVE · synced '+Math.floor(secs/60)+'m ago';
+}
+function markSynced(){_lastSyncTime=Date.now();updatePulse();}
+setInterval(updatePulse,5000);
+
+// ── NUMBER COUNT-UP ANIMATION ──
+function animateValue(el,start,end,duration,formatter){
+  const startTime=performance.now();
+  function frame(now){
+    const progress=Math.min(1,(now-startTime)/duration);
+    const eased=1-Math.pow(1-progress,3); // ease-out cubic
+    const current=start+(end-start)*eased;
+    el.textContent=formatter(current);
+    if(progress<1)requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+// ═══ SCROLL REVEAL ═══
+function initScrollReveal(){
+  const targets=document.querySelectorAll('.money-card,.race-section,.race-sl,.journal-locked-card,.course-cta-bar,.tweets-card,.accordion-section,.chart-card,.sl');
+  targets.forEach(el=>el.classList.add('sr'));
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
+  targets.forEach(el=>obs.observe(el));
+}
+
+// ═══ TYPEWRITER ═══
+function initTypewriter(){
+  const el=document.getElementById('typewriterText');
+  if(!el)return;
+  const text='THE GRIND IS LIVE · 2026 GOALS DASHBOARD';
+  let i=0;
+  function type(){
+    if(i<=text.length){
+      el.textContent=text.slice(0,i);
+      i++;
+      setTimeout(type,42);
+    }
+  }
+  setTimeout(type,600);
+}
+
+// ═══ SPARKLINE (trading card) ═══
+function renderSparkline(){
+  const canvas=document.getElementById('tradingSpark');
+  if(!canvas||!calData.length)return;
+  const today=new Date();today.setHours(23,59,59,999);
+  const sorted=[...calData]
+    .filter(d=>d.date&&new Date(d.date+'T00:00:00')<=today)
+    .sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(sorted.length<2){canvas.style.display='none';return;}
+  canvas.style.display='block';
+  // Cumulative trading-only curve
+  let run=0;
+  const vals=sorted.map(d=>{run+=d.trading;return run;});
+  const dpr=window.devicePixelRatio||1;
+  const W=canvas.parentElement.getBoundingClientRect().width-4;
+  const H=34;
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr,dpr);
+  const minV=Math.min(...vals),maxV=Math.max(...vals);
+  const range=(maxV-minV)||1;
+  const xOf=i=>2+i*((W-4)/(vals.length-1));
+  const yOf=v=>3+(H-6)-(((v-minV)/range)*(H-6));
+  const isPos=vals[vals.length-1]>=vals[0];
+  const color=isPos?'#06DAAE':'#FF3B5C';
+  // area
+  ctx.beginPath();
+  ctx.moveTo(xOf(0),yOf(vals[0]));
+  for(let i=0;i<vals.length-1;i++){
+    const cpx=(xOf(i)+xOf(i+1))/2;
+    ctx.bezierCurveTo(cpx,yOf(vals[i]),cpx,yOf(vals[i+1]),xOf(i+1),yOf(vals[i+1]));
+  }
+  ctx.lineTo(xOf(vals.length-1),H);ctx.lineTo(xOf(0),H);ctx.closePath();
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,isPos?'rgba(6,218,174,.28)':'rgba(255,59,92,.25)');
+  g.addColorStop(1,'transparent');
+  ctx.fillStyle=g;ctx.fill();
+  // line
+  ctx.beginPath();
+  ctx.moveTo(xOf(0),yOf(vals[0]));
+  for(let i=0;i<vals.length-1;i++){
+    const cpx=(xOf(i)+xOf(i+1))/2;
+    ctx.bezierCurveTo(cpx,yOf(vals[i]),cpx,yOf(vals[i+1]),xOf(i+1),yOf(vals[i+1]));
+  }
+  ctx.strokeStyle=color;ctx.lineWidth=1.6;ctx.lineCap='round';ctx.stroke();
+  // end dot
+  ctx.beginPath();ctx.arc(xOf(vals.length-1),yOf(vals[vals.length-1]),2.5,0,Math.PI*2);
+  ctx.fillStyle=color;ctx.fill();
+}
+
+// ═══ STREAK FLAME + DAY TINT ═══
+function updateStreakAndTint(){
+  const today=new Date();today.setHours(23,59,59,999);
+  const sorted=[...calData]
+    .filter(d=>d.date&&new Date(d.date+'T00:00:00')<=today)
+    .sort((a,b)=>new Date(b.date)-new Date(a.date)); // newest first
+  // Green streak from most recent day backwards
+  let streak=0;
+  for(const d of sorted){
+    if(d.total>0)streak++;
+    else break;
+  }
+  const flame=document.getElementById('streakFlame');
+  if(flame){
+    if(streak>=2){
+      flame.style.display='inline-flex';
+      document.getElementById('streakNum').textContent=streak;
+      flame.style.fontSize=Math.min(26,14+streak*2)+'px';
+    }else flame.style.display='none';
+  }
+  // Day tint on money card
+  const card=document.getElementById('moneyCard');
+  if(card&&sorted.length){
+    const todayStr=new Date().toISOString().slice(0,10);
+    const todayEntry=sorted.find(d=>d.date===todayStr);
+    card.classList.remove('day-green','day-red');
+    if(todayEntry){
+      if(todayEntry.total>0)card.classList.add('day-green');
+      else if(todayEntry.total<0)card.classList.add('day-red');
+    }
+  }
+}
+
+// ═══ GRAFFITI MILESTONE ═══
+function showGraffiti(pct){
+  const overlay=document.getElementById('milestoneOverlay');
+  const content=overlay.querySelector('.ms-content')||overlay;
+  // Inject graffiti text over the existing milestone content
+  const wrap=document.createElement('div');
+  wrap.className='graffiti-wrap';
+  wrap.style.cssText='position:absolute;top:18%;left:50%;transform:translateX(-50%);z-index:10;';
+  const words={25:'QUARTER WAY!',50:'HALFWAY!',75:'ALMOST THERE!',100:'LEGENDARY!'};
+  const g=document.createElement('div');
+  g.className='graffiti-text';
+  g.textContent=words[pct]||pct+'%!';
+  wrap.appendChild(g);
+  // drips
+  for(let i=0;i<5;i++){
+    const drip=document.createElement('div');
+    drip.className='graffiti-drip';
+    drip.style.left=(10+i*20)+'%';
+    drip.style.animationDelay=(0.4+i*0.15)+'s';
+    wrap.appendChild(drip);
+  }
+  overlay.appendChild(wrap);
+  // spray dots burst
+  for(let i=0;i<24;i++){
+    const dot=document.createElement('div');
+    dot.className='spray-dot';
+    const size=3+Math.random()*8;
+    dot.style.cssText+=`width:${size}px;height:${size}px;
+      background:${['#06DAAE','#7250FF','#FF3B5C','#F5C842'][Math.floor(Math.random()*4)]};
+      top:${15+Math.random()*30}%;left:${20+Math.random()*60}%;
+      animation-delay:${Math.random()*0.6}s;position:absolute;z-index:9;`;
+    overlay.appendChild(dot);
+  }
+  // cleanup after overlay closes
+  setTimeout(()=>{wrap.remove();overlay.querySelectorAll('.spray-dot').forEach(d=>d.remove());},6000);
+}
+
 // ── INFO BUTTON TOOLTIPS ──
 const ibTooltip=document.getElementById('ib-tooltip');
 document.querySelectorAll('.ib').forEach(btn=>{
@@ -2150,7 +2615,15 @@ function render(d){
   window._lastRenderData=d;
   const tot=d.trading+d.airdrop+d.content,usdTarget=getUSDTarget(),tp=Math.min(100,(tot/usdTarget)*100);
   totalEarned=tot;
-  $('totalDisplay').textContent=fmtMoney(tot);
+  markSynced();
+  // Count-up animation on total (first render only)
+  const totalEl=$('totalDisplay');
+  if(!window._totalAnimated&&tot>0){
+    window._totalAnimated=true;
+    animateValue(totalEl,0,tot,1200,(v)=>fmtMoney(v));
+  }else{
+    totalEl.textContent=fmtMoney(tot);
+  }
   $('totalPct').textContent=tp.toFixed(1)+'%';
   $('megaBar').style.width=tp+'%';$('megaPctLabel').textContent=tp.toFixed(1)+'% complete';
   const days=Math.max(1,Math.ceil((new Date('2026-08-31T00:00:00+05:30')-Date.now())/864e5));
@@ -3049,6 +3522,7 @@ function showMilestone(m){
   document.getElementById('msSub').textContent=m.sub;
   ov.style.display='flex';
   stopConfetti=launchConfetti();
+  showGraffiti(m.pct);
   // play a subtle chime via Web Audio
   try{
     const ac=new AudioContext();
@@ -3355,6 +3829,7 @@ function renderPnlChart(){
 
 async function init(){
   tick();setInterval(tick,30000);
+  initTypewriter();
   // Load data in parallel — don't wait for prices/rate before rendering
   const [d,daily]=await Promise.all([load(),loadDaily()]);
   calData=daily;
@@ -3363,6 +3838,9 @@ async function init(){
     render(d);
     renderCalendar();
     renderPnlChart();
+    renderSparkline();
+    updateStreakAndTint();
+    initScrollReveal();
     const tot=d.trading+d.airdrop+d.content;
     checkMilestone(tot);
     const ov=$('loadingOverlay');ov.classList.add('hidden');
@@ -3374,6 +3852,8 @@ async function init(){
       render(d);
       renderCalendar();
       renderPnlChart();
+      renderSparkline();
+      updateStreakAndTint();
     },60000);
     // Defer exchange rate fetch after page is visible
     setTimeout(()=>{
@@ -3381,7 +3861,7 @@ async function init(){
     },500);
   },600);
 }
-window.addEventListener('resize',()=>{renderPnlChart();});
+window.addEventListener('resize',()=>{renderPnlChart();renderSparkline();});
 // Attach chart hover after DOM ready
 document.addEventListener('DOMContentLoaded',()=>{
   const canvas=document.getElementById('pnlChart');
