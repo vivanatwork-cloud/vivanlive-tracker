@@ -498,7 +498,7 @@ header{
 /* TWEETS */
 .tweets-card{
   background:var(--s1);border:1px solid var(--border);
-  padding:18px;margin-bottom:28px;position:relative;
+  padding:14px;margin-bottom:28px;position:relative;
 }
 .tweets-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#1DA1F2;}
 .tweets-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -518,7 +518,8 @@ header{
   padding:8px 18px;border-radius:20px;transition:opacity .2s;
 }
 .tw-follow-btn:hover{opacity:.85;}
-.tweets-embed{min-height:200px;max-height:500px;overflow-y:auto;border:1px solid var(--border);background:var(--s2);}
+.tweets-embed{min-height:120px;max-height:280px;overflow-y:auto;border:1px solid var(--border);background:var(--s2);}
+@media(max-width:640px){.tweets-embed{max-height:240px;}}
 .tw-viewall{
   display:block;text-align:center;margin-top:12px;
   font-family:'DM Mono',monospace;font-size:10px;color:#1DA1F2;text-decoration:none;letter-spacing:.06em;
@@ -629,6 +630,61 @@ html::after{
   animation:sprayFade 1s ease-out both;
 }
 @keyframes sprayFade{0%{opacity:0;transform:scale(0);}40%{opacity:.8;transform:scale(1.2);}100%{opacity:0;transform:scale(1);}}
+
+/* DISCLAIMER */
+.disclaimer{
+  background:rgba(255,59,92,.04);
+  border:1px solid rgba(255,59,92,.18);
+  border-left:3px solid rgba(255,59,92,.5);
+  padding:20px 24px;margin-bottom:28px;
+}
+.disc-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.disc-icon{font-size:16px;}
+.disc-title{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;
+  color:var(--red);text-transform:uppercase;font-weight:500;
+}
+.disc-body p{
+  font-family:'Barlow',sans-serif;font-size:13px;line-height:1.65;
+  color:#999;margin-bottom:10px;
+}
+.disc-body p:last-child{margin-bottom:0;}
+.disc-body strong{color:#ccc;font-weight:600;}
+.disc-flag{
+  background:rgba(245,200,66,.05);border-left:2px solid rgba(245,200,66,.4);
+  padding:10px 14px;margin:14px 0!important;
+}
+.disc-flag strong{color:var(--gold);}
+.disc-final{
+  font-family:'DM Mono',monospace!important;font-size:11px!important;
+  color:#777!important;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);
+  margin-top:14px!important;
+}
+body.light .disclaimer{background:rgba(204,26,53,.03);border-color:rgba(204,26,53,.2);}
+body.light .disc-body p{color:#555;}
+body.light .disc-body strong{color:#111;}
+@media(max-width:640px){
+  .disclaimer{padding:16px 14px;}
+  .disc-body p{font-size:12px;line-height:1.6;}
+  .disc-title{font-size:9px;letter-spacing:.14em;}
+}
+
+/* PAGE NAV */
+.page-nav{
+  display:flex;gap:6px;align-items:center;
+  padding:12px 0;margin-bottom:4px;
+}
+.pnav-link{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;
+  padding:7px 14px;border:1px solid transparent;transition:all .2s;
+}
+.pnav-link:hover{color:var(--text);border-color:var(--border);}
+.pnav-link.active{color:var(--mint);border-color:rgba(6,218,174,.3);background:rgba(6,218,174,.06);}
+@media(max-width:640px){
+  .page-nav{padding:8px 0;gap:4px;}
+  .pnav-link{flex:1;text-align:center;padding:7px 4px;font-size:8px;letter-spacing:.06em;}
+}
 
 /* MONEY CARD */
 .money-card{
@@ -1787,6 +1843,13 @@ html::after{
 <div class="grain-overlay"></div>
 <div class="wrapper">
 
+  <!-- PAGE NAV -->
+  <nav class="page-nav">
+    <a href="/" class="pnav-link active">📊 Dashboard</a>
+    <a href="/airdrops.html" class="pnav-link">🪂 Airdrops</a>
+    <a href="https://hi.switchy.io/VivanLive" target="_blank" class="pnav-link">🔥 Inner Circle</a>
+  </nav>
+
   <div class="err" id="errorBanner">⚠️ Could not load live data — showing last known values</div>
 
   <!-- HEADER -->
@@ -2147,7 +2210,7 @@ html::after{
       <a href="https://x.com/VivanLive" target="_blank" class="tw-follow-btn">Follow</a>
     </div>
     <div class="tweets-embed" id="tweetsEmbed">
-      <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent noborders" data-tweet-limit="3" data-height="500" href="https://twitter.com/VivanLive?ref_src=twsrc%5Etfw">Tweets by VivanLive</a>
+      <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter transparent noborders" data-tweet-limit="2" data-height="280" href="https://twitter.com/VivanLive?ref_src=twsrc%5Etfw">Tweets by VivanLive</a>
     </div>
     <a href="https://x.com/VivanLive" target="_blank" class="tw-viewall">View all tweets on X ↗</a>
   </div>
@@ -2303,6 +2366,21 @@ html::after{
         <button class="share-action-btn" id="shareXBtn" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15);color:#fff;">𝕏 Post on X</button>
       </div>
       <div id="shareMsg" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--mint);letter-spacing:.08em;margin-top:10px;text-align:center;min-height:14px;"></div>
+    </div>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <div class="disc-header">
+      <span class="disc-icon">⚠️</span>
+      <span class="disc-title">Disclaimer — Read This</span>
+    </div>
+    <div class="disc-body">
+      <p><strong>This is not financial advice.</strong> I'm just tracking my own progress in public. Do your own research.</p>
+      <p>This dashboard shows aggregate numbers, not trades, positions, or strategies. Treat it as <strong>entertainment or motivation</strong> — whichever you prefer. Nothing here is a signal or a recommendation to do anything with your money.</p>
+      <p><strong>Don't try to replicate this.</strong> My risk tolerance, capital, and time horizon are not yours. I'm a mental freak — I take risks most people shouldn't.</p>
+      <p class="disc-flag">Worth saying out loud: <strong>I may be paper trading some or all of this purely for the adrenaline.</strong> Every number here is self-reported and unaudited. Assume nothing about whether real money is behind any of it.</p>
+      <p class="disc-final">Markets take everything from people who don't respect them. Proceed at your own risk.</p>
     </div>
   </div>
 
