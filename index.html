@@ -696,76 +696,6 @@ body.light .disc-body strong{color:#111;}
 }
 
 
-/* ═══ VOTE WIDGET (Instagram-story style) ═══ */
-.vote-widget{
-  background:var(--s1);border:1px solid var(--border);
-  padding:22px 24px;margin-top:14px;margin-bottom:28px;
-  position:relative;overflow:hidden;
-}
-.vote-widget::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--mint),var(--purple));}
-.vote-q{
-  font-family:'Barlow Condensed',sans-serif;font-weight:900;
-  font-size:clamp(19px,3vw,26px);letter-spacing:.02em;color:var(--text);
-  text-align:center;margin-bottom:4px;
-}
-.vote-sub{
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;
-  color:#888;text-transform:uppercase;text-align:center;margin-bottom:18px;
-}
-.vote-bars{display:flex;flex-direction:column;gap:10px;}
-.vote-opt{
-  position:relative;cursor:pointer;overflow:hidden;
-  border:1px solid var(--border);background:var(--s2);
-  padding:14px 18px;transition:border-color .2s,transform .12s;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  user-select:none;
-}
-.vote-opt:hover:not(.voted-state){border-color:var(--purple);transform:translateX(2px);}
-.vote-opt:active:not(.voted-state){transform:scale(.99);}
-.vote-fill{
-  position:absolute;left:0;top:0;bottom:0;width:0;
-  transition:width 1s cubic-bezier(.16,1,.3,1);z-index:0;
-}
-.vote-opt.money .vote-fill{background:linear-gradient(90deg,rgba(6,218,174,.28),rgba(6,218,174,.12));}
-.vote-opt.abs .vote-fill{background:linear-gradient(90deg,rgba(114,80,255,.3),rgba(114,80,255,.12));}
-.vote-label{
-  position:relative;z-index:1;display:flex;align-items:center;gap:9px;
-  font-family:'Barlow Condensed',sans-serif;font-weight:800;
-  font-size:19px;letter-spacing:.02em;color:var(--text);
-}
-.vote-emoji{font-size:20px;}
-.vote-pct{
-  position:relative;z-index:1;
-  font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;
-  opacity:0;transform:translateX(8px);
-  transition:opacity .5s ease .3s,transform .5s ease .3s;
-  flex-shrink:0;
-}
-.vote-opt.money .vote-pct{color:var(--mint);}
-.vote-opt.abs .vote-pct{color:var(--purple-lt);}
-.vote-widget.voted .vote-pct{opacity:1;transform:translateX(0);}
-.vote-widget.voted .vote-opt{cursor:default;}
-.vote-opt.your-pick{border-color:var(--gold);}
-.vote-opt.your-pick::after{
-  content:'YOUR PICK';position:absolute;right:-1px;top:-1px;z-index:2;
-  font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;
-  background:var(--gold);color:#000;padding:2px 7px;font-weight:600;
-}
-.vote-footer{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  margin-top:14px;font-family:'DM Mono',monospace;font-size:9px;
-  color:#777;letter-spacing:.1em;text-transform:uppercase;
-  min-height:14px;
-}
-.vote-dot{width:5px;height:5px;border-radius:50%;background:var(--mint);animation:votePulse 2s ease-in-out infinite;}
-@keyframes votePulse{0%,100%{opacity:1}50%{opacity:.25}}
-@media(max-width:640px){
-  .vote-widget{padding:16px 14px;}
-  .vote-opt{padding:12px 14px;}
-  .vote-label{font-size:16px;}
-  .vote-pct{font-size:19px;}
-}
-
 /* MONEY CARD */
 .money-card{
   background:var(--s1);border:1px solid #1a1a2e;
@@ -2056,27 +1986,6 @@ body.light .disc-body strong{color:#111;}
   </div><!-- end pnlChartSection -->
 
   <!-- THE RACE -->
-  <!-- VOTE WIDGET -->
-  <div class="vote-widget sr" id="voteWidget">
-    <div class="vote-q">Which happens first?</div>
-    <div class="vote-sub">Cast your vote · Results update live</div>
-    <div class="vote-bars">
-      <div class="vote-opt money" data-vote="money">
-        <div class="vote-fill" id="voteFillMoney"></div>
-        <div class="vote-label"><span class="vote-emoji">💰</span> Vivan hits ₹1 Crore</div>
-        <div class="vote-pct" id="votePctMoney">—</div>
-      </div>
-      <div class="vote-opt abs" data-vote="abs">
-        <div class="vote-fill" id="voteFillAbs"></div>
-        <div class="vote-label"><span class="vote-emoji">🦾</span> Vivan gets the six pack</div>
-        <div class="vote-pct" id="votePctAbs">—</div>
-      </div>
-    </div>
-    <div class="vote-footer" id="voteFooter">
-      <span class="vote-dot"></span><span id="voteCount">Tap to vote</span>
-    </div>
-  </div>
-
     <!-- COURSE CTA -->
   <div class="course-cta-bar">
     <div class="course-cta-left">
@@ -2321,7 +2230,7 @@ function animateValue(el,start,end,duration,formatter){
 
 // ═══ SCROLL REVEAL ═══
 function initScrollReveal(){
-  const targets=document.querySelectorAll('.money-card,.vote-widget,.course-cta-bar,.tweets-card,.accordion-section,.chart-card,.sl');
+  const targets=document.querySelectorAll('.money-card,.course-cta-bar,.tweets-card,.accordion-section,.chart-card,.sl');
   targets.forEach(el=>el.classList.add('sr'));
   const obs=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
@@ -2409,83 +2318,6 @@ function showGraffiti(pct){
   setTimeout(()=>{wrap.remove();overlay.querySelectorAll('.spray-dot').forEach(d=>d.remove());},6000);
 }
 
-
-// ═══ VOTE WIDGET ═══
-// Set this to your Apps Script Web App URL (see setup instructions)
-const VOTE_API='https://script.google.com/macros/s/AKfycbwRppukR9ahGjndmx4nEOUJ3UdCQqFrUMSdHcH2vz57nXeX9lJWlUWndroJbcoErVKN/exec';
-
-const voteWidget=document.getElementById('voteWidget');
-let voteCounts={money:0,abs:0};
-let myVote=localStorage.getItem('vl_vote');
-
-function renderVotes(){
-  const total=voteCounts.money+voteCounts.abs;
-  const mPct=total?Math.round((voteCounts.money/total)*100):50;
-  const aPct=total?100-mPct:50;
-
-  if(myVote){
-    voteWidget.classList.add('voted');
-    document.getElementById('voteFillMoney').style.width=mPct+'%';
-    document.getElementById('voteFillAbs').style.width=aPct+'%';
-    document.getElementById('votePctMoney').textContent=mPct+'%';
-    document.getElementById('votePctAbs').textContent=aPct+'%';
-    document.querySelectorAll('.vote-opt').forEach(o=>{
-      o.classList.add('voted-state');
-      o.classList.toggle('your-pick',o.dataset.vote===myVote);
-    });
-    document.getElementById('voteCount').textContent=
-      total===1?'1 vote':total.toLocaleString()+' votes';
-  }else{
-    document.getElementById('voteCount').textContent='Tap to vote';
-  }
-}
-
-async function fetchVotes(){
-  if(VOTE_API.includes('VOTE_API_URL')){
-    // Not configured — local-only demo mode
-    const local=JSON.parse(localStorage.getItem('vl_vote_counts')||'{"money":0,"abs":0}');
-    voteCounts=local;
-    renderVotes();
-    return;
-  }
-  try{
-    const r=await fetch(VOTE_API+'?action=get&t='+Date.now());
-    const d=await r.json();
-    voteCounts={money:+d.money||0,abs:+d.abs||0};
-    renderVotes();
-  }catch(e){
-    console.warn('Vote fetch failed:',e);
-    renderVotes();
-  }
-}
-
-async function castVote(choice){
-  if(myVote)return; // already voted
-  myVote=choice;
-  localStorage.setItem('vl_vote',choice);
-  voteCounts[choice]++;
-  renderVotes();
-
-  if(VOTE_API.includes('VOTE_API_URL')){
-    // local-only fallback
-    localStorage.setItem('vl_vote_counts',JSON.stringify(voteCounts));
-    return;
-  }
-  try{
-    // no-cors POST — fire and forget (Apps Script doesn't send CORS headers)
-    await fetch(VOTE_API+'?action=vote&choice='+choice,{mode:'no-cors'});
-    setTimeout(fetchVotes,900); // re-sync real numbers
-  }catch(e){
-    console.warn('Vote submit failed:',e);
-  }
-}
-
-document.querySelectorAll('.vote-opt').forEach(opt=>{
-  opt.addEventListener('click',()=>castVote(opt.dataset.vote));
-});
-
-fetchVotes();
-setInterval(()=>{if(myVote)fetchVotes();},60000);
 
 // ── INFO BUTTON TOOLTIPS ──
 const ibTooltip=document.getElementById('ib-tooltip');
