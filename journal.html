@@ -108,6 +108,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
 .trade-pnl{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;line-height:1;}
 .trade-pnl.pos{color:var(--mint);}
 .trade-pnl.neg{color:var(--red);}
+.trade-pnl.pnl-hidden{filter:blur(8px);user-select:none;pointer-events:none;opacity:.7;}
 .trade-r{font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:.06em;margin-top:2px;}
 .trade-result{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;margin-top:4px;padding:2px 6px;display:inline-block;}
 .res-win{color:var(--mint);background:rgba(6,218,174,.1);}
@@ -342,7 +343,7 @@ function tradeCard(t,locked){
         </div>
       </div>
       <div class="trade-right">
-        ${t.pnl?`<div class="trade-pnl ${pnlPos?'pos':'neg'}">${t.pnl}</div>`:''}
+        ${t.pnl?`<div class="trade-pnl ${pnlPos?'pos':'neg'} ${locked?'':'pnl-hidden'}">${t.pnl}</div>`:''}
         ${t.result?`<div class="trade-result ${win?'res-win':'res-loss'}">${t.result}</div>`:''}
       </div>
     </div>`;
