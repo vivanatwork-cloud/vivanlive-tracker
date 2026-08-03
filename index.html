@@ -683,7 +683,7 @@ body.light .disc-body strong{color:#111;}
 
 /* PAGE NAV */
 .page-nav{
-  display:flex;gap:6px;align-items:center;
+  display:flex;gap:6px;align-items:center;justify-content:flex-end;
   padding:12px 0;margin-bottom:4px;
 }
 .pnav-link{
@@ -1783,7 +1783,7 @@ body.light #worldMap path.visited{fill:var(--mint);}
 <div class="wrapper">
 
   <!-- PAGE NAV -->
-  <nav class="page-nav">
+    <nav class="page-nav">
     <a href="/" class="pnav-link active">📊 Dashboard</a>
     <a href="/airdrops" class="pnav-link">🪂 Airdrops</a>
     <a href="/journal" class="pnav-link">📓 Journal</a>
@@ -2096,11 +2096,12 @@ body.light #worldMap path.visited{fill:var(--mint);}
     </button>
     <div class="accordion-body" id="goals2026Body">
 
-  <!-- Row 1: VO2 + Travel -->
+  <!-- HEALTH MARKERS -->
+  <div class="sl" style="margin-top:8px;"><span class="sl-icon">💪</span>Health</div>
   <div class="bottom-row" style="margin-bottom:16px;">
     <div class="vo2-card">
       <div class="card-head"><span class="card-head-icon">🫀</span><div class="card-head-title">VO2 Max</div></div>
-      <div class="card-sub">💪 Fitness · Target: 50</div>
+      <div class="card-sub">💪 Cardio Fitness · Target: 50</div>
       <div class="gauge-wrap">
         <svg viewBox="0 0 200 115" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -2124,6 +2125,36 @@ body.light #worldMap path.visited{fill:var(--mint);}
         <div class="vstat"><div class="vv" id="vo2CurS">—</div><div class="vl">Current</div></div>
         <div class="vstat"><div class="vv">50</div><div class="vl">Target</div></div>
         <div class="vstat"><div class="vv" id="vo2Gap">—</div><div class="vl">Gap</div></div>
+      </div>
+    </div>
+
+    <!-- ABS CHALLENGE -->
+    <div class="vo2-card abs-card">
+      <div class="card-head"><span class="card-head-icon">🦾</span><div class="card-head-title">Abs Challenge</div></div>
+      <div class="card-sub">🎯 Body Fat · Target: 10%</div>
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 115" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gGabs" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FF3B5C"/>
+              <stop offset="100%" stop-color="#F5C842"/>
+            </linearGradient>
+          </defs>
+          <path d="M 20 110 A 80 80 0 0 1 180 110" fill="none" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+          <path id="absArc" d="M 20 110 A 80 80 0 0 1 180 110"
+                fill="none" stroke="url(#gGabs)" stroke-width="14" stroke-linecap="round"
+                stroke-dasharray="251.3" stroke-dashoffset="251.3"
+                style="transition:stroke-dashoffset 1.6s cubic-bezier(.16,1,.3,1)"/>
+        </svg>
+        <div class="gauge-ov">
+          <div class="gauge-num" id="absNum">—</div>
+          <div class="gauge-hint">→ target: 10%</div>
+        </div>
+      </div>
+      <div class="vo2-stats">
+        <div class="vstat"><div class="vv" id="absCurS">—</div><div class="vl">Body Fat</div></div>
+        <div class="vstat"><div class="vv">10%</div><div class="vl">Target</div></div>
+        <div class="vstat"><div class="vv" id="absGap">—</div><div class="vl">To Go</div></div>
       </div>
     </div>
   </div>
@@ -2608,6 +2639,16 @@ function render(d){
   $('vo2Num').textContent=v.toFixed(1);$('vo2CurS').textContent=v.toFixed(1);$('vo2Gap').textContent='+'+Math.max(0,50-v).toFixed(1);
   const arc=Math.PI*80,f=Math.min(1,Math.max(0,(v-20)/50));
   $('gaugeArc').style.strokeDashoffset=arc-arc*f;
+  // Abs challenge gauge — body fat 20% start -> 10% target
+  const bfv=d.bodyfat||18;
+  if($('absNum')){
+    $('absNum').textContent=bfv.toFixed(0)+'%';
+    $('absCurS').textContent=bfv.toFixed(0)+'%';
+    $('absGap').textContent=Math.max(0,bfv-10).toFixed(0)+'%';
+    // progress: how close to 10% from a 20% start
+    const absF=Math.min(1,Math.max(0,(20-bfv)/(20-10)));
+    $('absArc').style.strokeDashoffset=arc-arc*absF;
+  }
   const grid=$('countryGrid');grid.innerHTML='';
   d.countries.forEach(c=>{
     const el=document.createElement('div');
