@@ -2515,7 +2515,18 @@ const fmt=n=>n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+Math.round(n).toLocaleStrin
 const $=id=>document.getElementById(id);
 function render(d){
   window._lastRenderData=d;
-  const tot=d.trading+d.airdrop+d.content,usdTarget=getUSDTarget(),tp=Math.min(100,(tot/usdTarget)*100);
+  // ── Auto-sum from the daily tab when available (source of truth) ──
+  // Falls back to Sheet1 manual values only if daily tab is empty.
+  let dTrading=d.trading, dAirdrop=d.airdrop, dContent=d.content;
+  if(calData&&calData.length){
+    let sT=0,sA=0,sC=0;
+    calData.forEach(row=>{sT+=(+row.trading||0);sA+=(+row.airdrop||0);sC+=(+row.content||0);});
+    dTrading=sT;dAirdrop=sA;dContent=sC;
+    // keep the working data object in sync so every downstream calc uses daily totals
+    d={...d,trading:sT,airdrop:sA,content:sC};
+    window._lastRenderData=d;
+  }
+  const tot=dTrading+dAirdrop+dContent,usdTarget=getUSDTarget(),tp=Math.min(100,(tot/usdTarget)*100);
   totalEarned=tot;
   markSynced();
   // Count-up animation on total (first render only)
@@ -2532,15 +2543,15 @@ function render(d){
   const dailyUSD=Math.max(0,usdTarget-tot)/days;
   $('dailyTarget').textContent=fmtMoney(dailyUSD);
   // Combined Trading & Airdrop card
-  const taTotal=d.trading+d.airdrop;
+  const taTotal=dTrading+dAirdrop;
   $('tradingAmt').textContent=fmtMoney(taTotal);
   $('tradingBar').style.width=Math.min(100,(taTotal/(usdTarget*0.7))*100)+'%';
   const bdT=document.getElementById('bdTrading'),bdA=document.getElementById('bdAirdrop');
-  if(bdT)bdT.textContent=fmtMoney(d.trading);
-  if(bdA)bdA.textContent=fmtMoney(d.airdrop);
+  if(bdT)bdT.textContent=fmtMoney(dTrading);
+  if(bdA)bdA.textContent=fmtMoney(dAirdrop);
   // Content card
-  $('contentAmt').textContent=fmtMoney(d.content);
-  $('contentBar').style.width=Math.min(100,(d.content/(usdTarget*0.2))*100)+'%';
+  $('contentAmt').textContent=fmtMoney(dContent);
+  $('contentBar').style.width=Math.min(100,(dContent/(usdTarget*0.2))*100)+'%';
   // ── DEC 31 SCENARIO ──
   const dec31=new Date('2027-01-01T00:00:00+05:30');
   const daysLeftDec=Math.max(1,Math.ceil((dec31-Date.now())/864e5));
