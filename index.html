@@ -1197,7 +1197,33 @@ body.light #worldMap path.visited{fill:var(--mint);}
   animation:popIn .5s .5s cubic-bezier(.175,.885,.32,1.275) both;
 }
 .ms-close:hover{border-color:var(--mint);color:var(--mint);}
+.ms-btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+.ms-share{
+  background:var(--purple);border:1px solid var(--purple);color:#fff;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  padding:10px 24px;cursor:pointer;transition:all .2s;
+  animation:popIn .5s .45s cubic-bezier(.175,.885,.32,1.275) both;
+}
+.ms-share:hover{background:var(--purple-lt);transform:translateY(-1px);}
 #confettiCanvas{position:absolute;inset:0;pointer-events:none;z-index:1;}
+
+/* MILESTONE SHARE MODAL */
+#msShareModal{
+  position:fixed;inset:0;z-index:1000;display:none;
+  align-items:center;justify-content:center;padding:20px;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(10px);
+}
+.mss-inner{background:var(--s1);border:1px solid var(--border);max-width:520px;width:100%;padding:22px;max-height:92vh;overflow-y:auto;}
+.mss-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.mss-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:.04em;}
+.mss-close{background:none;border:none;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;letter-spacing:.1em;}
+.mss-close:hover{color:var(--text);}
+#msShareCanvas{width:100%;height:auto;display:block;border:1px solid var(--border);margin-bottom:14px;}
+.mss-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mss-btn{background:var(--s2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:12px;cursor:pointer;transition:all .2s;}
+.mss-btn:hover{border-color:var(--purple);}
+.mss-btn.primary{background:var(--purple);border-color:var(--purple);color:#fff;}
+.mss-msg{text-align:center;font-family:'DM Mono',monospace;font-size:10px;color:var(--mint);margin-top:10px;min-height:14px;letter-spacing:.06em;}
 
 /* FITNESS CARD */
 .bottom-row.three-col{grid-template-columns:1fr 1fr 1fr;}
@@ -1775,11 +1801,31 @@ body.light #worldMap path.visited{fill:var(--mint);}
     <div class="ms-emoji" id="msEmoji">🎉</div>
     <div class="ms-title" id="msTitle">25% REACHED</div>
     <div class="ms-sub" id="msSub">$25,000 of the $100K Challenge</div>
-    <button class="ms-close" id="msClose">Keep Going ↗</button>
+    <div class="ms-btn-row">
+      <button class="ms-share" id="msShare">📸 Share This Win</button>
+      <button class="ms-close" id="msClose">Keep Going ↗</button>
+    </div>
   </div>
 </div>
 
 <div class="grain-overlay"></div>
+
+<!-- MILESTONE SHARE MODAL -->
+<div id="msShareModal">
+  <div class="mss-inner">
+    <div class="mss-head">
+      <div class="mss-title">Share Your Milestone</div>
+      <button class="mss-close" id="mssClose">✕ CLOSE</button>
+    </div>
+    <canvas id="msShareCanvas"></canvas>
+    <div class="mss-actions">
+      <button class="mss-btn primary" id="mssDownload">⬇ Download</button>
+      <button class="mss-btn" id="mssCopy">📋 Copy Image</button>
+    </div>
+    <div class="mss-msg" id="mssMsg"></div>
+  </div>
+</div>
+
 <div class="wrapper">
 
   <!-- PAGE NAV -->
@@ -3485,7 +3531,7 @@ const MILESTONES=[
   {pct:75,label:'75% DONE 🚀',sub:'₹75L — The final stretch begins',emoji:'🚀'},
   {pct:100,label:'₹1Cr UNLOCKED 🏆',sub:'Mission accomplished. The grind paid off.',emoji:'🏆'},
 ];
-const shownMilestones=new Set(JSON.parse(sessionStorage.getItem('vl_milestones_v2')||'[]'));
+const shownMilestones=new Set(JSON.parse(sessionStorage.getItem('vl_milestones_v3')||'[]'));
 let stopConfetti=null;
 
 function checkMilestone(total){
@@ -3499,7 +3545,7 @@ function checkMilestone(total){
   MILESTONES.forEach(m=>{
     if(pct>=m.pct&&!shownMilestones.has(m.pct)){
       shownMilestones.add(m.pct);
-      sessionStorage.setItem('vl_milestones_v2',JSON.stringify([...shownMilestones]));
+      sessionStorage.setItem('vl_milestones_v3',JSON.stringify([...shownMilestones]));
       showMilestone(m);
     }
   });
@@ -3511,6 +3557,7 @@ function showMilestone(m){
   document.getElementById('msTitle').textContent=m.label;
   document.getElementById('msSub').textContent=m.sub;
   ov.style.display='flex';
+  window._currentMilestone=m;
   stopConfetti=launchConfetti();
   // Slight delay so overlay is fully visible before graffiti appears
   setTimeout(()=>showGraffiti(m.pct), 200);
@@ -3533,6 +3580,123 @@ document.getElementById('msClose').addEventListener('click',()=>{
   document.getElementById('milestoneOverlay').style.display='none';
   if(stopConfetti){stopConfetti();stopConfetti=null;}
 });
+
+// ── MILESTONE SHARE CARD ──
+function drawMilestoneCard(canvas,m){
+  const W=1080,H=1080;
+  canvas.width=W;canvas.height=H;
+  const ctx=canvas.getContext('2d');
+  const accent=m.pct>=100?'#F5C842':(m.pct>=50?'#06DAAE':'#7250FF');
+
+  // BG
+  ctx.fillStyle='#060608';ctx.fillRect(0,0,W,H);
+  const g1=ctx.createRadialGradient(W*.5,H*.35,0,W*.5,H*.35,W*.9);
+  g1.addColorStop(0,accent+'2e');g1.addColorStop(1,'transparent');
+  ctx.fillStyle=g1;ctx.fillRect(0,0,W,H);
+  const g2=ctx.createRadialGradient(0,H,0,0,H,W);
+  g2.addColorStop(0,'rgba(114,80,255,.18)');g2.addColorStop(1,'transparent');
+  ctx.fillStyle=g2;ctx.fillRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,.035)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=72){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=72){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // top bar
+  const tb=ctx.createLinearGradient(0,0,W,0);
+  tb.addColorStop(0,'#7250FF');tb.addColorStop(1,'#06DAAE');
+  ctx.fillStyle=tb;ctx.fillRect(0,0,W,12);
+
+  // logo
+  ctx.textAlign='center';
+  ctx.font='900 64px "Barlow Condensed",sans-serif';
+  const lx=W/2;
+  ctx.fillStyle='#fff';
+  const vw=ctx.measureText('VIVAN').width, lw=ctx.measureText('LIVE').width;
+  ctx.textAlign='left';
+  ctx.fillText('VIVAN',lx-(vw+lw)/2,140);
+  ctx.fillStyle='#06DAAE';
+  ctx.fillText('LIVE',lx-(vw+lw)/2+vw,140);
+  ctx.textAlign='center';
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='500 26px monospace';
+  ctx.fillText('@VivanLive  ·  vivan.fun',W/2,182);
+
+  // big emoji
+  ctx.font='170px sans-serif';
+  ctx.fillText(m.emoji,W/2,400);
+
+  // Milestone % — huge
+  ctx.fillStyle=accent;
+  ctx.font='900 300px "Barlow Condensed",sans-serif';
+  ctx.fillText(m.pct+'%',W/2,660);
+
+  // label
+  ctx.fillStyle='#fff';
+  ctx.font='900 68px "Barlow Condensed",sans-serif';
+  const cleanLabel=m.label.replace(/[🔥💎🚀🏆🎯]/g,'').trim();
+  ctx.fillText(cleanLabel,W/2,760);
+
+  // sub
+  ctx.fillStyle='rgba(255,255,255,.55)';
+  ctx.font='30px monospace';
+  ctx.fillText(m.sub,W/2,812);
+
+  // progress bar
+  const barY=880,barW=W-200,barX=100;
+  ctx.fillStyle='rgba(255,255,255,.08)';ctx.fillRect(barX,barY,barW,24);
+  const fillW=barW*(m.pct/100);
+  const bg=ctx.createLinearGradient(barX,0,barX+fillW,0);
+  bg.addColorStop(0,'#7250FF');bg.addColorStop(1,accent);
+  ctx.fillStyle=bg;ctx.fillRect(barX,barY,fillW,24);
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='22px monospace';
+  ctx.textAlign='left';ctx.fillText('₹0',barX,barY+60);
+  ctx.textAlign='right';ctx.fillText('₹1 Crore',barX+barW,barY+60);
+
+  // footer tag
+  ctx.textAlign='center';
+  ctx.fillStyle=accent;ctx.font='700 34px monospace';
+  ctx.fillText('#1CroreChallenge',W/2,1010);
+  ctx.textAlign='left';
+  return canvas;
+}
+
+let _msShareBuilt=false;
+document.getElementById('msShare').addEventListener('click',()=>{
+  const m=window._currentMilestone;if(!m)return;
+  const modal=document.getElementById('msShareModal');
+  modal.style.display='flex';
+  drawMilestoneCard(document.getElementById('msShareCanvas'),m);
+  _msShareBuilt=true;
+});
+document.getElementById('mssClose').addEventListener('click',()=>{
+  document.getElementById('msShareModal').style.display='none';
+});
+function msDownload(canvas,fname){
+  const isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const msg=document.getElementById('mssMsg');
+  if(isIOS){
+    const win=window.open();
+    win.document.write('<img src="'+canvas.toDataURL('image/png')+'" style="width:100%"/><p style="font-family:monospace;text-align:center;color:#333">Tap &amp; hold → Save to Photos</p>');
+    msg.textContent='📱 Tap & hold the image → Save to Photos';
+  }else{
+    const a=document.createElement('a');a.download=fname;a.href=canvas.toDataURL('image/png');a.click();
+    msg.textContent='✓ Downloaded!';
+  }
+  setTimeout(()=>msg.textContent='',4000);
+}
+document.getElementById('mssDownload').addEventListener('click',()=>{
+  msDownload(document.getElementById('msShareCanvas'),'vivanlive-milestone.png');
+});
+document.getElementById('mssCopy').addEventListener('click',()=>{
+  const canvas=document.getElementById('msShareCanvas');
+  const msg=document.getElementById('mssMsg');
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){msDownload(canvas,'vivanlive-milestone.png');return;}
+  try{
+    canvas.toBlob(async b=>{
+      await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);
+      msg.textContent='✓ Copied to clipboard!';setTimeout(()=>msg.textContent='',4000);
+    });
+  }catch{msDownload(canvas,'vivanlive-milestone.png');}
+});
+
 
 // ── PNL GROWTH CHART ──
 let chartView='cumulative';
@@ -3831,8 +3995,7 @@ async function init(){
     renderPnlChart();
     updateStreakAndTint();
     initScrollReveal();
-    const tot=d.trading+d.airdrop+d.content;
-    checkMilestone(tot);
+    checkMilestone(totalEarned); // totalEarned is set by render() from daily-tab sum
     const ov=$('loadingOverlay');ov.classList.add('hidden');
     setTimeout(()=>{ov.remove();showWelcomePopup();},400);
     // Auto-refresh data every 60 seconds
@@ -3842,7 +4005,8 @@ async function init(){
       render(d);
       renderCalendar();
       renderPnlChart();
-        updateStreakAndTint();
+      updateStreakAndTint();
+      checkMilestone(totalEarned); // re-check after each refresh
     },60000);
     // Defer exchange rate fetch after page is visible
     setTimeout(()=>{
