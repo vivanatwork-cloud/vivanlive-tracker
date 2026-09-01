@@ -699,6 +699,86 @@ body.light .disc-body strong{color:#111;}
 }
 
 
+/* ═══ CHALLENGE RETROSPECTIVE ═══ */
+.retro-section{margin-bottom:28px;}
+.retro-hero{
+  background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--gold);
+  padding:26px;margin-bottom:14px;position:relative;overflow:hidden;
+}
+.retro-hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 50% 60% at 80% 20%,rgba(245,200,66,.1),transparent 60%);
+}
+.retro-badge{
+  display:inline-block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--gold);background:rgba(245,200,66,.08);
+  border:1px solid rgba(245,200,66,.25);padding:5px 14px;margin-bottom:14px;position:relative;
+}
+.retro-hero h2{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(28px,5vw,44px);letter-spacing:.02em;line-height:1.05;margin-bottom:10px;position:relative;
+}
+.retro-hero h2 em{color:var(--mint);font-style:normal;}
+.retro-hero p{font-size:14px;color:#999;line-height:1.6;max-width:640px;position:relative;}
+.retro-stats{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;
+}
+.rstat{background:var(--s1);border:1px solid var(--border);padding:16px 14px;position:relative;overflow:hidden;}
+.rstat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--mint);}
+.rstat.neg::before{background:var(--red);}
+.rstat.gold::before{background:var(--gold);}
+.rstat-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;line-height:1;color:var(--text);}
+.rstat-val.mint{color:var(--mint);}
+.rstat-lbl{font-family:'DM Mono',monospace;font-size:8px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-top:5px;}
+.rstat-sub{font-family:'DM Mono',monospace;font-size:8px;color:#666;margin-top:3px;}
+
+.retro-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.retro-card{background:var(--s1);border:1px solid var(--border);padding:20px;overflow:hidden;}
+.retro-card-title{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.retro-card-title .rt-hint{margin-left:auto;font-size:8px;color:#666;letter-spacing:.06em;text-transform:none;}
+.retro-full{grid-column:1 / -1;}
+#retroEquity,#retroMonthly{width:100%;height:auto;display:block;}
+
+/* day of week heatmap */
+.dow-grid{display:flex;flex-direction:column;gap:6px;}
+.dow-row{display:grid;grid-template-columns:70px 1fr auto;gap:12px;align-items:center;}
+.dow-name{font-family:'DM Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.06em;}
+.dow-bar-track{height:22px;background:var(--s2);position:relative;overflow:hidden;}
+.dow-bar{height:100%;position:absolute;top:0;transition:width 1s ease;}
+.dow-bar.pos{background:linear-gradient(90deg,rgba(6,218,174,.4),var(--mint));left:50%;}
+.dow-bar.neg{background:linear-gradient(90deg,var(--red),rgba(255,59,92,.4));right:50%;}
+.dow-mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.15);}
+.dow-val{font-family:'DM Mono',monospace;font-size:10px;min-width:80px;text-align:right;letter-spacing:.04em;}
+.dow-val.pos{color:var(--mint);}
+.dow-val.neg{color:var(--red);}
+
+/* learnings */
+.learns{display:flex;flex-direction:column;gap:10px;}
+.learn{
+  background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--purple);
+  padding:16px 18px;display:flex;gap:14px;align-items:flex-start;
+}
+.learn.warn{border-left-color:var(--red);}
+.learn.good{border-left-color:var(--mint);}
+.learn-icon{font-size:22px;flex-shrink:0;line-height:1.2;}
+.learn-body h4{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;letter-spacing:.02em;color:var(--text);margin-bottom:4px;}
+.learn-body p{font-size:13px;color:#999;line-height:1.55;}
+.learn-body strong{color:var(--dim);}
+
+@media(max-width:860px){
+  .retro-stats{grid-template-columns:repeat(2,1fr);}
+  .retro-grid{grid-template-columns:1fr;}
+}
+@media(max-width:640px){
+  .retro-hero{padding:18px;}
+  .rstat-val{font-size:22px;}
+  .dow-row{grid-template-columns:52px 1fr;}
+  .dow-val{grid-column:2;text-align:left;min-width:0;margin-top:-4px;}
+}
+
 /* MONEY CARD */
 .money-card{
   background:var(--s1);border:1px solid #1a1a2e;
@@ -2056,6 +2136,87 @@ body.light #worldMap path.visited{fill:var(--mint);}
     </div>
   </div>
   </div><!-- end pnlChartSection -->
+
+  <!-- ═══ CHALLENGE RETROSPECTIVE ═══ -->
+  <div class="sl"><span class="sl-icon">📊</span>Challenge Retrospective</div>
+  <div class="retro-section">
+
+    <!-- Hero -->
+    <div class="retro-hero sr">
+      <div class="retro-badge">🏁 Halfway Mark Reached · 145 Days</div>
+      <h2>₹50L in 145 days. Here's <em>everything the data taught me.</em></h2>
+      <p>The goal was ₹1 Crore. I hit ₹50.4L — halfway — trading nearly every day from April to August. This is the honest breakdown: the edge, the near-blowup in May, the comeback, and the patterns I can't unsee. No polish.</p>
+    </div>
+
+    <!-- Headline stats -->
+    <div class="retro-stats">
+      <div class="rstat gold"><div class="rstat-val mint">₹50.4L</div><div class="rstat-lbl">Total Earned</div><div class="rstat-sub">$54,586</div></div>
+      <div class="rstat"><div class="rstat-val">65%</div><div class="rstat-lbl">Win-Day Rate</div><div class="rstat-sub">62W / 33L</div></div>
+      <div class="rstat"><div class="rstat-val">1.60</div><div class="rstat-lbl">Profit Factor</div><div class="rstat-sub">$134K / $84K</div></div>
+      <div class="rstat"><div class="rstat-val">+$528</div><div class="rstat-lbl">Expectancy / Day</div><div class="rstat-sub">per trading day</div></div>
+      <div class="rstat neg"><div class="rstat-val" style="color:var(--red)">-$37K</div><div class="rstat-lbl">Max Drawdown</div><div class="rstat-sub">the May bleed</div></div>
+    </div>
+
+    <!-- Equity curve (full width) -->
+    <div class="retro-card retro-full sr">
+      <div class="retro-card-title">📈 Trading Equity Curve <span class="rt-hint">cumulative · Apr–Aug 2026</span></div>
+      <canvas id="retroEquity"></canvas>
+    </div>
+
+    <!-- Monthly + Day-of-week -->
+    <div class="retro-grid">
+      <div class="retro-card sr">
+        <div class="retro-card-title">🗓️ The Monthly Arc <span class="rt-hint">trading net</span></div>
+        <canvas id="retroMonthly"></canvas>
+      </div>
+      <div class="retro-card sr">
+        <div class="retro-card-title">📅 Day-of-Week Edge <span class="rt-hint">Tuesday problem</span></div>
+        <div class="dow-grid" id="dowGrid"></div>
+      </div>
+    </div>
+
+    <!-- Concentration callout -->
+    <div class="retro-hero sr" style="border-left-color:var(--purple);margin-top:0;">
+      <div class="retro-badge" style="color:var(--purple-lt);background:rgba(114,80,255,.08);border-color:rgba(114,80,255,.25);">⚡ The Uncomfortable Truth</div>
+      <h2 style="font-size:clamp(22px,4vw,32px);">My top <em>5 days</em> made 72% of all profit.</h2>
+      <p>Top 10 days = 115% of net profit — meaning everything after that basically cancelled out. The result wasn't built on grinding consistency. It was built on catching a handful of big moves and not blowing up in between. That's fragile, and it's the thing I'm working on next.</p>
+    </div>
+
+    <!-- Learnings -->
+    <div class="sl" style="margin-top:24px;"><span class="sl-icon">🧠</span>What The Data Taught Me</div>
+    <div class="learns">
+      <div class="learn warn sr">
+        <div class="learn-icon">🩸</div>
+        <div class="learn-body">
+          <h4>My losses were bigger than my wins</h4>
+          <p>Average win day: <strong>+$2,161</strong>. Average loss day: <strong>−$2,541</strong>. I won more often (65%) but lost harder when I lost. A profit factor of 1.60 is positive but thin — a hard daily stop-loss would've barely touched my green days while cutting the worst reds in half.</p>
+        </div>
+      </div>
+      <div class="learn warn sr">
+        <div class="learn-icon">📉</div>
+        <div class="learn-body">
+          <h4>May nearly ended the run</h4>
+          <p>−$19,459 that month. A 38% win rate and a cluster of −$7.3K, −$6.9K, −$6.2K days within a week. The equity curve shows me revenge-trading — loss, loss, bigger loss — sizing up into a losing streak instead of stepping away. I gave back 74% of my entire profit at the worst point.</p>
+        </div>
+      </div>
+      <div class="learn warn sr">
+        <div class="learn-icon">🔴</div>
+        <div class="learn-body">
+          <h4>Tuesday is my kryptonite</h4>
+          <p>I lost <strong>−$19,883 on Tuesdays alone</strong> — almost exactly my entire May loss. Meanwhile Sundays and Mondays I win 81%+ of the time. If I'd simply not traded Tuesdays, my net would be ~$70K instead of $50K. Too consistent across 14 Tuesdays to be noise.</p>
+        </div>
+      </div>
+      <div class="learn good sr">
+        <div class="learn-icon">🚀</div>
+        <div class="learn-body">
+          <h4>Then June happened — and I became a different trader</h4>
+          <p>After the May blowup: June 92% win days, July 70%, August <strong>+$27K (my best month)</strong>. Something clicked — I got more selective and stopped forcing trades. That behavioral shift, not any single setup, is the real edge. Bottling whatever changed on June 4th is the whole game now.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ═══ END RETROSPECTIVE ═══ -->
 
   <!-- YOUTUBE DAILY CHALLENGE -->
   <div class="sl"><span class="sl-icon">🎬</span>The 10K Challenge</div>
@@ -3982,6 +4143,112 @@ function renderPnlChart(){
 
 // ── TRADE JOURNAL (teaser only — static dummy data, no fetch needed) ──
 
+// ═══ CHALLENGE RETROSPECTIVE RENDER ═══
+// Static data — challenge is complete, numbers are final.
+const RETRO_DAILY=[3051,1067,-858,1460,2840.5,5774.245,3159,1414,1019.77,2217,9727,3684.46,-9493.71,0,-3500,-549,2682,648,-2101,-1833,-4034,400,0,560,90,1282,49,-1200,-370,-1500,-1500,-1000,0,0,0,9073,-1412,741,3002,3500,-3594,-2966,-7343,0,0,0,-772,-6899,-3000,0,0,-6200,0,0,0,3008,-2434,774,293,1327,0,0,0,0,0,0,0,0,0,0,0,0,0,1200,165,72,1142,4135.8,0,0,2243,813,5184.2,507,2578,3604.72,1555,0,1298,1703,-2748,2689,1958.8,2400,200,-633,-3668,-767,871,-1326.7,0,733,0,0,1171,0,0,0,778,-3031,175,-2106,0,0,0,1581,0,0,0,0,0,0,0,500,1100,1000,0,0,0,-441,-538,-907,6306,4407,4935,1135,3633,-2461,0,3583,1288,256,-2667,4247.89];
+const RETRO_MONTHS=[
+  {m:'Apr',v:16775,wr:67},{m:'May',v:-19459,wr:38},{m:'Jun',v:12739,wr:92},{m:'Jul',v:13126,wr:70},{m:'Aug',v:26958,wr:72}
+];
+const RETRO_DOW=[
+  {d:'Sun',v:16643,wr:82},{d:'Mon',v:23936,wr:81},{d:'Tue',v:-19883,wr:43},{d:'Wed',v:-4382,wr:50},{d:'Thu',v:13821,wr:65},{d:'Fri',v:12161,wr:67},{d:'Sat',v:7844,wr:69}
+];
+
+function retroCanvas(id,hRatio){
+  const cv=document.getElementById(id);if(!cv)return null;
+  const wrap=cv.parentElement;
+  const w=wrap.clientWidth-40;const h=Math.round(w*hRatio);
+  const dpr=window.devicePixelRatio||1;
+  cv.width=w*dpr;cv.height=h*dpr;cv.style.width=w+'px';cv.style.height=h+'px';
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  return {ctx,w,h};
+}
+
+function drawRetroEquity(){
+  const c=retroCanvas('retroEquity',0.42);if(!c)return;
+  const {ctx,w,h}=c;
+  const pad={l:8,r:8,t:16,b:20};
+  const cum=[];let s=0;RETRO_DAILY.forEach(v=>{s+=v;cum.push(s);});
+  const min=Math.min(0,...cum),max=Math.max(...cum);
+  const px=i=>pad.l+(i/(cum.length-1))*(w-pad.l-pad.r);
+  const py=v=>pad.t+(1-(v-min)/(max-min))*(h-pad.t-pad.b);
+  ctx.strokeStyle='rgba(255,255,255,.12)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(pad.l,py(0));ctx.lineTo(w-pad.r,py(0));ctx.stroke();ctx.setLineDash([]);
+  const grad=ctx.createLinearGradient(0,pad.t,0,h-pad.b);
+  grad.addColorStop(0,'rgba(6,218,174,.28)');grad.addColorStop(1,'rgba(6,218,174,0)');
+  ctx.beginPath();ctx.moveTo(px(0),py(cum[0]));
+  cum.forEach((v,i)=>ctx.lineTo(px(i),py(v)));
+  ctx.lineTo(px(cum.length-1),py(0));ctx.lineTo(px(0),py(0));ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+  ctx.beginPath();ctx.moveTo(px(0),py(cum[0]));
+  cum.forEach((v,i)=>ctx.lineTo(px(i),py(v)));
+  ctx.strokeStyle='#06DAAE';ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
+  const lowIdx=cum.indexOf(Math.min(...cum));
+  ctx.fillStyle='#FF3B5C';ctx.beginPath();ctx.arc(px(lowIdx),py(cum[lowIdx]),4,0,7);ctx.fill();
+  ctx.fillStyle='rgba(255,59,92,.9)';ctx.font='600 10px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('May low',px(lowIdx),py(cum[lowIdx])+16);
+  ctx.fillStyle='#06DAAE';ctx.beginPath();ctx.arc(px(cum.length-1),py(cum[cum.length-1]),4,0,7);ctx.fill();
+  ctx.textAlign='right';ctx.fillStyle='#06DAAE';ctx.font='700 11px "DM Mono",monospace';
+  ctx.fillText('$'+(cum[cum.length-1]/1000).toFixed(0)+'K',px(cum.length-1)-2,py(cum[cum.length-1])-8);
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px "DM Mono",monospace';ctx.textAlign='center';
+  const monthStarts=[0,21,52,73,105];const labels=['Apr','May','Jun','Jul','Aug'];
+  monthStarts.forEach((mi,i)=>{if(mi<cum.length)ctx.fillText(labels[i],px(mi),h-6);});
+}
+
+function drawRetroMonthly(){
+  const c=retroCanvas('retroMonthly',0.62);if(!c)return;
+  const {ctx,w,h}=c;
+  const pad={l:8,r:8,t:20,b:32};
+  const vals=RETRO_MONTHS.map(m=>m.v);
+  const min=Math.min(0,...vals),max=Math.max(...vals);
+  const bw=(w-pad.l-pad.r)/RETRO_MONTHS.length;
+  const zy=pad.t+(1-(0-min)/(max-min))*(h-pad.t-pad.b);
+  RETRO_MONTHS.forEach((m,i)=>{
+    const x=pad.l+i*bw+bw*0.18,barW=bw*0.64;
+    const vy=pad.t+(1-(m.v-min)/(max-min))*(h-pad.t-pad.b);
+    const pos=m.v>=0;const top=pos?vy:zy,bh=Math.abs(vy-zy);
+    const g=ctx.createLinearGradient(0,top,0,top+bh);
+    if(pos){g.addColorStop(0,'#06DAAE');g.addColorStop(1,'rgba(6,218,174,.4)');}
+    else{g.addColorStop(0,'rgba(255,59,92,.4)');g.addColorStop(1,'#FF3B5C');}
+    ctx.fillStyle=g;ctx.fillRect(x,top,barW,Math.max(2,bh));
+    ctx.fillStyle=pos?'#06DAAE':'#FF3B5C';ctx.textAlign='center';
+    const lbl=(pos?'+':'−')+'$'+Math.abs(m.v/1000).toFixed(1)+'K';
+    ctx.font='700 12px "DM Mono",monospace';
+    // place negative labels just below the zero line, not at bar bottom (avoids clashing month name)
+    ctx.fillText(lbl,x+barW/2,pos?top-6:zy+14);
+    ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='700 12px "Barlow Condensed",sans-serif';
+    ctx.fillText(m.m.toUpperCase(),x+barW/2,h-16);
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='8px "DM Mono",monospace';
+    ctx.fillText(m.wr+'% win',x+barW/2,h-4);
+  });
+  ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pad.l,zy);ctx.lineTo(w-pad.r,zy);ctx.stroke();
+}
+
+function drawDOW(){
+  const grid=document.getElementById('dowGrid');if(!grid)return;
+  const maxAbs=Math.max(...RETRO_DOW.map(d=>Math.abs(d.v)));
+  grid.innerHTML=RETRO_DOW.map(d=>{
+    const pos=d.v>=0;const pct=Math.abs(d.v)/maxAbs*50;
+    const bar=pos
+      ?`<div class="dow-bar pos" style="width:${pct}%"></div>`
+      :`<div class="dow-bar neg" style="width:${pct}%"></div>`;
+    const val=(pos?'+':'−')+'$'+Math.abs(d.v/1000).toFixed(1)+'K';
+    return `<div class="dow-row">
+      <div class="dow-name">${d.d} <span style="color:#555;font-size:8px">${d.wr}%</span></div>
+      <div class="dow-bar-track">${bar}<div class="dow-mid"></div></div>
+      <div class="dow-val ${pos?'pos':'neg'}">${val}</div>
+    </div>`;
+  }).join('');
+}
+
+let _retroDone=false;
+function renderRetro(){
+  drawRetroEquity();drawRetroMonthly();drawDOW();
+  _retroDone=true;
+}
+window.addEventListener('resize',()=>{if(_retroDone){drawRetroEquity();drawRetroMonthly();}});
+// ═══ END RETROSPECTIVE ═══
+
 async function init(){
   tick();setInterval(tick,30000);
   initTypewriter();
@@ -3995,6 +4262,7 @@ async function init(){
     renderPnlChart();
     updateStreakAndTint();
     initScrollReveal();
+    renderRetro();
     checkMilestone(totalEarned); // totalEarned is set by render() from daily-tab sum
     const ov=$('loadingOverlay');ov.classList.add('hidden');
     setTimeout(()=>{ov.remove();showWelcomePopup();},400);
