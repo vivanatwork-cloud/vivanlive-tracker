@@ -2144,17 +2144,17 @@ body.light #worldMap path.visited{fill:var(--mint);}
     <!-- Hero -->
     <div class="retro-hero sr">
       <div class="retro-badge">🏁 Halfway Mark Reached · 145 Days</div>
-      <h2>₹50L in 145 days. Here's <em>everything the data taught me.</em></h2>
-      <p>The goal was ₹1 Crore. I hit ₹50.4L — halfway — trading nearly every day from April to August. This is the honest breakdown: the edge, the near-blowup in May, the comeback, and the patterns I can't unsee. No polish.</p>
+      <h2><span id="retroHeroAmt">₹50L</span> in 145 days. Here's <em>everything the data taught me.</em></h2>
+      <p>The goal was ₹1 Crore. I hit <span id="retroHeroFull">₹50.4L</span> — halfway — trading nearly every day from April to August. This is the honest breakdown: the edge, the near-blowup in May, the comeback, and the patterns I can't unsee. No polish.</p>
     </div>
 
     <!-- Headline stats -->
     <div class="retro-stats">
-      <div class="rstat gold"><div class="rstat-val mint">₹50.4L</div><div class="rstat-lbl">Total Earned</div><div class="rstat-sub">$54,586</div></div>
+      <div class="rstat gold"><div class="rstat-val mint" id="retroTotal">₹50.4L</div><div class="rstat-lbl">Total Earned</div><div class="rstat-sub" id="retroPerDay">≈ ₹34.8K / day</div></div>
       <div class="rstat"><div class="rstat-val">65%</div><div class="rstat-lbl">Win-Day Rate</div><div class="rstat-sub">62W / 33L</div></div>
-      <div class="rstat"><div class="rstat-val">1.60</div><div class="rstat-lbl">Profit Factor</div><div class="rstat-sub">$134K / $84K</div></div>
-      <div class="rstat"><div class="rstat-val">+$528</div><div class="rstat-lbl">Expectancy / Day</div><div class="rstat-sub">per trading day</div></div>
-      <div class="rstat neg"><div class="rstat-val" style="color:var(--red)">-$37K</div><div class="rstat-lbl">Max Drawdown</div><div class="rstat-sub">the May bleed</div></div>
+      <div class="rstat"><div class="rstat-val">1.60</div><div class="rstat-lbl">Profit Factor</div><div class="rstat-sub" id="retroPF">₹124L / ₹77L</div></div>
+      <div class="rstat"><div class="rstat-val" id="retroExp">+₹48.8K</div><div class="rstat-lbl">Expectancy / Day</div><div class="rstat-sub">per trading day</div></div>
+      <div class="rstat neg"><div class="rstat-val" style="color:var(--red)" id="retroDD">-₹34L</div><div class="rstat-lbl">Max Drawdown</div><div class="rstat-sub">the May bleed</div></div>
     </div>
 
     <!-- Equity curve (full width) -->
@@ -2189,28 +2189,28 @@ body.light #worldMap path.visited{fill:var(--mint);}
         <div class="learn-icon">🩸</div>
         <div class="learn-body">
           <h4>My losses were bigger than my wins</h4>
-          <p>Average win day: <strong>+$2,161</strong>. Average loss day: <strong>−$2,541</strong>. I won more often (65%) but lost harder when I lost. A profit factor of 1.60 is positive but thin — a hard daily stop-loss would've barely touched my green days while cutting the worst reds in half.</p>
+          <p>Average win day: <strong id="lrnAvgWin">+$2,161</strong>. Average loss day: <strong id="lrnAvgLoss">−$2,541</strong>. I won more often (65%) but lost harder when I lost. A profit factor of 1.60 is positive but thin — a hard daily stop-loss would've barely touched my green days while cutting the worst reds in half.</p>
         </div>
       </div>
       <div class="learn warn sr">
         <div class="learn-icon">📉</div>
         <div class="learn-body">
           <h4>May nearly ended the run</h4>
-          <p>−$19,459 that month. A 38% win rate and a cluster of −$7.3K, −$6.9K, −$6.2K days within a week. The equity curve shows me revenge-trading — loss, loss, bigger loss — sizing up into a losing streak instead of stepping away. I gave back 74% of my entire profit at the worst point.</p>
+          <p><span id="lrnMay">−$19,459</span> that month. A 38% win rate and a cluster of big red days within a week. The equity curve shows me revenge-trading — loss, loss, bigger loss — sizing up into a losing streak instead of stepping away. I gave back 74% of my entire profit at the worst point.</p>
         </div>
       </div>
       <div class="learn warn sr">
         <div class="learn-icon">🔴</div>
         <div class="learn-body">
           <h4>Tuesday is my kryptonite</h4>
-          <p>I lost <strong>−$19,883 on Tuesdays alone</strong> — almost exactly my entire May loss. Meanwhile Sundays and Mondays I win 81%+ of the time. If I'd simply not traded Tuesdays, my net would be ~$70K instead of $50K. Too consistent across 14 Tuesdays to be noise.</p>
+          <p>I lost <strong id="lrnTue">−$19,883 on Tuesdays alone</strong> — almost exactly my entire May loss. Meanwhile Sundays and Mondays I win 81%+ of the time. Too consistent across 14 Tuesdays to be noise.</p>
         </div>
       </div>
       <div class="learn good sr">
         <div class="learn-icon">🚀</div>
         <div class="learn-body">
           <h4>Then June happened — and I became a different trader</h4>
-          <p>After the May blowup: June 92% win days, July 70%, August <strong>+$27K (my best month)</strong>. Something clicked — I got more selective and stopped forcing trades. That behavioral shift, not any single setup, is the real edge. Bottling whatever changed on June 4th is the whole game now.</p>
+          <p>After the May blowup: June 92% win days, July 70%, August <strong id="lrnAug">+$27K (my best month)</strong>. Something clicked — I got more selective and stopped forcing trades. That behavioral shift, not any single setup, is the real edge. Bottling whatever changed on June 4th is the whole game now.</p>
         </div>
       </div>
     </div>
@@ -2500,14 +2500,21 @@ function animateValue(el,start,end,duration,formatter){
 
 // ═══ SCROLL REVEAL ═══
 function initScrollReveal(){
-  const targets=document.querySelectorAll('.money-card,.yt-card,.course-cta-bar,.accordion-section,.chart-card,.sl');
-  targets.forEach(el=>el.classList.add('sr'));
+  const autoTargets=document.querySelectorAll('.money-card,.yt-card,.course-cta-bar,.accordion-section,.chart-card,.sl');
+  autoTargets.forEach(el=>el.classList.add('sr'));
   const obs=new IntersectionObserver(entries=>{
     entries.forEach(e=>{
       if(e.isIntersecting){e.target.classList.add('vis');obs.unobserve(e.target);}
     });
-  },{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
-  targets.forEach(el=>obs.observe(el));
+  },{threshold:0.05,rootMargin:'0px 0px -20px 0px'});
+  // observe every .sr element (auto-added + hardcoded in HTML like the retro section)
+  document.querySelectorAll('.sr').forEach(el=>obs.observe(el));
+  // Safety net: if IntersectionObserver never fires for something off-screen quirks,
+  // reveal anything still hidden after 2.5s so nothing stays blank.
+  setTimeout(()=>{document.querySelectorAll('.sr:not(.vis)').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top<window.innerHeight+400)el.classList.add('vis');
+  });},2500);
 }
 
 // ═══ TYPEWRITER ═══
@@ -2690,6 +2697,7 @@ function setCurrency(c){
   if(window._lastRenderData)render(window._lastRenderData);
   renderCalendar();
   renderPnlChart();
+  if(typeof renderRetro==='function'&&_retroDone)renderRetro();
 }
 
 function getUSDTarget(){return Math.round(10000000/usdInr);}
@@ -4156,7 +4164,9 @@ const RETRO_DOW=[
 function retroCanvas(id,hRatio){
   const cv=document.getElementById(id);if(!cv)return null;
   const wrap=cv.parentElement;
-  const w=wrap.clientWidth-40;const h=Math.round(w*hRatio);
+  let w=wrap.clientWidth-40;
+  if(w<50)w=Math.min(680,(document.querySelector('.wrapper')?.clientWidth||680)-40); // fallback if parent not laid out yet
+  const h=Math.round(w*hRatio);
   const dpr=window.devicePixelRatio||1;
   cv.width=w*dpr;cv.height=h*dpr;cv.style.width=w+'px';cv.style.height=h+'px';
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
@@ -4188,7 +4198,7 @@ function drawRetroEquity(){
   ctx.fillText('May low',px(lowIdx),py(cum[lowIdx])+16);
   ctx.fillStyle='#06DAAE';ctx.beginPath();ctx.arc(px(cum.length-1),py(cum[cum.length-1]),4,0,7);ctx.fill();
   ctx.textAlign='right';ctx.fillStyle='#06DAAE';ctx.font='700 11px "DM Mono",monospace';
-  ctx.fillText('$'+(cum[cum.length-1]/1000).toFixed(0)+'K',px(cum.length-1)-2,py(cum[cum.length-1])-8);
+  ctx.fillText(retroFmt(cum[cum.length-1]),px(cum.length-1)-2,py(cum[cum.length-1])-8);
   ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='9px "DM Mono",monospace';ctx.textAlign='center';
   const monthStarts=[0,21,52,73,105];const labels=['Apr','May','Jun','Jul','Aug'];
   monthStarts.forEach((mi,i)=>{if(mi<cum.length)ctx.fillText(labels[i],px(mi),h-6);});
@@ -4211,7 +4221,7 @@ function drawRetroMonthly(){
     else{g.addColorStop(0,'rgba(255,59,92,.4)');g.addColorStop(1,'#FF3B5C');}
     ctx.fillStyle=g;ctx.fillRect(x,top,barW,Math.max(2,bh));
     ctx.fillStyle=pos?'#06DAAE':'#FF3B5C';ctx.textAlign='center';
-    const lbl=(pos?'+':'−')+'$'+Math.abs(m.v/1000).toFixed(1)+'K';
+    const lbl=retroFmt(m.v,true);
     ctx.font='700 12px "DM Mono",monospace';
     // place negative labels just below the zero line, not at bar bottom (avoids clashing month name)
     ctx.fillText(lbl,x+barW/2,pos?top-6:zy+14);
@@ -4232,7 +4242,7 @@ function drawDOW(){
     const bar=pos
       ?`<div class="dow-bar pos" style="width:${pct}%"></div>`
       :`<div class="dow-bar neg" style="width:${pct}%"></div>`;
-    const val=(pos?'+':'−')+'$'+Math.abs(d.v/1000).toFixed(1)+'K';
+    const val=retroFmt(d.v,true);
     return `<div class="dow-row">
       <div class="dow-name">${d.d} <span style="color:#555;font-size:8px">${d.wr}%</span></div>
       <div class="dow-bar-track">${bar}<div class="dow-mid"></div></div>
@@ -4242,9 +4252,52 @@ function drawDOW(){
 }
 
 let _retroDone=false;
+// Format a USD figure into the current currency, compact (used by retro)
+function retroFmt(usd,withSign){
+  const sign=withSign?(usd>=0?'+':'−'):'';
+  const a=Math.abs(usd);
+  if(currency==='INR'){
+    const inr=a*usdInr;
+    if(inr>=10000000)return sign+'₹'+(inr/10000000).toFixed(2)+'Cr';
+    if(inr>=100000)return sign+'₹'+(inr/100000).toFixed(1)+'L';
+    if(inr>=1000)return sign+'₹'+(inr/1000).toFixed(1)+'K';
+    return sign+'₹'+Math.round(inr).toLocaleString('en-IN');
+  }
+  if(a>=1000)return sign+'$'+(a/1000).toFixed(1)+'K';
+  return sign+'$'+Math.round(a).toLocaleString();
+}
+function updateRetroCurrency(){
+  const TOTAL=54586, DAYS=145, PROFIT_DAYS=95;
+  const GROSS_WIN=133991, GROSS_LOSS=83852, DD=37240;
+  const perDay=TOTAL/DAYS;
+  const exp=(GROSS_WIN-GROSS_LOSS)/PROFIT_DAYS;
+  const set=(id,txt)=>{const e=document.getElementById(id);if(e)e.textContent=txt;};
+  set('retroTotal',retroFmt(TOTAL));
+  set('retroHeroAmt',retroFmt(TOTAL));
+  set('retroHeroFull',retroFmt(TOTAL));
+  set('retroPerDay','≈ '+retroFmt(perDay)+' / day');
+  set('retroPF',retroFmt(GROSS_WIN)+' / '+retroFmt(GROSS_LOSS));
+  set('retroExp',retroFmt(exp,true));
+  set('retroDD',retroFmt(-DD,true));
+  // learnings prose amounts
+  set('lrnAvgWin',retroFmt(2161,true));
+  set('lrnAvgLoss',retroFmt(-2541,true));
+  set('lrnMay',retroFmt(-19459,true));
+  set('lrnTue',retroFmt(-19883,true)+' on Tuesdays alone');
+  set('lrnAug',retroFmt(26958,true)+' (my best month)');
+}
 function renderRetro(){
+  updateRetroCurrency();
   drawRetroEquity();drawRetroMonthly();drawDOW();
   _retroDone=true;
+  // Redraw once the section is actually on-screen (correct width after layout/reveal)
+  const sec=document.querySelector('.retro-section');
+  if(sec&&'IntersectionObserver' in window){
+    const ro=new IntersectionObserver(es=>{
+      es.forEach(e=>{if(e.isIntersecting){drawRetroEquity();drawRetroMonthly();ro.disconnect();}});
+    },{threshold:0.02});
+    ro.observe(sec);
+  }
 }
 window.addEventListener('resize',()=>{if(_retroDone){drawRetroEquity();drawRetroMonthly();}});
 // ═══ END RETROSPECTIVE ═══
