@@ -2477,7 +2477,9 @@ async function load(){
     const text=await fetchWithRetry(SHEET);
     const d=parse(text);
     $('errorBanner').style.display='none';
-    return(d.trading||d.airdrop||d.content||d.yt||d.ig)?d:FB;
+    // Consider the fetch valid if ANY currently-used key has data.
+    const hasData=d.subs||d.vo2||d.bodyfat||(d.countries&&d.countries.length)||d.ytStart;
+    return hasData?d:FB;
   }catch(e){
     console.error('Main sheet fetch failed:',e);
     $('errorBanner').style.display='flex';
