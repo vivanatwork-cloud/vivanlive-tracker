@@ -523,17 +523,8 @@ header{
 .yt-dec31{background:rgba(255,59,92,.05)!important;border-color:rgba(255,59,92,.18)!important;}
 .yt-dec31 .dec31-need strong{color:var(--red)!important;}
 .yt-dec31 .dec31-val{color:var(--red)!important;}
-/* daily video streak row */
-.yt-streak-row{
-  display:flex;gap:0;border:1px solid var(--border);margin-top:4px;
-}
-.yt-streak-item{flex:1;text-align:center;padding:14px 8px;}
-.yt-streak-item:not(:last-child){border-right:1px solid var(--border);}
-.yt-streak-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;line-height:1;color:var(--text);}
-.yt-streak-lbl{font-family:'DM Mono',monospace;font-size:8px;color:#888;letter-spacing:.1em;text-transform:uppercase;margin-top:4px;}
 @media(max-width:480px){
   .yt-card{padding:14px;}
-  .yt-streak-val{font-size:20px;}
 }
 
 /* YT-STREAK + card styles below */
@@ -777,6 +768,53 @@ body.light .disc-body strong{color:#111;}
   .rstat-val{font-size:22px;}
   .dow-row{grid-template-columns:52px 1fr;}
   .dow-val{grid-column:2;text-align:left;min-width:0;margin-top:-4px;}
+}
+
+/* ═══ CHALLENGE COMPLETE BANNER ═══ */
+.done-banner{
+  display:block;text-decoration:none;position:relative;overflow:hidden;
+  background:var(--s1);border:1px solid var(--border);
+  border-left:3px solid var(--gold);
+  padding:36px 34px;margin-bottom:28px;
+  transition:transform .25s cubic-bezier(.16,1,.3,1),border-color .25s;
+}
+.done-banner:hover{transform:translateY(-3px);border-color:rgba(245,200,66,.5);}
+.done-aurora{
+  position:absolute;inset:0;pointer-events:none;opacity:.6;
+  background:
+    radial-gradient(ellipse 45% 60% at 15% 30%,rgba(245,200,66,.16),transparent 60%),
+    radial-gradient(ellipse 50% 70% at 85% 70%,rgba(114,80,255,.16),transparent 60%),
+    radial-gradient(ellipse 40% 50% at 60% 20%,rgba(6,218,174,.1),transparent 60%);
+  animation:auroraShift 12s ease-in-out infinite alternate;
+}
+.done-inner{position:relative;z-index:1;}
+.done-badge{
+  display:inline-block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);background:rgba(245,200,66,.1);
+  border:1px solid rgba(245,200,66,.3);padding:5px 14px;margin-bottom:16px;
+}
+.done-title{
+  font-family:'Barlow Condensed',sans-serif;font-weight:900;
+  font-size:clamp(30px,6vw,56px);letter-spacing:.01em;line-height:1;
+  color:var(--text);margin-bottom:12px;
+}
+.done-title em{color:var(--mint);font-style:normal;}
+.done-sub{font-size:15px;color:#aaa;line-height:1.5;margin-bottom:22px;max-width:480px;}
+.done-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:#fff;background:var(--purple);padding:14px 28px;
+  transition:background .2s;
+}
+.done-banner:hover .done-cta{background:var(--purple-lt);}
+.done-arrow{transition:transform .2s;display:inline-block;}
+.done-banner:hover .done-arrow{transform:translate(2px,-2px);}
+body.light .done-banner{background:#fff;}
+body.light .done-sub{color:#555;}
+@media(max-width:640px){
+  .done-banner{padding:26px 20px;}
+  .done-sub{font-size:13.5px;}
+  .done-cta{padding:12px 22px;font-size:11px;}
 }
 
 /* MONEY CARD */
@@ -1928,23 +1966,11 @@ body.light #worldMap path.visited{fill:var(--mint);}
     </div>
     <div class="dl-wrap">
       <div class="dl-badges-row">
-        <div class="day-badge">
-          <div class="day-lbl">Day</div>
-          <div class="day-num" id="challengeDay">—</div>
-        </div>
         <div class="day-badge" style="background:rgba(114,80,255,.08);border-color:rgba(114,80,255,.25);">
           <div class="day-lbl" style="color:var(--purple-lt);">2026 Ends</div>
           <div class="day-num" style="color:var(--purple-lt);" id="daysToEoy">—</div>
         </div>
-        <div class="dl-badge">
-          <div class="dl-emoji">🏁</div>
-          <div>
-            <div class="dl-lbl">Final Deadline</div>
-            <div class="dl-date">31 AUG 2026</div>
-          </div>
-        </div>
       </div>
-      <div id="countdown"></div>
     </div>
   </header>
 
@@ -1958,266 +1984,6 @@ body.light #worldMap path.visited{fill:var(--mint);}
     <a class="cta-btn" href="https://hi.switchy.io/VivanLive" target="_blank">Join Now ↗</a>
   </div>
 
-  <!-- 1CR CHALLENGE -->
-  <div class="challenge-header">
-    <div class="sl" style="margin-bottom:0;flex:1"><span class="sl-icon">💰</span>1 Crore Challenge</div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span class="rate-badge" id="rateBadge">fetching…</span>
-      <div class="currency-toggle">
-        <button class="curr-btn active" id="btnINR" onclick="setCurrency('INR')">₹ INR</button>
-        <button class="curr-btn" id="btnUSD" onclick="setCurrency('USD')">$ USD</button>
-      </div>
-    </div>
-  </div>
-  <div class="aurora-wrap">
-  <div class="money-card" id="moneyCard">
-    <div class="aurora"></div>
-    <div class="money-head">
-      <div class="money-left-title">
-        💸 <span id="challengeTitle">₹1 Crore Challenge</span>
-        <div class="live-pulse"><span class="lp-dot"></span><span id="lpText">LIVE · syncing…</span></div>
-      </div>
-      <div class="daily-note">
-        <span>⚡ Need <strong id="dailyTarget">—</strong>/day</span>
-      </div>
-    </div>
-    <!-- Stats row -->
-    <div class="money-stats-row">
-      <div class="money-stat-item">
-        <div class="money-stat-lbl">Total Earned</div>
-        <div class="money-stat-val" id="totalDisplay">₹0</div><span id="streakFlame" style="display:none;"></span>
-      </div>
-      <div class="money-stat-divider"></div>
-      <div class="money-stat-item">
-        <div class="money-stat-lbl">Target</div>
-        <div class="money-stat-val" style="font-size:24px;color:var(--dim)" id="targetLabel">₹1,00,00,000</div>
-      </div>
-      <div class="money-stat-divider"></div>
-      <div class="money-stat-item">
-        <div class="money-stat-lbl">Progress</div>
-        <div class="money-stat-val" style="font-size:24px"><strong id="totalPct" style="color:var(--mint)">0%</strong></div>
-      </div>
-    </div>
-    <!-- Dec 31 Scenario -->
-    <div class="dec31-row">
-      <div class="dec31-icon">🎯</div>
-      <div class="dec31-text">
-        <span class="dec31-lbl">If completed by <strong>31 Dec 2026</strong></span>
-        <span class="dec31-need">Need <strong id="dec31Daily">—</strong>/day · <span id="dec31Status" class="dec31-tag">—</span></span>
-      </div>
-      <div class="dec31-stat">
-        <div class="dec31-val" id="dec31DaysLeft">—</div>
-        <div class="dec31-unit">days left</div>
-      </div>
-    </div>
-    <div class="bar-row">
-      <div class="bar-head">
-        <span>📊 Overall Progress</span>
-        <span id="megaPctLabel">0% complete</span>
-      </div>
-      <div class="mega-bar"><div class="mega-fill" id="megaBar" style="width:0%"></div></div>
-    </div>
-    <div class="streams streams-two">
-      <div class="sc" id="tradingCard" style="cursor:pointer" title="Click to view PnL Calendar">
-        <div class="sc-head">
-          <div class="ib" data-tip="Crypto · Stocks · Airdrops">i</div>
-        </div>
-        <div class="sc-label">Trading &amp; Airdrop <span id="calToggleHint" class="cal-toggle-pill">📅 PnL</span> <span id="chartToggleHint" class="cal-toggle-pill" style="margin-left:2px;">📊 Chart</span></div>
-        <div class="sc-amt" id="tradingAmt">₹0</div>
-        <div class="sc-breakdown">
-          <span class="sc-bd-item">📈 Trading <strong id="bdTrading">₹0</strong></span>
-          <span class="sc-bd-sep">·</span>
-          <span class="sc-bd-item">🪂 Airdrop <strong id="bdAirdrop">₹0</strong></span>
-        </div>
-        <div class="mini-bar"><div class="mini-fill" id="tradingBar" style="width:0%"></div></div>
-        <a class="sc-link" href="https://vivanlive.substack.com/p/how-to-make-100k-from-crypto-airdrops" target="_blank" onclick="event.stopPropagation()">📖 How to make $100K from Airdrops ↗</a>
-      </div>
-      <div class="sc">
-        <div class="sc-head">
-          <div class="sc-icon">🎬</div>
-          <div class="ib" data-tip="Affiliate · Brand Deals">i</div>
-        </div>
-        <div class="sc-label">Content</div>
-        <div class="sc-amt" id="contentAmt">₹0</div>
-        <div class="mini-bar"><div class="mini-fill" id="contentBar" style="width:0%"></div></div>
-      </div>
-    </div>
-  </div>
-  </div><!-- end aurora-wrap -->
-
-  <!-- PNL CALENDAR (revealed on Trading click, inside $100K section) -->
-  <div id="pnlCalendarSection" style="display:none;margin-top:-14px;margin-bottom:28px;">
-  <div class="cal-panel">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-    <div class="sl" style="margin-bottom:0;flex:1"><span class="sl-icon">📅</span>PnL Calendar</div>
-    <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;letter-spacing:.1em;text-transform:uppercase" id="calClose">✕ Close</span>
-  </div>
-  <div class="pnl-section">
-    <div class="pnl-top">
-      <div class="pnl-nav">
-        <button id="calPrev">&#8592;</button>
-        <div class="pnl-month" id="calMonthLabel">— 2026</div>
-        <button id="calNext">&#8594;</button>
-      </div>
-      <button class="share-btn" id="sharePnlBtn">⬡ Share PnL</button>
-    </div>
-    <div class="pnl-stats">
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Total PnL</div><div class="pnl-stat-val neu" id="calTotal">—</div></div>
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Best Day</div><div class="pnl-stat-val pos" id="calBest">—</div></div>
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Worst Day</div><div class="pnl-stat-val neg" id="calWorst">—</div></div>
-      <div class="pnl-stat"><div class="pnl-stat-lbl">Green Days</div><div class="pnl-stat-val neu" id="calWinDays">—</div></div>
-    </div>
-
-    <!-- TARGET STATUS -->
-    <div class="target-row">
-      <div class="target-item" id="dailyTargetStatus">
-        <div class="target-label">Daily Target</div>
-        <div class="target-info"><span class="target-amount" id="targetDailyAmt">—</span><span class="target-badge" id="targetDailyBadge">—</span></div>
-        <div class="target-bar-wrap"><div class="target-bar-fill" id="targetDailyBar" style="width:0%"></div></div>
-        <div class="target-sub" id="targetDailySub">—</div>
-      </div>
-      <div class="target-item" id="monthlyTargetStatus">
-        <div class="target-label">Monthly Target</div>
-        <div class="target-info"><span class="target-amount" id="targetMonthAmt">—</span><span class="target-badge" id="targetMonthBadge">—</span></div>
-        <div class="target-bar-wrap"><div class="target-bar-fill" id="targetMonthBar" style="width:0%"></div></div>
-        <div class="target-sub" id="targetMonthSub">—</div>
-      </div>
-    </div>
-    <div class="pnl-ratio-bar">
-      <div class="pnl-ratio-lbl">Profit / Loss Ratio</div>
-      <div class="pnl-ratio-track">
-        <div class="pnl-ratio-green" id="ratioGreen" style="width:0%"></div>
-        <div class="pnl-ratio-red" id="ratioRed"></div>
-      </div>
-      <div class="pnl-ratio-ends">
-        <div class="pnl-ratio-end"><div class="pnl-ratio-dot" style="background:var(--mint)"></div><span id="ratioGreenLbl">0 days · $0</span></div>
-        <div class="pnl-ratio-end"><span id="ratioRedLbl">0 days · $0</span><div class="pnl-ratio-dot" style="background:var(--red)"></div></div>
-      </div>
-    </div>
-    <div class="cal-grid-head">
-      <div class="cal-dh">Sun</div><div class="cal-dh">Mon</div><div class="cal-dh">Tue</div>
-      <div class="cal-dh">Wed</div><div class="cal-dh">Thu</div><div class="cal-dh">Fri</div><div class="cal-dh">Sat</div>
-    </div>
-    <div class="cal-grid" id="calGrid"></div>
-  </div><!-- end pnl-section -->
-  </div><!-- end inner panel -->
-  </div><!-- end pnlCalendarSection -->
-
-  <!-- PNL GROWTH CHART -->
-  <div id="pnlChartSection" style="display:none;margin-top:-14px;margin-bottom:28px;">
-  <div class="chart-card">
-    <div class="chart-header">
-      <div class="chart-meta">
-        <div class="chart-stat" id="chartTotalEl">
-          <div class="chart-stat-lbl">Cumulative PnL</div>
-          <div class="chart-stat-val" id="chartTotal">—</div>
-        </div>
-        <div class="chart-stat">
-          <div class="chart-stat-lbl">Best Day</div>
-          <div class="chart-stat-val pos" id="chartBest">—</div>
-        </div>
-        <div class="chart-stat">
-          <div class="chart-stat-lbl">Worst Day</div>
-          <div class="chart-stat-val neg" id="chartWorst">—</div>
-        </div>
-        <div class="chart-stat">
-          <div class="chart-stat-lbl">Win Rate</div>
-          <div class="chart-stat-val" id="chartWinRate" style="color:var(--purple-lt)">—</div>
-        </div>
-      </div>
-      <div class="chart-toggles">
-        <button class="chart-tog active" onclick="setChartView('cumulative',this)">Cumulative</button>
-        <button class="chart-tog" onclick="setChartView('daily',this)">Daily</button>
-      </div>
-    </div>
-    <div class="chart-wrap">
-      <canvas id="pnlChart" style="cursor:crosshair;"></canvas>
-      <div class="chart-empty" id="chartEmpty">No data yet — add entries to your daily sheet</div>
-    </div>
-  </div>
-  </div><!-- end pnlChartSection -->
-
-  <!-- ═══ CHALLENGE RETROSPECTIVE ═══ -->
-  <div class="sl"><span class="sl-icon">📊</span>Challenge Retrospective</div>
-  <div class="retro-section">
-
-    <!-- Hero -->
-    <div class="retro-hero sr">
-      <div class="retro-badge">🏁 Halfway Mark Reached · 145 Days</div>
-      <h2><span id="retroHeroAmt">₹50L</span> in 145 days. Here's <em>everything the data taught me.</em></h2>
-      <p>The goal was ₹1 Crore. I hit <span id="retroHeroFull">₹50.4L</span> — halfway — trading nearly every day from April to August. This is the honest breakdown: the edge, the near-blowup in May, the comeback, and the patterns I can't unsee. No polish.</p>
-    </div>
-
-    <!-- Headline stats -->
-    <div class="retro-stats">
-      <div class="rstat gold"><div class="rstat-val mint" id="retroTotal">₹50.4L</div><div class="rstat-lbl">Total Earned</div><div class="rstat-sub" id="retroPerDay">≈ ₹34.8K / day</div></div>
-      <div class="rstat"><div class="rstat-val">65%</div><div class="rstat-lbl">Win-Day Rate</div><div class="rstat-sub">62W / 33L</div></div>
-      <div class="rstat"><div class="rstat-val">1.60</div><div class="rstat-lbl">Profit Factor</div><div class="rstat-sub" id="retroPF">₹124L / ₹77L</div></div>
-      <div class="rstat"><div class="rstat-val" id="retroExp">+₹48.8K</div><div class="rstat-lbl">Expectancy / Day</div><div class="rstat-sub">per trading day</div></div>
-      <div class="rstat neg"><div class="rstat-val" style="color:var(--red)" id="retroDD">-₹34L</div><div class="rstat-lbl">Max Drawdown</div><div class="rstat-sub">the May bleed</div></div>
-    </div>
-
-    <!-- Equity curve (full width) -->
-    <div class="retro-card retro-full sr">
-      <div class="retro-card-title">📈 Trading Equity Curve <span class="rt-hint">cumulative · Apr–Aug 2026</span></div>
-      <canvas id="retroEquity"></canvas>
-    </div>
-
-    <!-- Monthly + Day-of-week -->
-    <div class="retro-grid">
-      <div class="retro-card sr">
-        <div class="retro-card-title">🗓️ The Monthly Arc <span class="rt-hint">trading net</span></div>
-        <canvas id="retroMonthly"></canvas>
-      </div>
-      <div class="retro-card sr">
-        <div class="retro-card-title">📅 Day-of-Week Edge <span class="rt-hint">Tuesday problem</span></div>
-        <div class="dow-grid" id="dowGrid"></div>
-      </div>
-    </div>
-
-    <!-- Concentration callout -->
-    <div class="retro-hero sr" style="border-left-color:var(--purple);margin-top:0;">
-      <div class="retro-badge" style="color:var(--purple-lt);background:rgba(114,80,255,.08);border-color:rgba(114,80,255,.25);">⚡ The Uncomfortable Truth</div>
-      <h2 style="font-size:clamp(22px,4vw,32px);">My top <em>5 days</em> made 72% of all profit.</h2>
-      <p>Top 10 days = 115% of net profit — meaning everything after that basically cancelled out. The result wasn't built on grinding consistency. It was built on catching a handful of big moves and not blowing up in between. That's fragile, and it's the thing I'm working on next.</p>
-    </div>
-
-    <!-- Learnings -->
-    <div class="sl" style="margin-top:24px;"><span class="sl-icon">🧠</span>What The Data Taught Me</div>
-    <div class="learns">
-      <div class="learn warn sr">
-        <div class="learn-icon">🩸</div>
-        <div class="learn-body">
-          <h4>My losses were bigger than my wins</h4>
-          <p>Average win day: <strong id="lrnAvgWin">+$2,161</strong>. Average loss day: <strong id="lrnAvgLoss">−$2,541</strong>. I won more often (65%) but lost harder when I lost. A profit factor of 1.60 is positive but thin — a hard daily stop-loss would've barely touched my green days while cutting the worst reds in half.</p>
-        </div>
-      </div>
-      <div class="learn warn sr">
-        <div class="learn-icon">📉</div>
-        <div class="learn-body">
-          <h4>May nearly ended the run</h4>
-          <p><span id="lrnMay">−$19,459</span> that month. A 38% win rate and a cluster of big red days within a week. The equity curve shows me revenge-trading — loss, loss, bigger loss — sizing up into a losing streak instead of stepping away. I gave back 74% of my entire profit at the worst point.</p>
-        </div>
-      </div>
-      <div class="learn warn sr">
-        <div class="learn-icon">🔴</div>
-        <div class="learn-body">
-          <h4>Tuesday is my kryptonite</h4>
-          <p>I lost <strong id="lrnTue">−$19,883 on Tuesdays alone</strong> — almost exactly my entire May loss. Meanwhile Sundays and Mondays I win 81%+ of the time. Too consistent across 14 Tuesdays to be noise.</p>
-        </div>
-      </div>
-      <div class="learn good sr">
-        <div class="learn-icon">🚀</div>
-        <div class="learn-body">
-          <h4>Then June happened — and I became a different trader</h4>
-          <p>After the May blowup: June 92% win days, July 70%, August <strong id="lrnAug">+$27K (my best month)</strong>. Something clicked — I got more selective and stopped forcing trades. That behavioral shift, not any single setup, is the real edge. Bottling whatever changed on June 4th is the whole game now.</p>
-        </div>
-      </div>
-    </div>
-
-  </div>
-  <!-- ═══ END RETROSPECTIVE ═══ -->
-
   <!-- YOUTUBE DAILY CHALLENGE -->
   <div class="sl"><span class="sl-icon">🎬</span>The 10K Challenge</div>
   <div class="yt-card" id="ytCard">
@@ -2225,7 +1991,7 @@ body.light #worldMap path.visited{fill:var(--mint);}
     <div class="money-head">
       <div class="money-left-title">
         📺 <span>10,000 Subscriber Challenge</span>
-        <div class="live-pulse"><span class="lp-dot" style="background:var(--red);box-shadow:0 0 8px var(--red);"></span><span>1 video every day · till Dec 31</span></div>
+        <div class="live-pulse"><span class="lp-dot" style="background:var(--red);box-shadow:0 0 8px var(--red);"></span><span>Growing to 10K · till Dec 31</span></div>
       </div>
       <div class="daily-note yt-note">
         <span>🎬 Need <strong id="ytDailySubs">—</strong> subs/day</span>
@@ -2268,21 +2034,6 @@ body.light #worldMap path.visited{fill:var(--mint);}
       </div>
       <div class="mega-bar"><div class="mega-fill yt-fill" id="ytBar" style="width:0%"></div></div>
     </div>
-    <!-- Daily video streak -->
-    <div class="yt-streak-row">
-      <div class="yt-streak-item">
-        <div class="yt-streak-val" id="ytDay">Day 0</div>
-        <div class="yt-streak-lbl">Of the challenge</div>
-      </div>
-      <div class="yt-streak-item">
-        <div class="yt-streak-val" id="ytVideos">0</div>
-        <div class="yt-streak-lbl">Videos published</div>
-      </div>
-      <div class="yt-streak-item">
-        <div class="yt-streak-val" id="ytConsistency" style="color:var(--mint)">—</div>
-        <div class="yt-streak-lbl">Consistency</div>
-      </div>
-    </div>
   </div>
 
     <!-- COURSE CTA -->
@@ -2295,13 +2046,10 @@ body.light #worldMap path.visited{fill:var(--mint);}
     <a class="course-cta-btn" href="https://www.cryptocourse.in/courses/crypto-trading-playbook-proven-strategies-for-profitable-trades-from-vivan-68878b6aa882204f18bbabc1" target="_blank">Enroll Now ↗</a>
   </div>
 
-    <!-- 2026 GOALS ACCORDION -->
-  <div class="accordion-section" id="goals2026">
-    <button class="accordion-header" onclick="toggleAccordion('goals2026Body','goals2026Arrow')">
-      <span><span class="sl-icon">🌟</span>2026 Goals</span>
-      <span class="accordion-arrow" id="goals2026Arrow">▼</span>
-    </button>
-    <div class="accordion-body" id="goals2026Body">
+    <!-- 2026 GOALS (always open) -->
+  <div id="goals2026">
+    <div class="sl"><span class="sl-icon">🌟</span>2026 Goals</div>
+    <div id="goals2026Body">
 
   <!-- HEALTH MARKERS -->
   <div class="sl" style="margin-top:8px;"><span class="sl-icon">💪</span>Health</div>
@@ -2436,21 +2184,6 @@ body.light #worldMap path.visited{fill:var(--mint);}
         <button class="share-action-btn" id="shareXBtn" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.15);color:#fff;">𝕏 Post on X</button>
       </div>
       <div id="shareMsg" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--mint);letter-spacing:.08em;margin-top:10px;text-align:center;min-height:14px;"></div>
-    </div>
-  </div>
-
-  <!-- DISCLAIMER -->
-  <div class="disclaimer">
-    <div class="disc-header">
-      <span class="disc-icon">⚠️</span>
-      <span class="disc-title">Disclaimer — Read This</span>
-    </div>
-    <div class="disc-body">
-      <p><strong>This is not financial advice.</strong> I'm just tracking my own progress in public. Do your own research.</p>
-      <p>This dashboard shows aggregate numbers, not trades, positions, or strategies. Treat it as <strong>entertainment or motivation</strong> — whichever you prefer. Nothing here is a signal or a recommendation to do anything with your money.</p>
-      <p><strong>Don't try to replicate this.</strong> My risk tolerance, capital, and time horizon are not yours. I'm a mental freak — I take risks most people shouldn't.</p>
-      <p class="disc-flag">Worth saying out loud: <strong>I may be paper trading some or all of this purely for the adrenaline.</strong> Every number here is self-reported and unaudited. Assume nothing about whether real money is behind any of it.</p>
-      <p class="disc-final">Markets take everything from people who don't respect them. Proceed at your own risk.</p>
     </div>
   </div>
 
@@ -2681,6 +2414,7 @@ async function fetchExchangeRate(){
 }
 
 function setCurrency(c){
+  if(!document.getElementById('btnINR'))return; // toggle removed with money card
   currency=c;
   $('btnINR').className='curr-btn'+(c==='INR'?' active':'');
   $('btnUSD').className='curr-btn'+(c==='USD'?' active':'');
@@ -2729,6 +2463,7 @@ function parse(csv){
 const fmt=n=>n>=1000?'$'+(n/1000).toFixed(1)+'K':'$'+Math.round(n).toLocaleString();
 const $=id=>document.getElementById(id);
 function render(d){
+  if(!document.getElementById('totalDisplay'))return; // money card removed — challenge complete
   window._lastRenderData=d;
   // ── Auto-sum from the daily tab when available (source of truth) ──
   // Falls back to Sheet1 manual values only if daily tab is empty.
@@ -2791,7 +2526,6 @@ function render(d){
   const YT_GOAL=10000;
   const ytStartDate=new Date((d.ytStart||'2026-07-29')+'T00:00:00+05:30');
   const subs=d.subs||0;
-  const videos=d.videos||0;
   const ytPct=Math.min(100,(subs/YT_GOAL)*100);
   const ytEl=id=>document.getElementById(id);
   if(ytEl('ytSubs'))ytEl('ytSubs').textContent=subs.toLocaleString('en-IN');
@@ -2804,20 +2538,8 @@ function render(d){
   if(ytEl('ytDailySubs'))ytEl('ytDailySubs').textContent=ytDailyNeeded.toLocaleString('en-IN');
   if(ytEl('ytDec31'))ytEl('ytDec31').textContent=ytDailyNeeded.toLocaleString('en-IN');
   if(ytEl('ytDaysLeft'))ytEl('ytDaysLeft').textContent=daysLeftDec;
-  // challenge day + video streak
-  const ytDaysElapsed=Math.max(0,Math.floor((Date.now()-ytStartDate)/864e5))+1;
-  if(ytEl('ytDay'))ytEl('ytDay').textContent='Day '+ytDaysElapsed;
-  if(ytEl('ytVideos'))ytEl('ytVideos').textContent=videos.toLocaleString('en-IN');
-  // consistency: videos vs days elapsed
-  const consistencyPct=ytDaysElapsed>0?Math.min(100,Math.round((videos/ytDaysElapsed)*100)):0;
-  const ytConsEl=ytEl('ytConsistency');
-  if(ytConsEl){
-    ytConsEl.textContent=consistencyPct+'%';
-    if(consistencyPct>=100){ytConsEl.textContent='100%';ytConsEl.style.color='var(--mint)';}
-    else if(consistencyPct>=80)ytConsEl.style.color='var(--gold)';
-    else ytConsEl.style.color='var(--red)';
-  }
-  // status tag: are current subs pace enough?
+  const ytDaysElapsed=Math.max(1,Math.floor((Date.now()-ytStartDate)/864e5)+1);
+  // status tag: is current subs pace enough?
   const ytPaceSoFar=ytDaysElapsed>0?subs/ytDaysElapsed:0;
   const ytStatusEl=ytEl('ytStatus');
   if(ytStatusEl){
@@ -2904,17 +2626,6 @@ function highlightMap(countries){
   });
 }
 function tick(){
-  const diff=new Date('2026-08-31T00:00:00+05:30')-Date.now(),el=$('countdown');
-  if(diff<=0){el.textContent='🏁 DEADLINE REACHED';}
-  else{
-    const d=Math.floor(diff/864e5),h=Math.floor(diff%864e5/36e5),m=Math.floor(diff%36e5/6e4);
-    el.innerHTML=`<div class="cd-unit"><span class="cd-n">${d}</span><span class="cd-l">days</span></div><div class="cd-unit"><span class="cd-n">${h}</span><span class="cd-l">hrs</span></div><div class="cd-unit"><span class="cd-n">${m}</span><span class="cd-l">min</span></div>`;
-  }
-  // Challenge day counter — started 9 Apr 2026
-  const start=new Date('2026-04-09T00:00:00+05:30');
-  const dayNum=Math.max(1,Math.floor((Date.now()-start)/864e5)+1);
-  const dayEl=$('challengeDay');
-  if(dayEl)dayEl.textContent=dayNum;
   // Days to end of 2026
   const eoy=new Date('2027-01-01T00:00:00+05:30');
   const daysLeft2026=Math.max(0,Math.ceil((eoy-Date.now())/864e5));
@@ -3005,6 +2716,7 @@ function fmtPnl(v){
 }
 
 function renderCalendar(){
+  if(!document.getElementById('calGrid'))return; // calendar removed
   const monthData=calData.filter(d=>{
     const dt=new Date(d.date+'T00:00:00');
     return dt.getFullYear()===calYear&&dt.getMonth()===calMonth;
@@ -3184,18 +2896,18 @@ function renderBucketChart(){
 
 
 // calendar navigation
-document.getElementById('calPrev').addEventListener('click',()=>{
+document.getElementById('calPrev')?.addEventListener('click',()=>{
   let m=calMonth-1,y=calYear;
   if(m<0){m=11;y--;}
   if(y<CAL_START_YEAR||(y===CAL_START_YEAR&&m<CAL_START_MONTH))return;
   calMonth=m;calYear=y;renderCalendar();
 });
-document.getElementById('calNext').addEventListener('click',()=>{
+document.getElementById('calNext')?.addEventListener('click',()=>{
   calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();
 });
 
 // trading card click → show/hide calendar inline
-document.getElementById('tradingCard').addEventListener('click',()=>{
+document.getElementById('tradingCard')?.addEventListener('click',()=>{
   const sec=document.getElementById('pnlCalendarSection');
   const hint=document.getElementById('calToggleHint');
   const isOpen=sec.style.display!=='none';
@@ -3212,7 +2924,7 @@ document.getElementById('tradingCard').addEventListener('click',()=>{
 });
 
 // Chart pill — independent toggle
-document.getElementById('chartToggleHint').addEventListener('click',(e)=>{
+document.getElementById('chartToggleHint')?.addEventListener('click',(e)=>{
   e.stopPropagation();
   const sec=document.getElementById('pnlChartSection');
   const hint=document.getElementById('chartToggleHint');
@@ -3222,7 +2934,7 @@ document.getElementById('chartToggleHint').addEventListener('click',(e)=>{
   hint.classList.toggle('open',!isOpen);
   if(!isOpen)setTimeout(renderPnlChart,50);
 });
-document.getElementById('calClose').addEventListener('click',(e)=>{
+document.getElementById('calClose')?.addEventListener('click',(e)=>{
   e.stopPropagation();
   document.getElementById('pnlCalendarSection').style.display='none';
   const hint=document.getElementById('calToggleHint');
@@ -3520,7 +3232,7 @@ function getShareText(){
   return `${isPos?'🟢':'🔴'} ${monthName} ${year} PnL\n\n${fmtShare(monthTotal)} month total\n${fmtShare(todayPnl)} today\n✅ ${green} green  ❌ ${red} red\n\nTracking the ₹1Cr challenge live 👇\nvivan.fun\n\n#1CroreChallenge #VivanLive #Crypto #Trading`;
 }
 
-document.getElementById('sharePnlBtn').addEventListener('click',()=>{
+document.getElementById('sharePnlBtn')?.addEventListener('click',()=>{
   const modal=document.getElementById('shareModal');
   modal.style.display='flex';
   // Always fetch fresh before drawing
@@ -4287,6 +3999,7 @@ function updateRetroCurrency(){
   set('lrnAug',retroFmt(26958,true)+' (my best month)');
 }
 function renderRetro(){
+  if(!document.getElementById('retroEquity'))return; // retrospective removed
   updateRetroCurrency();
   drawRetroEquity();drawRetroMonthly();drawDOW();
   _retroDone=true;
