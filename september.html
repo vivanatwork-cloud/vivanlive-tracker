@@ -88,6 +88,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;back
 .platform.signed .pf-idwrap{max-height:70px;opacity:1;margin-top:14px;}
 .pf-id{width:100%;background:var(--s2);border:1px solid var(--border);color:var(--text);font-family:'Barlow',sans-serif;font-size:15px;padding:12px 14px;outline:none;transition:border-color .2s;}
 .pf-id:focus{border-color:var(--mint);}
+.pf-id.field-err,.tg-input.field-err{border-color:var(--red)!important;box-shadow:0 0 0 2px rgba(255,59,92,.15);}
 
 /* TELEGRAM INPUT */
 .tg-card{background:var(--s1);border:1px solid var(--border);border-left:3px solid var(--purple);padding:22px;}
@@ -192,7 +193,7 @@ body.light .hero p,body.light .tg-hint{color:#555;}
           </div>
         </div>
         <div class="pf-idwrap">
-          <input type="text" class="pf-id" id="idPropr" placeholder="Your Propr User ID" autocomplete="off">
+          <input type="text" class="pf-id" id="idPropr" placeholder="Your Propr User ID (required)" autocomplete="off">
         </div>
       </div>
 
@@ -209,7 +210,7 @@ body.light .hero p,body.light .tg-hint{color:#555;}
           </div>
         </div>
         <div class="pf-idwrap">
-          <input type="text" class="pf-id" id="idHypernova" placeholder="Your Hypernova Username" autocomplete="off">
+          <input type="text" class="pf-id" id="idHypernova" placeholder="Your Hypernova Username (required)" autocomplete="off">
         </div>
       </div>
 
@@ -226,7 +227,7 @@ body.light .hero p,body.light .tg-hint{color:#555;}
           </div>
         </div>
         <div class="pf-idwrap">
-          <input type="email" class="pf-id" id="idStayflat" placeholder="Your StayFlat Email ID" autocomplete="off">
+          <input type="email" class="pf-id" id="idStayflat" placeholder="Your StayFlat Email ID (required)" autocomplete="off">
         </div>
       </div>
     </div>
@@ -307,9 +308,21 @@ tgInput.addEventListener('input',()=>{
 submitBtn.addEventListener('click',submit);
 tgInput.addEventListener('keydown',e=>{if(e.key==='Enter')submit();});
 
+function flagField(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.classList.add('field-err');
+  el.focus();
+  el.addEventListener('input',()=>el.classList.remove('field-err'),{once:true});
+}
+
 async function submit(){
   msg.className='submit-msg';msg.textContent='';
   let tg=tgInput.value.trim();
+
+  const proprId=document.getElementById('idPropr').value.trim();
+  const hypernovaId=document.getElementById('idHypernova').value.trim();
+  const stayflatId=document.getElementById('idStayflat').value.trim();
 
   // require at least one platform answered
   const anyAnswered=Object.values(state).some(v=>v!==null);
@@ -318,9 +331,47 @@ async function submit(){
     msg.textContent='Please confirm your status on at least one platform.';
     return;
   }
-  if(!validTg(tg)){
+
+  // require at least one "signed up"
+  const anySignedUp=Object.values(state).some(v=>v==='yes');
+  if(!anySignedUp){
     msg.className='submit-msg err';
-    msg.textContent='Enter a valid Telegram username (e.g. @yourname).';
+    msg.textContent='You need to be signed up on at least one platform to get access.';
+    return;
+  }
+
+  // if signed up on a platform, its ID is mandatory
+  if(state.propr==='yes'&&!proprId){
+    flagField('idPropr');
+    msg.className='submit-msg err';
+    msg.textContent='Please enter your Propr User ID.';
+    return;
+  }
+  if(state.hypernova==='yes'&&!hypernovaId){
+    flagField('idHypernova');
+    msg.className='submit-msg err';
+    msg.textContent='Please enter your Hypernova Username.';
+    return;
+  }
+  if(state.stayflat==='yes'&&!stayflatId){
+    flagField('idStayflat');
+    msg.className='submit-msg err';
+    msg.textContent='Please enter your StayFlat Email ID.';
+    return;
+  }
+  // validate StayFlat email format if provided
+  if(state.stayflat==='yes'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(stayflatId)){
+    flagField('idStayflat');
+    msg.className='submit-msg err';
+    msg.textContent='Please enter a valid StayFlat email address.';
+    return;
+  }
+
+  // Telegram mandatory
+  if(!validTg(tg)){
+    flagField('tgInput');
+    msg.className='submit-msg err';
+    msg.textContent='Telegram username is required (e.g. @yourname).';
     return;
   }
 
@@ -331,11 +382,11 @@ async function submit(){
     action:'september',
     telegram:tg,
     propr:state.propr||'no',
-    proprId:document.getElementById('idPropr').value.trim(),
+    proprId:proprId,
     hypernova:state.hypernova||'no',
-    hypernovaId:document.getElementById('idHypernova').value.trim(),
+    hypernovaId:hypernovaId,
     stayflat:state.stayflat||'no',
-    stayflatId:document.getElementById('idStayflat').value.trim()
+    stayflatId:stayflatId
   };
 
   if(!SUBMIT_API.includes('SUBMIT_API_URL')){
